@@ -1,0 +1,14 @@
+PREFIX aio: <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?item ?label (COUNT(DISTINCT ?method) AS ?count)
+WHERE {
+  ?item a aio:WaterChallenge .
+  OPTIONAL { ?item rdfs:label ?label }
+  OPTIONAL {
+    ?item aio:involvesProcess ?process .
+    ?method aio:modelsProcess ?process .
+  }
+}
+GROUP BY ?item ?label
+ORDER BY ?label

@@ -1,0 +1,9 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+SELECT DISTINCT ?method ?scale ?timeStep
+WHERE {
+  {{challenge}} aio:involvesProcess ?process .
+  ?method aio:modelsProcess ?process .
+  OPTIONAL { ?method aio:hasApplicationScale ?scale }
+  OPTIONAL { ?method aio:hasTypicalTimeStep ?timeStep }
+}

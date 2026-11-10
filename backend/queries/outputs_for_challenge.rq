@@ -1,0 +1,20 @@
+PREFIX aio:  <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# The outputs usually expected for a challenge.
+# ?isPrimary is 1 for the outputs proposed first (hasPrimaryOutput), 0 for the others.
+# One row per (output, water entity): the Python side groups the rows.
+SELECT DISTINCT ?item ?label ?question ?entity ?isPrimary
+WHERE {
+  {{challenge}} aio:hasTypicalOutput ?item .
+  OPTIONAL {
+    ?item rdfs:label ?label .
+    FILTER(lang(?label) = "en" || lang(?label) = "")
+  }
+  OPTIONAL {
+    ?item aio:plainQuestion ?question .
+    FILTER(lang(?question) = "en")
+  }
+  OPTIONAL { ?item aio:relevantToEntity ?entity }
+  BIND(IF(EXISTS { {{challenge}} aio:hasPrimaryOutput ?item }, 1, 0) AS ?isPrimary)
+}

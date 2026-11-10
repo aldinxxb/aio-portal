@@ -1,0 +1,11 @@
+PREFIX aio: <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?item ?label (COUNT(DISTINCT ?process) AS ?count)
+WHERE {
+  ?item aio:canBeImplementedIn {{software}} .
+  OPTIONAL { ?item rdfs:label ?label }
+  OPTIONAL { ?item aio:modelsProcess ?process }
+}
+GROUP BY ?item ?label
+ORDER BY ?label

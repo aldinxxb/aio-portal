@@ -1,0 +1,25 @@
+PREFIX aio: <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?kind ?item ?label
+WHERE {
+  {
+    {{method}} a aio:ModelingMethod .
+    BIND({{method}} AS ?item)
+    BIND("method" AS ?kind)
+  }
+  UNION { {{method}} aio:modelsProcess ?item . BIND("process" AS ?kind) }
+  UNION {
+    {{method}} aio:modelsProcess ?process .
+    ?item aio:involvesProcess ?process ;
+          a aio:WaterChallenge .
+    BIND("challenge" AS ?kind)
+  }
+  UNION { {{method}} aio:canBeImplementedIn ?item . BIND("software" AS ?kind) }
+  UNION { {{method}} aio:hasApplicationScale ?item . BIND("scale" AS ?kind) }
+  UNION { {{method}} aio:hasTypicalTimeStep ?item . BIND("timestep" AS ?kind) }
+  UNION { {{method}} aio:requiresMandatoryInput ?item . BIND("mandatory" AS ?kind) }
+  UNION { {{method}} aio:acceptsOptionalInput ?item . BIND("optional" AS ?kind) }
+  UNION { {{method}} aio:producesOutput ?item . BIND("output" AS ?kind) }
+  OPTIONAL { ?item rdfs:label ?label }
+}

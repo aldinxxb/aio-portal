@@ -1,0 +1,13 @@
+PREFIX aio:  <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# Every named individual of one kind (e.g. all study objectives), with its English label.
+SELECT DISTINCT ?item ?label
+WHERE {
+  ?item a {{kind}} .
+  OPTIONAL {
+    ?item rdfs:label ?label .
+    FILTER(lang(?label) = "en" || lang(?label) = "")
+  }
+}
+ORDER BY ?label

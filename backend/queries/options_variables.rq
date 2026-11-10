@@ -1,0 +1,12 @@
+PREFIX aio: <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?item ?label (COUNT(DISTINCT ?method) AS ?count)
+WHERE {
+  {{challenge}} aio:involvesProcess ?process .
+  ?method aio:modelsProcess ?process ;
+          aio:requiresMandatoryInput ?item .
+  OPTIONAL { ?item rdfs:label ?label }
+}
+GROUP BY ?item ?label
+ORDER BY DESC(?count) ?label

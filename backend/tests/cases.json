@@ -1,0 +1,63 @@
+[
+  {
+    "name": "flood_rainfall_only",
+    "description": "Only rainfall intensity is available for a flood study.",
+    "source": "ontology 0.6.1: derived from the recorded mandatory inputs",
+    "urr": {"challenge": "Flood", "available_variables": ["RainfallIntensity"]},
+    "expect": {"direct_exactly": ["KinematicWave"]}
+  },
+  {
+    "name": "flood_no_data",
+    "description": "The user has no data at all: nothing can be directly applicable.",
+    "source": "ontology 0.6.1: derived from the recorded mandatory inputs",
+    "urr": {"challenge": "Flood"},
+    "expect": {"direct_exactly": [], "not_recorded_count": 0}
+  },
+  {
+    "name": "flood_runoff_rainfall_and_precipitation",
+    "description": "Runoff only, with rainfall intensity and precipitation.",
+    "source": "ontology 0.6.1: derived from the recorded mandatory inputs",
+    "urr": {
+      "challenge": "Flood",
+      "processes": ["Runoff"],
+      "available_variables": ["RainfallIntensity", "Precipitation"]
+    },
+    "expect": {"direct_exactly": ["KinematicWave", "ModClark", "SCS-CN"]}
+  },
+  {
+    "name": "flood_discharge_and_head",
+    "description": "Discharge and hydraulic head are available for a flood study.",
+    "source": "ontology 0.6.1: derived from the recorded mandatory inputs",
+    "urr": {"challenge": "Flood", "available_variables": ["Discharge", "HydraulicHead"]},
+    "expect": {"direct_exactly": ["DarcyEquation3D", "Muskingum-Cunge"]}
+  },
+  {
+    "name": "flood_sediment",
+    "description": "Sediment transport only, with shear stress, flow velocity and discharge.",
+    "source": "ontology 0.6.1: derived from the recorded mandatory inputs",
+    "urr": {
+      "challenge": "Flood",
+      "processes": ["SedimentTransport"],
+      "available_variables": ["ShearStress", "FlowVelocity", "Discharge"]
+    },
+    "expect": {
+      "direct_exactly": ["EngelundHansen", "FiniteVolumeSedimentTransport", "MeyerPeterMuller"],
+      "not_direct": ["ExnerEquation"]
+    }
+  },
+  {
+    "name": "drought_precipitation",
+    "description": "Drought study with precipitation only.",
+    "source": "ontology 0.6.1: derived from the recorded mandatory inputs",
+    "urr": {"challenge": "Drought", "available_variables": ["Precipitation"]},
+    "expect": {"direct_exactly": ["HortonInfiltrationModel", "SCS-CN"]}
+  },
+  {
+    "name": "example_expert_expectation",
+    "description": "EXAMPLE of the format of an expert judgement. Invented by the tutorial to show the format; replace it with a real hydrologist's expectation.",
+    "source": "EXAMPLE, not a real expert opinion",
+    "urr": {"challenge": "Flood", "available_variables": ["Discharge", "HydraulicHead"]},
+    "expect": {"not_direct": ["DarcyEquation3D"]},
+    "known_gap": "The engine measures data fit only, not suitability, so it cannot exclude a method whose inputs happen to be available."
+  }
+]

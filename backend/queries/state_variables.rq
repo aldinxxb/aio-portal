@@ -1,0 +1,5 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+# All variables that describe a state (water level, soil moisture, ...).
+SELECT DISTINCT ?item
+WHERE { ?item a aio:StateVariable }

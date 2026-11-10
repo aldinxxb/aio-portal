@@ -1,0 +1,15 @@
+PREFIX aio:  <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# The key drivers of a challenge. ?isDefault is 1 for the driver assumed when the
+# user skips the driver step (hasDefaultDriver), 0 otherwise.
+SELECT DISTINCT ?item ?label ?isDefault
+WHERE {
+  ?item aio:isKeyDriverOf {{challenge}} .
+  OPTIONAL {
+    ?item rdfs:label ?label .
+    FILTER(lang(?label) = "en" || lang(?label) = "")
+  }
+  BIND(IF(EXISTS { {{challenge}} aio:hasDefaultDriver ?item }, 1, 0) AS ?isDefault)
+}
+ORDER BY ?label

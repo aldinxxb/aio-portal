@@ -1,0 +1,11 @@
+PREFIX aio: <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?method ?methodLabel ?input
+WHERE {
+  aio:Flood aio:involvesProcess ?process .
+  ?method aio:modelsProcess ?process .
+  OPTIONAL { ?method rdfs:label ?methodLabel }
+  OPTIONAL { ?method aio:requiresInput ?input }
+}
+ORDER BY ?methodLabel

@@ -1,0 +1,49 @@
+services:
+  graphdb:
+    image: ontotext/graphdb:10.8.0
+    ports:
+      - "7200:7200"
+    volumes:
+      - graphdb-data:/opt/graphdb/home
+
+  graphdb-init:
+    image: curlimages/curl:latest
+    depends_on:
+      - graphdb
+    volumes:
+      - ./ontology:/ontology:ro
+      - ./graphdb:/init:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        until curl -sf http://graphdb:7200/rest/repositories > /dev/null; do
+          echo "waiting for GraphDB..."; sleep 3
+        done
+        if curl -sf http://graphdb:7200/rest/repositories | grep -q '"aio"'; then
+          echo "repository aio already exists, nothing to do"; exit 0
+        fi
+        curl -sSf -X POST -F config=@/init/aio-config.ttl http://graphdb:7200/rest/repositories
+        curl -sSf -X POST -H "Content-Type: application/x-turtle" --data-binary @/ontology/aio-core.ttl http://graphdb:7200/repositories/aio/statements
+        echo "ontology loaded"
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      GRAPHDB_URL: http://graphdb:7200
+      CORS_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+    depends_on:
+      graphdb-init:
+        condition: service_completed_successfully
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  graphdb-data:

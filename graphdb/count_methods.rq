@@ -1,0 +1,4 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+SELECT (COUNT(DISTINCT ?method) AS ?n)
+WHERE { ?method a aio:ModelingMethod }

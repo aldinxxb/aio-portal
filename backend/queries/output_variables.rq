@@ -1,0 +1,5 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+# The variable(s) behind one expected output (Hydrograph -> Discharge).
+SELECT DISTINCT ?item
+WHERE { {{output}} aio:isExpressedBy ?item }

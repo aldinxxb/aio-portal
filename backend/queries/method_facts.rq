@@ -1,0 +1,21 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+# The facts about every method that the requirement rules need.
+# One row per (method, property, value).
+SELECT DISTINCT ?method ?prop ?value
+WHERE {
+  VALUES ?prop {
+    aio:hasTemporalMode
+    aio:hasTypicalTimeStep
+    aio:hasSpatialRepresentation
+    aio:hasDimensionality
+    aio:hasCalibrationParameter
+    aio:hasPhysicalParameter
+    aio:isCalibratedAgainst
+    aio:producesOutput
+    aio:requiresMandatoryInput
+    aio:requiresInput
+  }
+  ?method aio:modelsProcess ?process .
+  ?method ?prop ?value .
+}

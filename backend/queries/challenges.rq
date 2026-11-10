@@ -1,0 +1,9 @@
+PREFIX aio: <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?challenge ?label
+WHERE {
+  ?challenge a aio:WaterChallenge .
+  OPTIONAL { ?challenge rdfs:label ?label }
+}
+ORDER BY ?label

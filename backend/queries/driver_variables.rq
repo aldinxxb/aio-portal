@@ -1,0 +1,5 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+# The variables that characterise one driver (Urbanization -> ImperviousFraction, ...).
+SELECT DISTINCT ?item
+WHERE { {{driver}} aio:isCharacterizedBy ?item }
