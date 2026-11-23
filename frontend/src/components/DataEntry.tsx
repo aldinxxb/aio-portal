@@ -21,6 +21,7 @@ import {
 import ChainCard from "./ChainCard";
 import { EntryHero, PageNav, PageSteps } from "./EntryFrame";
 import FranceMap, { boundsOf, type Bounds } from "./FranceMap";
+import { fullDataItems } from "../share";
 
 // Entry "Start from data", the home screen of the portal. Four pages, one question each:
 //   1 Study area     choose an area of France, then the watersheds (BD Topage) inside it
@@ -176,34 +177,44 @@ function VariablePicker({ variables, taken, value, onPick }: {
   );
 }
 
+// The study as kept in the address and in the draft: ids only, the rest is read again.
+export type DataState = {
+  page?: number; layer?: LayerId; area?: string; sheds?: string[]; entity?: string | null;
+  data?: DataItem[]; challenge?: string | null; objective?: string | null; outputs?: string[]; level?: Readiness | null;
+};
+
 type Props = {
   // open a workflow's diagnosis, with the study described here
   onAdjust: (chain: Chain, study: { challenge: string; objective: string | null; outputs: string[]; data: DataItem[] }) => void;
+  initial?: DataState | null;                                // a study from a link or a draft
+  onState?: (state: DataState | null, summary: string) => void;   // every change, for the address (null: nothing chosen)
 };
 
-export default function DataEntry({ onAdjust }: Props) {
-  const [page, setPage] = useState(0);
+export default function DataEntry({ onAdjust, initial, onState }: Props) {
+  const [page, setPage] = useState(initial?.page ?? 0);
+  // the area of a link is found once its layer is loaded
+  const pendingArea = useRef<string | null>(initial?.area ?? null);
   // ---- page 1: where ----
-  const [layerId, setLayerId] = useState<LayerId>("basins");
+  const [layerId, setLayerId] = useState<LayerId>(initial?.layer ?? "basins");
   const [layer, setLayer] = useState<AreaLayer | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [region, setRegion] = useState<{ layer: LayerId; feature: AreaFeature } | null>(null);
   const [sheds, setSheds] = useState<WatershedLayer | null>(null);
   const [shedError, setShedError] = useState<string | null>(null);
-  const [picked, setPicked] = useState<string[]>([]);          // watersheds chosen inside the region
-  const [entity, setEntity] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string[]>(initial?.sheds ?? []);   // watersheds chosen inside the region
+  const [entity, setEntity] = useState<string | null>(initial?.entity ?? null);
   const [entities, setEntities] = useState<Ref[]>([]);
   // ---- page 2: data ----
   const [variables, setVariables] = useState<DeclarableVariable[]>([]);
-  const [data, setData] = useState<DataItem[]>([]);
+  const [data, setData] = useState<DataItem[]>(() => fullDataItems(initial?.data));
   const [item, setItem] = useState(EMPTY_ITEM);
   const [showAll, setShowAll] = useState(false);
   // ---- page 3: goal ----
-  const [challenge, setChallenge] = useState<string | null>(null);
-  const [objective, setObjective] = useState<string | null>(null);
-  const [outputs, setOutputs] = useState<string[]>([]);
+  const [challenge, setChallenge] = useState<string | null>(initial?.challenge ?? null);
+  const [objective, setObjective] = useState<string | null>(initial?.objective ?? null);
+  const [outputs, setOutputs] = useState<string[]>(initial?.outputs ?? []);
   // ---- page 4: workflows ----
-  const [level, setLevel] = useState<Readiness | null>(null);
+  const [level, setLevel] = useState<Readiness | null>(initial?.level ?? null);
   const [result, setResult] = useState<Assessment | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -219,8 +230,19 @@ export default function DataEntry({ onAdjust }: Props) {
     setLayer(null);
     setMapError(null);
     getLayer(layerId)
-      .then((found) => { if (!cancelled) setLayer(found); })
-      .catch((e) => { if (!cancelled) setMapError(String(e)); });
+      .then((found) => {
+        if (cancelled) return;
+        setLayer(found);
+        // the area named by a link or a draft
+        const wanted = pendingArea.current;
+        if (wanted) {
+          pendingArea.current = null;
+          const feature = found.features.find((f) => f.properties.id === wanted);
+          if (feature) setRegion({ layer: layerId, feature });
+          else setPage(0);
+        }
+      })
+      .catch((e) => { if (!cancelled) { pendingArea.current = null; setPage(0); setMapError(String(e)); } });
     return () => { cancelled = true; };
   }, [layerId]);
 
@@ -267,6 +289,21 @@ export default function DataEntry({ onAdjust }: Props) {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bodyKey]);
+
+  const stateKey = JSON.stringify([page, region?.layer, region?.feature.properties.id, picked, entity, data, challenge, objective, outputs, level]);
+  useEffect(() => {
+    if (!onState || pendingArea.current) return;
+    const state: DataState = {
+      page, layer: region?.layer ?? layerId, area: region?.feature.properties.id, sheds: picked, entity,
+      data, challenge, objective, outputs, level,
+    };
+    const summary = region
+      ? `${area?.name ?? region.feature.properties.name} · ${data.length} data${challenge ? " · goal chosen" : ""}`
+      : "";
+    // nothing chosen yet: a plain address
+    onState(region || data.length ? state : null, summary);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateKey, area?.name]);
 
   const label = useMemo(() => new Map(variables.map((v) => [v.id, name(v)])), [variables]);
   const chosenVariable = variables.find((v) => v.id === item.variable);

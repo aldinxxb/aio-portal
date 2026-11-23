@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fullSetupRequest } from "../share";
 import type { Ref } from "../api";
 import {
   applyPatch,
@@ -63,11 +64,19 @@ function Choices({ options, value, onPick, empty }: {
   );
 }
 
+// The study as kept in the address and in the draft.
+export type SetupState = { step: number; request: SetupRequest; declined?: string[]; tried?: string[] };
+
 // initial: a set-up handed over by the Water Challenge entry ("check and adjust this workflow")
-export default function SetupEntry({ initial }: { initial?: SetupRequest | null }) {
+// saved: a study from a link or a draft, where it was left
+export default function SetupEntry({ initial, saved, onState }: {
+  initial?: SetupRequest | null; saved?: SetupState | null; onState?: (state: SetupState, summary: string) => void;
+}) {
   // with a challenge and an objective the diagnosis can start at once; else the study is asked first
-  const [step, setStep] = useState(initial ? (initial.context.objective ? 3 : 1) : 0);
-  const [request, setRequest] = useState<SetupRequest>(initial ?? EMPTY_REQUEST);
+  // a link drops empty values to stay short: the set-up is put back in its full shape
+  const restored = saved ? fullSetupRequest(saved.request) : null;
+  const [step, setStep] = useState(restored ? Math.min(3, Math.max(0, saved!.step ?? 0)) : initial ? (initial.context.objective ? 3 : 1) : 0);
+  const [request, setRequest] = useState<SetupRequest>(restored ?? initial ?? EMPTY_REQUEST);
   const [software, setSoftware] = useState<SetupOption[]>([]);
   const [chains, setChains] = useState<SetupOption[]>([]);
   const [groups, setGroups] = useState<RoleGroup[]>([]);
@@ -77,11 +86,11 @@ export default function SetupEntry({ initial }: { initial?: SetupRequest | null 
   const [result, setResult] = useState<Improvement | null>(null);
   const [accepted, setAccepted] = useState<string[]>([]);   // messages of the accepted actions
   const [history, setHistory] = useState<SetupRequest[]>([]); // the request before each accepted action (undo)
-  const [declined, setDeclined] = useState<string[]>([]);   // ids of the suggestions the user declined
+  const [declined, setDeclined] = useState<string[]>(saved?.declined ?? []);   // ids of the suggestions the user declined
   // An expected output the workflow does not deliver is completed AT ONCE with the best
   // matching method (same software first); the user can change it or leave it out.
   const [autoAdded, setAutoAdded] = useState<Record<string, string>>({});   // method -> output
-  const [autoTried, setAutoTried] = useState<string[]>([]);                  // outputs already completed once
+  const [autoTried, setAutoTried] = useState<string[]>(saved?.tried ?? []);  // outputs already completed once
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // step 1 is short: one way of describing the set-up at a time, one job open at a time
@@ -95,6 +104,15 @@ export default function SetupEntry({ initial }: { initial?: SetupRequest | null 
   const contextKey = JSON.stringify(context);
 
   const guard = (work: Promise<unknown>) => work.catch((e) => setError(String(e)));
+
+  // every change goes to the address (and the draft): a reload or a shared link finds it again
+  useEffect(() => {
+    if (!onState) return;
+    const parts = [request.setup.methods.length ? `${request.setup.methods.length} method${request.setup.methods.length > 1 ? "s" : ""}` : "",
+                   request.context.challenge ? "challenge chosen" : "", request.data.length ? `${request.data.length} data` : ""].filter(Boolean);
+    onState({ step, request, declined, tried: autoTried }, parts.join(" · "));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, JSON.stringify(request), declined.join(), autoTried.join()]);
 
   // step 1: software, standard workflows, and the methods grouped by the job they do
   useEffect(() => {

@@ -14,7 +14,7 @@ import {
   type ChainRecommendation,
   type Licence,
 } from "./api";
-import DataEntry from "./components/DataEntry";
+import DataEntry, { type DataState } from "./components/DataEntry";
 import type { DataItem } from "./dataApi";
 import Credits from "./components/Credits";
 import EntryCards, { type Entry } from "./components/EntryCards";
@@ -27,11 +27,17 @@ import OpenDataLayer from "./components/OpenDataLayer";
 import RequirementsPanel from "./components/RequirementsPanel";
 import SearchBar from "./components/SearchBar";
 import SummaryGraph from "./components/SummaryGraph";
-import SetupEntry from "./components/SetupEntry";
+import SetupEntry, { type SetupState } from "./components/SetupEntry";
 import type { SetupRequest } from "./setupApi";
 import Wizard from "./components/Wizard";
 import WorkflowSection from "./components/WorkflowSection";
 import { CHALLENGE_STEPS, DATA_STEPS, SOFTWARE_STEPS } from "./steps";
+import {
+  addressOf, ago, dropDraft, fullSetupRequest, loadDraft, readAddress, saveDraft, writeAddress, type Draft as SavedDraft,
+} from "./share";
+
+// The Water Challenge results as kept in the address: the answers and how to name them.
+type ChallengeState = { answers: Draft; labels: Record<string, string>; licence?: Licence; software?: string | null; focus?: string | null };
 
 
 // The wizard answers of Entry 1 in the shape the backend expects (a URR).
@@ -51,9 +57,19 @@ function toRequest(draft: Draft): RecommendRequest {
 }
 
 export default function App() {
-  // the portal opens on "Start from data", or on the ontology when the address points to a term
-  const [entry, setEntry] = useState<Entry | null>(() => (window.location.hash.startsWith("#/ontology") ? "ontology" : "data"));
-  const ontologyTerm = useRef<string | null>(decodeURIComponent(window.location.hash.match(/^#\/ontology\/(.+)$/)?.[1] ?? "") || null);
+  // The portal opens where the address says (a shared link, a reload), else on "Start from data".
+  const start = useRef(readAddress());
+  const [entry, setEntry] = useState<Entry | null>(start.current.entry);
+  const ontologyTerm = useRef<string | null>(start.current.term);
+  // the study an entry starts from: a link, a reload or a resumed draft
+  const [saved, setSaved] = useState<unknown | null>(start.current.state);
+  // an unfinished study of this entry, offered back when the address holds none
+  const [resume, setResume] = useState<SavedDraft | null>(() =>
+    start.current.state || start.current.entry === "ontology" ? null : loadDraft(start.current.entry));
+  const current = useRef<unknown | null>(start.current.state);   // the entry's study, as last reported
+  const diagnosisState = useRef<unknown | null>(start.current.diagnosis);   // the open diagnosis, as last reported
+  const pushedDiagnosis = useRef(false);                         // opened here (back works) or from a link
+  const [copied, setCopied] = useState(false);
   const [run, setRun] = useState(0);                       // bumped to restart the wizard
   const [answers, setAnswers] = useState<Draft | null>(null);
   const [labels, setLabels] = useState<Record<string, string>>({});
@@ -67,17 +83,18 @@ export default function App() {
   const [focus, setFocus] = useState<string | null>(null);         // the workflow the summary focuses on
   // A workflow's diagnosis opened from the results. The results stay mounted (hidden), so
   // coming back finds them as they were: filters, opened cards, focus; the scroll is restored.
-  const [adjusting, setAdjusting] = useState<SetupRequest | null>(null);
+  const [adjusting, setAdjusting] = useState<SetupRequest | null>(() =>
+    fullSetupRequest((start.current.diagnosis as { request?: unknown } | null)?.request));
   const [adjustRun, setAdjustRun] = useState(0);
   const savedScroll = useRef(0);
-  const adjustingRef = useRef(false);
+  const adjustingRef = useRef(!!start.current.diagnosis);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [catalogue, setCatalogue] = useState(false);       // the open data catalogue, slid in from the right
 
   const lastRequest = useRef(0);   // only the answer to the latest request is shown
 
-  async function handleFinish(draft: Draft, readable: Record<string, string>) {
+  async function handleFinish(draft: Draft, readable: Record<string, string>, which: Entry | null = entry) {
     const mine = ++lastRequest.current;
     const latest = () => mine === lastRequest.current;
     setAnswers(draft);
@@ -85,7 +102,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      if (entry === "software") {
+      if (which === "software") {
         let ids = draft.methods ?? [];
         if (ids.length === 0) {
           // no preference: take every method of the software
@@ -94,7 +111,7 @@ export default function App() {
         }
         const found = await Promise.all(ids.map(getMethod));
         if (latest()) setProfiles(found);
-      } else if (entry === "challenge") {
+      } else if (which === "challenge") {
         const found = await recommend(toRequest(draft));
         if (latest()) setResult(found);
       }
@@ -103,6 +120,37 @@ export default function App() {
     } finally {
       if (latest()) setLoading(false);
     }
+  }
+
+  // ---- the address -------------------------------------------------------------------------
+  // An entry reports its study on every change: it goes to the address (no new history step)
+  // and, once there is something to keep, to the draft of that entry.
+  const entryRef = useRef(entry);
+  entryRef.current = entry;
+  function report(which: Entry, state: unknown | null, summary: string) {
+    if (which !== entryRef.current) return;
+    current.current = state;
+    writeAddress(addressOf(which, state, adjustingRef.current ? diagnosisState.current : null));
+    if (summary) {
+      saveDraft(which, state, summary);
+      setResume(null);    // a new study replaces the one offered back
+    }
+  }
+  function reportDiagnosis(state: unknown) {
+    if (!adjustingRef.current) return;
+    diagnosisState.current = state;
+    if (entryRef.current && entryRef.current !== "ontology") writeAddress(addressOf(entryRef.current, current.current, state));
+  }
+
+  // Restore Water Challenge results from a link or a draft: the answers are asked again.
+  function restoreChallenge(state: unknown) {
+    const st = state as ChallengeState | null;
+    if (!st?.answers?.challenge) return false;
+    setLicence(st.licence ?? null);
+    setChainSoftware(st.software ?? null);
+    setFocus(st.focus ?? null);
+    handleFinish(st.answers, st.labels ?? {}, "challenge");
+    return true;
   }
 
   // A filter was changed or removed on the results page: same request, new answers.
@@ -166,25 +214,67 @@ export default function App() {
     adjustingRef.current = true;
     setAdjusting(request);
     setAdjustRun((n) => n + 1);
-    window.history.pushState({ aio: "diagnosis" }, "");   // the browser's back button comes back here
+    diagnosisState.current = { step: request.context.objective ? 3 : 1, request };
+    pushedDiagnosis.current = true;
+    // a new history step: the browser's back button comes back to the results
+    window.history.pushState({ aio: "diagnosis" }, "", window.location.pathname + window.location.search
+      + addressOf(entryRef.current!, current.current, diagnosisState.current));
     window.scrollTo({ top: 0 });
+  }
+
+  // "Back to the results": the history step when there is one, else (a diagnosis opened from a link) directly
+  function leaveDiagnosis() {
+    if (pushedDiagnosis.current) { window.history.back(); return; }
+    closeDiagnosis();
+    writeAddress(addressOf(entryRef.current!, current.current));
   }
 
   function closeDiagnosis() {
     adjustingRef.current = false;
+    pushedDiagnosis.current = false;
+    diagnosisState.current = null;
     setAdjusting(null);
     // after the results are shown again, put the page where it was
     requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: savedScroll.current })));
   }
 
+  // Back, forward, or a link opened while the portal is open: follow the address.
+  function followAddress() {
+    const found = readAddress();
+    if (found.entry === "ontology") {
+      // the ontology page follows its own terms; from another entry, open it on that term
+      if (entryRef.current !== "ontology") { ontologyTerm.current = found.term; open("ontology", null); setResume(null); }
+      return;
+    }
+    const same = found.entry === entryRef.current
+      && addressOf(found.entry, found.state) === addressOf(found.entry, current.current);
+    if (!same) {
+      open(found.entry, found.state);
+      return;
+    }
+    // the same study: only the diagnosis opened or closed
+    if (!found.diagnosis && adjustingRef.current) closeDiagnosis();
+    else if (found.diagnosis && !adjustingRef.current) {
+      const request = fullSetupRequest((found.diagnosis as { request?: unknown }).request);
+      if (request) {
+        adjustingRef.current = true;
+        diagnosisState.current = found.diagnosis;
+        setAdjusting(request);
+        setAdjustRun((n) => n + 1);
+      }
+    }
+  }
+  const follow = useRef(followAddress);
+  follow.current = followAddress;
+
+  // the challenge results of a link or a reload are asked once the page is up
   useEffect(() => {
-    // a link to the ontology (#/ontology/<term>) opens its tab, even when the portal is already open
-    const onHash = () => {
-      const match = window.location.hash.match(/^#\/ontology\/?(.*)$/);
-      if (!match) return;
-      ontologyTerm.current = match[1] ? decodeURIComponent(match[1]) : null;
-      setEntry((current) => (current === "ontology" ? current : "ontology"));
-    };
+    if (start.current.entry === "challenge" && start.current.state) restoreChallenge(start.current.state);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const onHash = () => follow.current();
     window.addEventListener("hashchange", onHash);
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setCatalogue(false); };
     window.addEventListener("keydown", onKey);
@@ -195,20 +285,64 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const onBack = () => {
-      if (adjustingRef.current) closeDiagnosis();
-    };
+    const onBack = () => follow.current();
     window.addEventListener("popstate", onBack);
     return () => window.removeEventListener("popstate", onBack);
   }, []);
 
+  // Clicking an entry tab (even the selected one) starts that flow from scratch; an unfinished
+  // study of that entry is offered back.
   function choose(next: Entry) {
-    if (next === "ontology") {
-      ontologyTerm.current = null;
-      if (!window.location.hash.startsWith("#/ontology")) window.location.hash = "/ontology";
-    } else if (window.location.hash.startsWith("#/ontology")) {
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    if (next === "ontology") ontologyTerm.current = null;
+    open(next, null);
+    setResume(next === "ontology" ? null : loadDraft(next));
+  }
+
+  function resumeDraft() {
+    if (!resume || !entry) return;
+    open(entry, resume.state);
+    setResume(null);
+  }
+
+  function discardDraft() {
+    if (entry) dropDraft(entry);
+    setResume(null);
+  }
+
+  async function copyLink() {
+    const link = window.location.href;
+    let done = false;
+    try {
+      await navigator.clipboard.writeText(link);
+      done = true;
+    } catch {
+      // no clipboard access (http page, embedded view): copy from a hidden field instead
+      const field = document.createElement("textarea");
+      field.value = link;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      try { done = document.execCommand("copy"); } catch { done = false; }
+      field.remove();
     }
+    if (!done) { window.prompt("Copy this link:", link); return; }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  // open an entry, empty or on a study (from a link or a draft)
+  function open(next: Entry, state: unknown | null) {
+    current.current = state;
+    if (next === "ontology") {
+      if (!window.location.hash.startsWith("#/ontology")) window.location.hash = "/ontology";
+    } else {
+      writeAddress(addressOf(next, state));
+    }
+    setSaved(state);
+    pushedDiagnosis.current = false;
+    diagnosisState.current = null;
     setHandover(null);
     adjustingRef.current = false;
     setAdjusting(null);
@@ -221,6 +355,9 @@ export default function App() {
     setResult(null);
     setProfiles([]);
     setError(null);
+    setLicence(null);
+    setChainSoftware(null);
+    if (next === "challenge" && state) restoreChallenge(state);
   }
 
   const text = (id: string) => labels[id] ?? id;
@@ -268,6 +405,17 @@ export default function App() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, licence, chainSoftware]);
+  // the Water Challenge results go to the address once answered (the wizard itself is not kept)
+  useEffect(() => {
+    if (entry !== "challenge") return;
+    if (!answers) { if (!loading) report("challenge", null, ""); return; }
+    const ids = new Set(Object.values(answers).flat().filter((x): x is string => typeof x === "string"));
+    const named = Object.fromEntries(Object.entries(labels).filter(([id]) => ids.has(id)));
+    report("challenge", { answers, labels: named, licence, software: chainSoftware, focus } satisfies ChallengeState,
+           `${labels[answers.challenge ?? ""] ?? answers.challenge ?? ""} · results`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry, JSON.stringify(answers), licence, chainSoftware, focus]);
+
   const steps =
     entry === "challenge" ? CHALLENGE_STEPS : entry === "software" ? SOFTWARE_STEPS : DATA_STEPS;
   const filters = answers !== null && (
@@ -303,10 +451,26 @@ export default function App() {
             Open data catalogue
             {entry === "challenge" && datasets.length > 0 && <span className="catalogue-count" title="datasets for the workflow in focus">{datasets.length}</span>}
           </button>
+          <button className={`share-btn${copied ? " on" : ""}`} onClick={copyLink}
+                  title="Copy a link to this page as it is now: it opens the same study, for you or a colleague">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" /><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
+            </svg>
+            <span aria-live="polite">{copied ? "Link copied" : "Copy link"}</span>
+          </button>
         </nav>
       </header>
 
       <main className="page">
+        {resume && entry && entry !== "ontology" && !adjusting && (
+          <div className="resume-bar" role="status">
+            <span><strong>Continue where you left off?</strong> <span className="muted">Your last study here, {ago(resume.saved)}: {resume.summary}</span></span>
+            <span className="resume-actions">
+              <button className="btn btn-primary" onClick={resumeDraft}>Resume</button>
+              <button className="link-btn" onClick={discardDraft}>Discard</button>
+            </span>
+          </div>
+        )}
 
         {/* left: the entry · right: the open data layer. "Start from data" has its own open data
             page and a large map, so it takes the whole width. */}
@@ -330,11 +494,15 @@ export default function App() {
         {entry === "ontology" && <OntologyEntry key={`onto-${run}`} initial={ontologyTerm.current} />}
 
         {/* Modeling Approach: its own flow (set-up, study, data, diagnosis and improvements) */}
-        {entry === "software" && <SetupEntry key={`setup-${run}`} initial={handover} />}
+        {entry === "software" && (
+          <SetupEntry key={`setup-${run}`} initial={handover} saved={saved as SetupState | null}
+                      onState={(state, summary) => report("software", state, summary)} />
+        )}
 
         {entry === "data" && (
           <div hidden={!!adjusting}>
-            <DataEntry key={`data-${run}`} onAdjust={adjustFromData} />
+            <DataEntry key={`data-${run}`} onAdjust={adjustFromData} initial={saved as DataState | null}
+                       onState={(state, summary) => report("data", state, summary)} />
           </div>
         )}
 
@@ -369,10 +537,13 @@ export default function App() {
         {(entry === "challenge" || entry === "data") && adjusting && (
           <>
             <div className="back-bar">
-              <button className="btn" onClick={() => window.history.back()}>Back to {entry === "data" ? "your data" : "the recommended workflows"}</button>
+              <button className="btn" onClick={leaveDiagnosis}>Back to {entry === "data" ? "your data" : "the recommended workflows"}</button>
               <span className="muted">Your filters, opened workflows and position are kept.</span>
             </div>
-            <SetupEntry key={`adjust-${adjustRun}`} initial={adjusting} />
+            <SetupEntry key={`adjust-${adjustRun}`} initial={adjusting}
+                        saved={diagnosisState.current && (diagnosisState.current as SetupState).request
+                          ? { ...(diagnosisState.current as SetupState), request: adjusting } : null}
+                        onState={reportDiagnosis} />
           </>
         )}
 
