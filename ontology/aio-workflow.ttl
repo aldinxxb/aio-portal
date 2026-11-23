@@ -1,0 +1,1432 @@
+@prefix aio: <https://w3id.org/aio#> .
+@prefix aiowf: <https://w3id.org/aio/workflow#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#  AIO extension: model composition 0.9.0. Imports the core.
+
+###  https://w3id.org/aio/workflow
+<https://w3id.org/aio/workflow> a owl:Ontology ;
+    dct:description "How methods are assembled into a model: the component roles a method can fill, the interfaces through which roles exchange variables, chain templates and their slots, coupling types. Used by the recommendation to build and check workflows."@en ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dct:modified "2026-11-20"^^xsd:date ;
+    dct:title "AIO extension - model composition"@en ;
+    owl:imports <https://w3id.org/aio> ;
+    owl:versionIRI <https://w3id.org/aio/workflow/0.9.0> ;
+    owl:versionInfo "0.9.0" ;
+    vann:preferredNamespacePrefix "aiowf" ;
+    vann:preferredNamespaceUri "https://w3id.org/aio/workflow#" .
+
+#################################################################
+#    Object properties
+#################################################################
+
+###  https://w3id.org/aio/workflow#canFeed
+aiowf:canFeed a owl:ObjectProperty ;
+    rdfs:domain aio:ModelingMethod ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "can feed"@en ;
+    rdfs:range aio:ModelingMethod ;
+    skos:definition "Method A can pass its output to method B: A fills a role that feeds B's role through a role interface, A produces the exchanged variable, neither method already plays the other's role, B takes the variable (or the input it replaces) as an input, both share a compatible time step (A at least as fine as B), and, where the interface requires it, both have the same spatial structure. Materialised by the build script."@en .
+
+###  https://w3id.org/aio/workflow#deliversOutput
+aiowf:deliversOutput a owl:ObjectProperty ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "delivers output"@en ;
+    rdfs:range aio:ExpectedOutput ;
+    skos:definition "Expected output that a chain built on this template can produce."@en .
+
+###  https://w3id.org/aio/workflow#exchangesVariable
+aiowf:exchangesVariable a owl:ObjectProperty ;
+    rdfs:domain aiowf:RoleInterface ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "exchanges variable"@en ;
+    rdfs:range aio:Variable ;
+    skos:definition "Variable passed through the interface."@en .
+
+###  https://w3id.org/aio/workflow#feedsRole
+aiowf:feedsRole a owl:ObjectProperty ;
+    owl:propertyChainAxiom _:node11 ;
+    rdfs:domain aiowf:ComponentRole ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "feeds role"@en ;
+    rdfs:range aiowf:ComponentRole ;
+    skos:definition "Role A feeds role B through at least one role interface (inferred: isSourceOfInterface ∘ toRole)."@en .
+
+###  https://w3id.org/aio/workflow#fillsRole
+aiowf:fillsRole a owl:ObjectProperty ;
+    rdfs:domain aio:ModelingMethod ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "fills role"@en ;
+    rdfs:range aiowf:ComponentRole ;
+    skos:definition "Component role that the method can play in a model structure."@en .
+
+###  https://w3id.org/aio/workflow#fromRole
+aiowf:fromRole a owl:FunctionalProperty ,
+        owl:ObjectProperty ;
+    owl:inverseOf aiowf:isSourceOfInterface ;
+    rdfs:domain aiowf:RoleInterface ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "from role"@en ;
+    rdfs:range aiowf:ComponentRole ;
+    skos:definition "Role that provides the exchanged variable."@en .
+
+###  https://w3id.org/aio/workflow#hasSlot
+aiowf:hasSlot a owl:ObjectProperty ;
+    rdfs:domain aiowf:ChainTemplate ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "has slot"@en ;
+    rdfs:range aiowf:ChainSlot ;
+    skos:definition "Slot of the template."@en .
+
+###  https://w3id.org/aio/workflow#hasTypicalCoupling
+aiowf:hasTypicalCoupling a owl:ObjectProperty ;
+    rdfs:domain aiowf:RoleInterface ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "has typical coupling"@en ;
+    rdfs:range aiowf:CouplingType ;
+    skos:definition "Usual coupling type for this interface."@en .
+
+###  https://w3id.org/aio/workflow#isSourceOfInterface
+aiowf:isSourceOfInterface a owl:ObjectProperty ;
+    rdfs:domain aiowf:ComponentRole ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "is source of interface"@en ;
+    rdfs:range aiowf:RoleInterface ;
+    skos:definition "Inverse of from role."@en .
+
+###  https://w3id.org/aio/workflow#servesChallenge
+aiowf:servesChallenge a owl:ObjectProperty ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "serves challenge"@en ;
+    rdfs:range aio:WaterChallenge ;
+    skos:definition "Water challenge this template or chain is typically used for."@en .
+
+###  https://w3id.org/aio/workflow#slotRole
+aiowf:slotRole a owl:FunctionalProperty ,
+        owl:ObjectProperty ;
+    rdfs:domain aiowf:ChainSlot ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "slot role"@en ;
+    rdfs:range aiowf:ComponentRole ;
+    skos:definition "Role to be filled in this slot."@en .
+
+###  https://w3id.org/aio/workflow#substitutesInput
+aiowf:substitutesInput a owl:ObjectProperty ;
+    rdfs:domain aiowf:RoleInterface ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "substitutes input"@en ;
+    rdfs:range aio:Variable ;
+    skos:definition "Input of the receiving method that the exchanged variable replaces (e.g. throughfall replaces precipitation), so it needs no dataset."@en .
+
+###  https://w3id.org/aio/workflow#toRole
+aiowf:toRole a owl:FunctionalProperty ,
+        owl:ObjectProperty ;
+    rdfs:domain aiowf:RoleInterface ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "to role"@en ;
+    rdfs:range aiowf:ComponentRole ;
+    skos:definition "Role that receives the exchanged variable."@en .
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  https://w3id.org/aio/workflow#hasInseparableRoles
+aiowf:hasInseparableRoles a owl:DatatypeProperty ,
+        owl:FunctionalProperty ;
+    rdfs:domain aio:ModelingMethod ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "has inseparable roles"@en ;
+    rdfs:range xsd:boolean ;
+    skos:definition "For a method that fills several component roles. True: the roles are one calculation and are always held together (the method is a package: it is added to a chain with all its roles, or not at all). False: the method is used for one role at a time, and may hold a single role in a chain. Not stated on methods with a single role."@en .
+
+###  https://w3id.org/aio/workflow#isMandatorySlot
+aiowf:isMandatorySlot a owl:DatatypeProperty ,
+        owl:FunctionalProperty ;
+    rdfs:domain aiowf:ChainSlot ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "is mandatory slot"@en ;
+    rdfs:range xsd:boolean ;
+    skos:definition "True if a chain must fill this slot."@en .
+
+###  https://w3id.org/aio/workflow#requiresMatchingSpatialRepresentation
+aiowf:requiresMatchingSpatialRepresentation a owl:DatatypeProperty ;
+    rdfs:domain aiowf:RoleInterface ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "requires matching spatial representation"@en ;
+    rdfs:range xsd:boolean ;
+    skos:definition "True if the exchanged field must have the same spatial structure on both sides (e.g. gridded excess rainfall for a gridded transform)."@en .
+
+###  https://w3id.org/aio/workflow#slotOrder
+aiowf:slotOrder a owl:DatatypeProperty ,
+        owl:FunctionalProperty ;
+    rdfs:domain aiowf:ChainSlot ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "slot order"@en ;
+    rdfs:range xsd:integer ;
+    skos:definition "Position of the slot from upstream (1) to downstream."@en .
+
+#################################################################
+#    Classes
+#################################################################
+
+###  https://w3id.org/aio/workflow#ChainSlot
+aiowf:ChainSlot a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "chain slot"@en ;
+    skos:definition "Position of a component role in a chain template."@en .
+
+###  https://w3id.org/aio/workflow#ChainTemplate
+aiowf:ChainTemplate a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "chain template"@en ;
+    skos:definition "Standard model structure for a kind of study: an ordered list of role slots, some mandatory."@en .
+
+###  https://w3id.org/aio/workflow#ComponentRole
+aiowf:ComponentRole a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "component role"@en ;
+    skos:definition "A slot in a model structure (loss, transform, routing, …). Methods fill roles; two methods filling the same role are alternatives, methods in roles linked by a role interface can be chained."@en .
+
+###  https://w3id.org/aio/workflow#CouplingType
+aiowf:CouplingType a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "coupling type"@en ;
+    skos:definition "How two components exchange information."@en .
+
+###  https://w3id.org/aio/workflow#RoleInterface
+aiowf:RoleInterface a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/workflow> ;
+    rdfs:label "role interface"@en ;
+    skos:definition "n-ary link stating that the output of one component role feeds another, which variable is exchanged and how they are usually coupled."@en .
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  https://w3id.org/aio#AdvectionDispersionEquation
+aio:AdvectionDispersionEquation aiowf:fillsRole aiowf:Role_SoluteTransport .
+
+###  https://w3id.org/aio#BoussinesqEquation
+aio:BoussinesqEquation aiowf:canFeed aio:ChannelElements1D ,
+        aio:ConceptualRoutingReservoir ,
+        aio:ConductionAdvectionThermalEquation ,
+        aio:Muskingum-Cunge ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_GroundwaterFlow .
+
+###  https://w3id.org/aio#ChannelElements1D
+aio:ChannelElements1D aiowf:canFeed aio:DiffusiveWave2D ,
+        aio:ManningsEquation ,
+        aio:Navier-StokesSimplified ,
+        aio:ShallowWaterEquations2D ;
+    aiowf:fillsRole aiowf:Role_ChannelRouting .
+
+###  https://w3id.org/aio#Clark-UH
+aio:Clark-UH aiowf:canFeed aio:ChannelElements1D ,
+        aio:ManningsEquation ,
+        aio:Muskingum-Cunge ,
+        aio:Navier-StokesSimplified ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_RunoffTransform .
+
+###  https://w3id.org/aio#ConceptualGroundwaterReservoir
+aio:ConceptualGroundwaterReservoir aiowf:canFeed aio:ChannelElements1D ,
+        aio:ConceptualRoutingReservoir ,
+        aio:Muskingum-Cunge ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_Baseflow .
+
+###  https://w3id.org/aio#ConceptualRoutingReservoir
+aio:ConceptualRoutingReservoir aiowf:canFeed aio:ManningsEquation ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_ChannelRouting ,
+        aiowf:Role_RunoffTransform ;
+    aiowf:hasInseparableRoles "false"^^xsd:boolean .
+
+###  https://w3id.org/aio#ConductionAdvectionThermalEquation
+aio:ConductionAdvectionThermalEquation aiowf:fillsRole aiowf:Role_HeatTransport .
+
+###  https://w3id.org/aio#ConstantBF
+aio:ConstantBF aiowf:canFeed aio:ChannelElements1D ,
+        aio:ConceptualRoutingReservoir ,
+        aio:Muskingum-Cunge ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_Baseflow .
+
+###  https://w3id.org/aio#DarcyEquation3D
+aio:DarcyEquation3D aiowf:canFeed aio:AdvectionDispersionEquation ,
+        aio:ChannelElements1D ,
+        aio:ConceptualRoutingReservoir ,
+        aio:ConductionAdvectionThermalEquation ,
+        aio:Muskingum-Cunge ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_GroundwaterFlow .
+
+###  https://w3id.org/aio#DiffusiveWave2D
+aio:DiffusiveWave2D aiowf:canFeed aio:AdvectionDispersionEquation ,
+        aio:ChannelElements1D ,
+        aio:Muskingum-Cunge ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_Hydraulics ,
+        aiowf:Role_RunoffTransform ;
+    aiowf:hasInseparableRoles "false"^^xsd:boolean .
+
+###  https://w3id.org/aio#EmpiricalCropCoefficients
+aio:EmpiricalCropCoefficients aiowf:canFeed aio:LayeredSoilWaterBudget ,
+        aio:RichardsEquation ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_ActualET .
+
+###  https://w3id.org/aio#EnergyEquation
+aio:EnergyEquation aiowf:canFeed aio:LayeredSoilWaterBudget ,
+        aio:RichardsEquation ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_ActualET .
+
+###  https://w3id.org/aio#EngelundHansen
+aio:EngelundHansen aiowf:canFeed aio:ExnerEquation ;
+    aiowf:fillsRole aiowf:Role_SedimentTransport .
+
+###  https://w3id.org/aio#ExnerEquation
+aio:ExnerEquation aiowf:fillsRole aiowf:Role_Morphology .
+
+###  https://w3id.org/aio#FiniteDifferenceGroundwaterFlow
+aio:FiniteDifferenceGroundwaterFlow aiowf:canFeed aio:ChannelElements1D ,
+        aio:ConceptualRoutingReservoir ,
+        aio:ConductionAdvectionThermalEquation ,
+        aio:Muskingum-Cunge ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_GroundwaterFlow .
+
+###  https://w3id.org/aio#FiniteVolumeSedimentTransport
+aio:FiniteVolumeSedimentTransport aiowf:fillsRole aiowf:Role_Morphology ,
+        aiowf:Role_SedimentTransport ;
+    aiowf:hasInseparableRoles "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#GashAnalyticalModel
+aio:GashAnalyticalModel aiowf:canFeed aio:GR4Jmodel ,
+        aio:LayeredSoilWaterBudget ,
+        aio:SCS-CN ,
+        aio:SoilMoistureAccounting ,
+        aio:VIC-RunoffGeneration ;
+    aiowf:fillsRole aiowf:Role_Interception .
+
+###  https://w3id.org/aio#GR-likeConceptualETreduction
+aio:GR-likeConceptualETreduction aiowf:canFeed aio:LayeredSoilWaterBudget ,
+        aio:RichardsEquation ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_ActualET .
+
+###  https://w3id.org/aio#GR4Jmodel
+aio:GR4Jmodel aiowf:canFeed aio:ManningsEquation ,
+        aio:Muskingum-Cunge ,
+        aio:PollutantBuildupWashoff ;
+    aiowf:fillsRole aiowf:Role_Baseflow ,
+        aiowf:Role_ExcessRainfall ,
+        aiowf:Role_RunoffTransform ,
+        aiowf:Role_SoilWaterBudget ;
+    aiowf:hasInseparableRoles "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Green-Ampt
+aio:Green-Ampt aiowf:canFeed aio:Clark-UH ,
+        aio:ConceptualGroundwaterReservoir ,
+        aio:ConceptualRoutingReservoir ,
+        aio:KinematicWave ,
+        aio:LinearReservoir ,
+        aio:NonLinearReservoir ,
+        aio:PollutantBuildupWashoff ,
+        aio:SCS-UH ,
+        aio:Two-zoneGroundwaterModel ;
+    aiowf:fillsRole aiowf:Role_ExcessRainfall .
+
+###  https://w3id.org/aio#HargeavesMethod
+aio:HargeavesMethod aiowf:canFeed aio:EmpiricalCropCoefficients ,
+        aio:GR-likeConceptualETreduction ,
+        aio:GR4Jmodel ,
+        aio:GashAnalyticalModel ,
+        aio:KristenJensen ,
+        aio:LayeredSoilWaterBudget ,
+        aio:MoistureContentThresholds ,
+        aio:RootzoneStress ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_PET .
+
+###  https://w3id.org/aio#HortonInfiltrationModel
+aio:HortonInfiltrationModel aiowf:canFeed aio:Clark-UH ,
+        aio:ConceptualGroundwaterReservoir ,
+        aio:ConceptualRoutingReservoir ,
+        aio:KinematicWave ,
+        aio:LinearReservoir ,
+        aio:NonLinearReservoir ,
+        aio:PollutantBuildupWashoff ,
+        aio:SCS-UH ,
+        aio:Two-zoneGroundwaterModel ;
+    aiowf:fillsRole aiowf:Role_ExcessRainfall .
+
+###  https://w3id.org/aio#KinematicWave
+aio:KinematicWave aiowf:canFeed aio:DiffusiveWave2D ,
+        aio:ManningsEquation ,
+        aio:Navier-StokesSimplified ,
+        aio:Saint-VenantEquations1D ,
+        aio:ShallowWaterEquations2D ;
+    aiowf:fillsRole aiowf:Role_ChannelRouting ,
+        aiowf:Role_RunoffTransform ;
+    aiowf:hasInseparableRoles "false"^^xsd:boolean .
+
+###  https://w3id.org/aio#KristenJensen
+aio:KristenJensen aiowf:canFeed aio:LayeredSoilWaterBudget ,
+        aio:RichardsEquation ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_ActualET .
+
+###  https://w3id.org/aio#LayeredSoilWaterBudget
+aio:LayeredSoilWaterBudget aiowf:canFeed aio:BoussinesqEquation ,
+        aio:ConceptualGroundwaterReservoir ,
+        aio:DarcyEquation3D ,
+        aio:FiniteDifferenceGroundwaterFlow ,
+        aio:Green-Ampt ,
+        aio:KristenJensen ,
+        aio:MoistureContentThresholds ,
+        aio:PhilipsEquation ,
+        aio:RootzoneStress ,
+        aio:SCS-CN ,
+        aio:Two-zoneGroundwaterModel ;
+    aiowf:fillsRole aiowf:Role_SoilWaterBudget .
+
+###  https://w3id.org/aio#LinearReservoir
+aio:LinearReservoir aiowf:canFeed aio:ChannelElements1D ,
+        aio:ConceptualRoutingReservoir ,
+        aio:ManningsEquation ,
+        aio:Muskingum-Cunge ,
+        aio:Navier-StokesSimplified ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_Baseflow ,
+        aiowf:Role_RunoffTransform ;
+    aiowf:hasInseparableRoles "false"^^xsd:boolean .
+
+###  https://w3id.org/aio#ManningsEquation
+aio:ManningsEquation aiowf:canFeed aio:AdvectionDispersionEquation ;
+    aiowf:fillsRole aiowf:Role_Hydraulics .
+
+###  https://w3id.org/aio#MeyerPeterMuller
+aio:MeyerPeterMuller aiowf:canFeed aio:ExnerEquation ;
+    aiowf:fillsRole aiowf:Role_SedimentTransport .
+
+###  https://w3id.org/aio#ModClark
+aio:ModClark aiowf:canFeed aio:ChannelElements1D ,
+        aio:ManningsEquation ,
+        aio:Muskingum-Cunge ,
+        aio:Navier-StokesSimplified ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_RunoffTransform .
+
+###  https://w3id.org/aio#MoistureContentThresholds
+aio:MoistureContentThresholds aiowf:canFeed aio:LayeredSoilWaterBudget ,
+        aio:RichardsEquation ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_ActualET .
+
+###  https://w3id.org/aio#Muskingum-Cunge
+aio:Muskingum-Cunge aiowf:canFeed aio:DiffusiveWave2D ,
+        aio:ManningsEquation ,
+        aio:Navier-StokesSimplified ,
+        aio:ShallowWaterEquations2D ;
+    aiowf:fillsRole aiowf:Role_ChannelRouting .
+
+###  https://w3id.org/aio#Navier-StokesSimplified
+aio:Navier-StokesSimplified aiowf:canFeed aio:AdvectionDispersionEquation ,
+        aio:EngelundHansen ,
+        aio:FiniteVolumeSedimentTransport ,
+        aio:MeyerPeterMuller ;
+    aiowf:fillsRole aiowf:Role_Hydraulics .
+
+###  https://w3id.org/aio#NonLinearReservoir
+aio:NonLinearReservoir aiowf:canFeed aio:ChannelElements1D ,
+        aio:ConceptualRoutingReservoir ,
+        aio:ManningsEquation ,
+        aio:Muskingum-Cunge ,
+        aio:Navier-StokesSimplified ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_Baseflow ,
+        aiowf:Role_RunoffTransform ;
+    aiowf:hasInseparableRoles "false"^^xsd:boolean .
+
+###  https://w3id.org/aio#Penman-Monteih
+aio:Penman-Monteih aiowf:canFeed aio:EmpiricalCropCoefficients ,
+        aio:GR-likeConceptualETreduction ,
+        aio:GR4Jmodel ,
+        aio:GashAnalyticalModel ,
+        aio:KristenJensen ,
+        aio:LayeredSoilWaterBudget ,
+        aio:MoistureContentThresholds ,
+        aio:RootzoneStress ,
+        aio:RutterModel ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_PET .
+
+###  https://w3id.org/aio#PhilipsEquation
+aio:PhilipsEquation aiowf:canFeed aio:Clark-UH ,
+        aio:ConceptualGroundwaterReservoir ,
+        aio:ConceptualRoutingReservoir ,
+        aio:KinematicWave ,
+        aio:LinearReservoir ,
+        aio:NonLinearReservoir ,
+        aio:PollutantBuildupWashoff ,
+        aio:SCS-UH ,
+        aio:Two-zoneGroundwaterModel ;
+    aiowf:fillsRole aiowf:Role_ExcessRainfall .
+
+###  https://w3id.org/aio#PollutantBuildupWashoff
+aio:PollutantBuildupWashoff aiowf:canFeed aio:AdvectionDispersionEquation ;
+    aiowf:fillsRole aiowf:Role_PollutantLoading .
+
+###  https://w3id.org/aio#Priestly-TaylorEstimates
+aio:Priestly-TaylorEstimates aiowf:canFeed aio:EmpiricalCropCoefficients ,
+        aio:GR-likeConceptualETreduction ,
+        aio:GR4Jmodel ,
+        aio:GashAnalyticalModel ,
+        aio:KristenJensen ,
+        aio:LayeredSoilWaterBudget ,
+        aio:MoistureContentThresholds ,
+        aio:RootzoneStress ,
+        aio:RutterModel ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_PET .
+
+###  https://w3id.org/aio#RichardsEquation
+aio:RichardsEquation aiowf:canFeed aio:BoussinesqEquation ,
+        aio:Clark-UH ,
+        aio:ConceptualGroundwaterReservoir ,
+        aio:ConceptualRoutingReservoir ,
+        aio:DarcyEquation3D ,
+        aio:DiffusiveWave2D ,
+        aio:FiniteDifferenceGroundwaterFlow ,
+        aio:KinematicWave ,
+        aio:KristenJensen ,
+        aio:LinearReservoir ,
+        aio:ModClark ,
+        aio:MoistureContentThresholds ,
+        aio:NonLinearReservoir ,
+        aio:RootzoneStress ,
+        aio:SCS-UH ,
+        aio:ShallowWaterEquations2D ,
+        aio:Two-zoneGroundwaterModel ;
+    aiowf:fillsRole aiowf:Role_ExcessRainfall ,
+        aiowf:Role_SoilWaterBudget ;
+    aiowf:hasInseparableRoles "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RootzoneStress
+aio:RootzoneStress aiowf:canFeed aio:LayeredSoilWaterBudget ,
+        aio:RichardsEquation ,
+        aio:SoilMoistureAccounting ;
+    aiowf:fillsRole aiowf:Role_ActualET .
+
+###  https://w3id.org/aio#RutterModel
+aio:RutterModel aiowf:canFeed aio:GR4Jmodel ,
+        aio:Green-Ampt ,
+        aio:HortonInfiltrationModel ,
+        aio:LayeredSoilWaterBudget ,
+        aio:PhilipsEquation ,
+        aio:RichardsEquation ,
+        aio:SCS-CN ,
+        aio:SoilMoistureAccounting ,
+        aio:VIC-RunoffGeneration ;
+    aiowf:fillsRole aiowf:Role_Interception .
+
+###  https://w3id.org/aio#Saint-VenantEquations1D
+aio:Saint-VenantEquations1D aiowf:canFeed aio:AdvectionDispersionEquation ,
+        aio:EngelundHansen ,
+        aio:FiniteVolumeSedimentTransport ,
+        aio:MeyerPeterMuller ;
+    aiowf:fillsRole aiowf:Role_ChannelRouting ,
+        aiowf:Role_Hydraulics ;
+    aiowf:hasInseparableRoles "false"^^xsd:boolean .
+
+###  https://w3id.org/aio#SCS-CN
+aio:SCS-CN aiowf:canFeed aio:Clark-UH ,
+        aio:ConceptualRoutingReservoir ,
+        aio:DiffusiveWave2D ,
+        aio:KinematicWave ,
+        aio:LinearReservoir ,
+        aio:ModClark ,
+        aio:NonLinearReservoir ,
+        aio:PollutantBuildupWashoff ,
+        aio:SCS-UH ,
+        aio:ShallowWaterEquations2D ;
+    aiowf:fillsRole aiowf:Role_ExcessRainfall .
+
+###  https://w3id.org/aio#SCS-UH
+aio:SCS-UH aiowf:canFeed aio:ChannelElements1D ,
+        aio:ManningsEquation ,
+        aio:Muskingum-Cunge ,
+        aio:Navier-StokesSimplified ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_RunoffTransform .
+
+###  https://w3id.org/aio#ShallowWaterEquations2D
+aio:ShallowWaterEquations2D aiowf:canFeed aio:AdvectionDispersionEquation ,
+        aio:ChannelElements1D ,
+        aio:EngelundHansen ,
+        aio:FiniteVolumeSedimentTransport ,
+        aio:MeyerPeterMuller ,
+        aio:Muskingum-Cunge ,
+        aio:Saint-VenantEquations1D ;
+    aiowf:fillsRole aiowf:Role_Hydraulics ,
+        aiowf:Role_RunoffTransform ;
+    aiowf:hasInseparableRoles "false"^^xsd:boolean .
+
+###  https://w3id.org/aio#SoilMoistureAccounting
+aio:SoilMoistureAccounting aiowf:canFeed aio:BoussinesqEquation ,
+        aio:Clark-UH ,
+        aio:ConceptualGroundwaterReservoir ,
+        aio:ConceptualRoutingReservoir ,
+        aio:DarcyEquation3D ,
+        aio:FiniteDifferenceGroundwaterFlow ,
+        aio:KinematicWave ,
+        aio:KristenJensen ,
+        aio:LinearReservoir ,
+        aio:MoistureContentThresholds ,
+        aio:NonLinearReservoir ,
+        aio:PollutantBuildupWashoff ,
+        aio:RootzoneStress ,
+        aio:SCS-UH ,
+        aio:Two-zoneGroundwaterModel ;
+    aiowf:fillsRole aiowf:Role_ExcessRainfall ,
+        aiowf:Role_SoilWaterBudget ;
+    aiowf:hasInseparableRoles "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#TemperatureIndexMethod
+aio:TemperatureIndexMethod aiowf:canFeed aio:GR4Jmodel ,
+        aio:Green-Ampt ,
+        aio:HortonInfiltrationModel ,
+        aio:LayeredSoilWaterBudget ,
+        aio:PhilipsEquation ,
+        aio:RichardsEquation ,
+        aio:SCS-CN ,
+        aio:SoilMoistureAccounting ,
+        aio:VIC-RunoffGeneration ;
+    aiowf:fillsRole aiowf:Role_Snow .
+
+###  https://w3id.org/aio#Two-zoneGroundwaterModel
+aio:Two-zoneGroundwaterModel aiowf:canFeed aio:ConceptualRoutingReservoir ,
+        aio:Muskingum-Cunge ;
+    aiowf:fillsRole aiowf:Role_Baseflow .
+
+###  https://w3id.org/aio#VIC-RunoffGeneration
+aio:VIC-RunoffGeneration aiowf:canFeed aio:Clark-UH ,
+        aio:ConceptualGroundwaterReservoir ,
+        aio:ConceptualRoutingReservoir ,
+        aio:KinematicWave ,
+        aio:KristenJensen ,
+        aio:LinearReservoir ,
+        aio:ModClark ,
+        aio:MoistureContentThresholds ,
+        aio:NonLinearReservoir ,
+        aio:PollutantBuildupWashoff ,
+        aio:RootzoneStress ,
+        aio:SCS-UH ,
+        aio:Two-zoneGroundwaterModel ;
+    aiowf:fillsRole aiowf:Role_ExcessRainfall ,
+        aiowf:Role_SoilWaterBudget ;
+    aiowf:hasInseparableRoles "true"^^xsd:boolean .
+
+###  https://w3id.org/aio/workflow#IF_ActualET_SoilWaterBudget_ActualEvapotranspiration
+aiowf:IF_ActualET_SoilWaterBudget_ActualEvapotranspiration a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:ActualEvapotranspiration ;
+    aiowf:fromRole aiowf:Role_ActualET ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_SoilWaterBudget ;
+    rdfs:label "actual evapotranspiration → soil water budget (ActualEvapotranspiration)"@en .
+
+###  https://w3id.org/aio/workflow#IF_Baseflow_ChannelRouting_BaseFlowContribution
+aiowf:IF_Baseflow_ChannelRouting_BaseFlowContribution a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:BaseFlowContribution ;
+    aiowf:fromRole aiowf:Role_Baseflow ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_ChannelRouting ;
+    rdfs:label "baseflow → channel routing (BaseFlowContribution)"@en .
+
+###  https://w3id.org/aio/workflow#IF_ChannelRouting_Hydraulics_Discharge
+aiowf:IF_ChannelRouting_Hydraulics_Discharge a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:Discharge ;
+    aiowf:fromRole aiowf:Role_ChannelRouting ;
+    aiowf:hasTypicalCoupling aiowf:OfflineOneWay ;
+    aiowf:toRole aiowf:Role_Hydraulics ;
+    rdfs:label "channel routing → hydraulics (Discharge)"@en .
+
+###  https://w3id.org/aio/workflow#IF_ExcessRainfall_Baseflow_InfiltrationRate
+aiowf:IF_ExcessRainfall_Baseflow_InfiltrationRate a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:InfiltrationRate ;
+    aiowf:fromRole aiowf:Role_ExcessRainfall ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_Baseflow ;
+    rdfs:label "excess rainfall (runoff production) → baseflow (InfiltrationRate)"@en .
+
+###  https://w3id.org/aio/workflow#IF_ExcessRainfall_PollutantLoading_RunoffVolume
+aiowf:IF_ExcessRainfall_PollutantLoading_RunoffVolume a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:RunoffVolume ;
+    aiowf:fromRole aiowf:Role_ExcessRainfall ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_PollutantLoading ;
+    rdfs:label "excess rainfall (runoff production) → pollutant loading (RunoffVolume)"@en .
+
+###  https://w3id.org/aio/workflow#IF_ExcessRainfall_RunoffTransform_EffectiveRainfall
+aiowf:IF_ExcessRainfall_RunoffTransform_EffectiveRainfall a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:EffectiveRainfall ;
+    aiowf:fromRole aiowf:Role_ExcessRainfall ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:requiresMatchingSpatialRepresentation "true"^^xsd:boolean ;
+    aiowf:toRole aiowf:Role_RunoffTransform ;
+    rdfs:label "excess rainfall (runoff production) → runoff transform (EffectiveRainfall)"@en .
+
+###  https://w3id.org/aio/workflow#IF_GroundwaterFlow_ChannelRouting_BaseFlowContribution
+aiowf:IF_GroundwaterFlow_ChannelRouting_BaseFlowContribution a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:BaseFlowContribution ;
+    aiowf:fromRole aiowf:Role_GroundwaterFlow ;
+    aiowf:hasTypicalCoupling aiowf:TwoWayCoupling ;
+    aiowf:toRole aiowf:Role_ChannelRouting ;
+    rdfs:label "groundwater flow → channel routing (BaseFlowContribution)"@en .
+
+###  https://w3id.org/aio/workflow#IF_GroundwaterFlow_HeatTransport_GroundwaterFlux
+aiowf:IF_GroundwaterFlow_HeatTransport_GroundwaterFlux a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:GroundwaterFlux ;
+    aiowf:fromRole aiowf:Role_GroundwaterFlow ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_HeatTransport ;
+    rdfs:label "groundwater flow → heat transport (GroundwaterFlux)"@en .
+
+###  https://w3id.org/aio/workflow#IF_GroundwaterFlow_SoluteTransport_FlowVelocity
+aiowf:IF_GroundwaterFlow_SoluteTransport_FlowVelocity a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:FlowVelocity ;
+    aiowf:fromRole aiowf:Role_GroundwaterFlow ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_SoluteTransport ;
+    rdfs:label "groundwater flow → solute transport (FlowVelocity)"@en .
+
+###  https://w3id.org/aio/workflow#IF_Hydraulics_SedimentTransport_ShearStress
+aiowf:IF_Hydraulics_SedimentTransport_ShearStress a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:ShearStress ;
+    aiowf:fromRole aiowf:Role_Hydraulics ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_SedimentTransport ;
+    rdfs:label "hydraulics → sediment transport (ShearStress)"@en .
+
+###  https://w3id.org/aio/workflow#IF_Hydraulics_SoluteTransport_FlowVelocity
+aiowf:IF_Hydraulics_SoluteTransport_FlowVelocity a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:FlowVelocity ;
+    aiowf:fromRole aiowf:Role_Hydraulics ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_SoluteTransport ;
+    rdfs:label "hydraulics → solute transport (FlowVelocity)"@en .
+
+###  https://w3id.org/aio/workflow#IF_Interception_ExcessRainfall_Throughfall
+aiowf:IF_Interception_ExcessRainfall_Throughfall a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:Throughfall ;
+    aiowf:fromRole aiowf:Role_Interception ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:substitutesInput aio:Precipitation ;
+    aiowf:toRole aiowf:Role_ExcessRainfall ;
+    rdfs:label "interception → excess rainfall (runoff production) (Throughfall)"@en .
+
+###  https://w3id.org/aio/workflow#IF_Interception_SoilWaterBudget_Throughfall
+aiowf:IF_Interception_SoilWaterBudget_Throughfall a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:Throughfall ;
+    aiowf:fromRole aiowf:Role_Interception ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:substitutesInput aio:Precipitation ;
+    aiowf:toRole aiowf:Role_SoilWaterBudget ;
+    rdfs:label "interception → soil water budget (Throughfall)"@en .
+
+###  https://w3id.org/aio/workflow#IF_PET_ActualET_PotentialEvapotranspiration
+aiowf:IF_PET_ActualET_PotentialEvapotranspiration a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:PotentialEvapotranspiration ;
+    aiowf:fromRole aiowf:Role_PET ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_ActualET ;
+    rdfs:label "potential evapotranspiration → actual evapotranspiration (PotentialEvapotranspiration)"@en .
+
+###  https://w3id.org/aio/workflow#IF_PET_Interception_PotentialEvapotranspiration
+aiowf:IF_PET_Interception_PotentialEvapotranspiration a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:PotentialEvapotranspiration ;
+    aiowf:fromRole aiowf:Role_PET ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:substitutesInput aio:PotentialEvaporation ;
+    aiowf:toRole aiowf:Role_Interception ;
+    rdfs:label "potential evapotranspiration → interception (PotentialEvapotranspiration)"@en .
+
+###  https://w3id.org/aio/workflow#IF_PET_SoilWaterBudget_PotentialEvapotranspiration
+aiowf:IF_PET_SoilWaterBudget_PotentialEvapotranspiration a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:PotentialEvapotranspiration ;
+    aiowf:fromRole aiowf:Role_PET ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_SoilWaterBudget ;
+    rdfs:label "potential evapotranspiration → soil water budget (PotentialEvapotranspiration)"@en .
+
+###  https://w3id.org/aio/workflow#IF_PollutantLoading_SoluteTransport_PollutantLoad
+aiowf:IF_PollutantLoading_SoluteTransport_PollutantLoad a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:PollutantLoad ;
+    aiowf:fromRole aiowf:Role_PollutantLoading ;
+    aiowf:hasTypicalCoupling aiowf:OfflineOneWay ;
+    aiowf:toRole aiowf:Role_SoluteTransport ;
+    rdfs:label "pollutant loading → solute transport (PollutantLoad)"@en .
+
+###  https://w3id.org/aio/workflow#IF_RunoffTransform_ChannelRouting_Discharge
+aiowf:IF_RunoffTransform_ChannelRouting_Discharge a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:Discharge ;
+    aiowf:fromRole aiowf:Role_RunoffTransform ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_ChannelRouting ;
+    rdfs:label "runoff transform → channel routing (Discharge)"@en .
+
+###  https://w3id.org/aio/workflow#IF_RunoffTransform_Hydraulics_Discharge
+aiowf:IF_RunoffTransform_Hydraulics_Discharge a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:Discharge ;
+    aiowf:fromRole aiowf:Role_RunoffTransform ;
+    aiowf:hasTypicalCoupling aiowf:OfflineOneWay ;
+    aiowf:toRole aiowf:Role_Hydraulics ;
+    rdfs:label "runoff transform → hydraulics (Discharge)"@en .
+
+###  https://w3id.org/aio/workflow#IF_SedimentTransport_Morphology_SedimentDischarge
+aiowf:IF_SedimentTransport_Morphology_SedimentDischarge a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:SedimentDischarge ;
+    aiowf:fromRole aiowf:Role_SedimentTransport ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_Morphology ;
+    rdfs:label "sediment transport → morphological update (SedimentDischarge)"@en .
+
+###  https://w3id.org/aio/workflow#IF_Snow_ExcessRainfall_SnowmeltAmount
+aiowf:IF_Snow_ExcessRainfall_SnowmeltAmount a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:SnowmeltAmount ;
+    aiowf:fromRole aiowf:Role_Snow ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:substitutesInput aio:Precipitation ;
+    aiowf:toRole aiowf:Role_ExcessRainfall ;
+    rdfs:label "snow accumulation and melt → excess rainfall (runoff production) (SnowmeltAmount)"@en .
+
+###  https://w3id.org/aio/workflow#IF_Snow_SoilWaterBudget_SnowmeltAmount
+aiowf:IF_Snow_SoilWaterBudget_SnowmeltAmount a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:SnowmeltAmount ;
+    aiowf:fromRole aiowf:Role_Snow ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:substitutesInput aio:Precipitation ;
+    aiowf:toRole aiowf:Role_SoilWaterBudget ;
+    rdfs:label "snow accumulation and melt → soil water budget (SnowmeltAmount)"@en .
+
+###  https://w3id.org/aio/workflow#IF_SoilWaterBudget_ActualET_SoilMoisture
+aiowf:IF_SoilWaterBudget_ActualET_SoilMoisture a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:SoilMoisture ;
+    aiowf:fromRole aiowf:Role_SoilWaterBudget ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_ActualET ;
+    rdfs:label "soil water budget → actual evapotranspiration (SoilMoisture)"@en .
+
+###  https://w3id.org/aio/workflow#IF_SoilWaterBudget_Baseflow_RechargeRate
+aiowf:IF_SoilWaterBudget_Baseflow_RechargeRate a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:RechargeRate ;
+    aiowf:fromRole aiowf:Role_SoilWaterBudget ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:substitutesInput aio:InfiltrationRate ;
+    aiowf:toRole aiowf:Role_Baseflow ;
+    rdfs:label "soil water budget → baseflow (RechargeRate)"@en .
+
+###  https://w3id.org/aio/workflow#IF_SoilWaterBudget_ExcessRainfall_SoilMoisture
+aiowf:IF_SoilWaterBudget_ExcessRainfall_SoilMoisture a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:SoilMoisture ;
+    aiowf:fromRole aiowf:Role_SoilWaterBudget ;
+    aiowf:hasTypicalCoupling aiowf:InternalCoupling ;
+    aiowf:toRole aiowf:Role_ExcessRainfall ;
+    rdfs:label "soil water budget → excess rainfall (runoff production) (SoilMoisture)"@en .
+
+###  https://w3id.org/aio/workflow#IF_SoilWaterBudget_GroundwaterFlow_RechargeRate
+aiowf:IF_SoilWaterBudget_GroundwaterFlow_RechargeRate a aiowf:RoleInterface ,
+        owl:NamedIndividual ;
+    aiowf:exchangesVariable aio:RechargeRate ;
+    aiowf:fromRole aiowf:Role_SoilWaterBudget ;
+    aiowf:hasTypicalCoupling aiowf:OfflineOneWay ;
+    aiowf:toRole aiowf:Role_GroundwaterFlow ;
+    rdfs:label "soil water budget → groundwater flow (RechargeRate)"@en .
+
+###  https://w3id.org/aio/workflow#InternalCoupling
+aiowf:InternalCoupling a aiowf:CouplingType ,
+        owl:NamedIndividual ;
+    rdfs:label "internal"@en ;
+    skos:definition "Both components run inside the same software."@en .
+
+###  https://w3id.org/aio/workflow#OfflineOneWay
+aiowf:OfflineOneWay a aiowf:CouplingType ,
+        owl:NamedIndividual ;
+    rdfs:label "offline one-way"@en ;
+    skos:definition "Outputs of one model are written to file and used as inputs of the next; no feedback."@en .
+
+###  https://w3id.org/aio/workflow#Role_ActualET
+aiowf:Role_ActualET a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "actual evapotranspiration"@en ;
+    skos:definition "Reduces potential to actual evapotranspiration according to soil moisture and vegetation."@en .
+
+###  https://w3id.org/aio/workflow#Role_Baseflow
+aiowf:Role_Baseflow a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "baseflow"@en ;
+    skos:definition "Computes the slow groundwater contribution to streamflow."@en .
+
+###  https://w3id.org/aio/workflow#Role_ChannelRouting
+aiowf:Role_ChannelRouting a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "channel routing"@en ;
+    skos:definition "Propagates hydrographs along the river network."@en .
+
+###  https://w3id.org/aio/workflow#Role_ExcessRainfall
+aiowf:Role_ExcessRainfall a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "excess rainfall (runoff production)"@en ;
+    skos:definition "Splits liquid water input into infiltration and excess rainfall."@en .
+
+###  https://w3id.org/aio/workflow#Role_GroundwaterFlow
+aiowf:Role_GroundwaterFlow a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "groundwater flow"@en ;
+    skos:definition "Solves groundwater heads and fluxes in the aquifer."@en .
+
+###  https://w3id.org/aio/workflow#Role_HeatTransport
+aiowf:Role_HeatTransport a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "heat transport"@en ;
+    skos:definition "Transports heat in water or the subsurface."@en .
+
+###  https://w3id.org/aio/workflow#Role_Hydraulics
+aiowf:Role_Hydraulics a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "hydraulics"@en ;
+    skos:definition "Computes water depth and velocity in channels and floodplains (1D/2D/3D)."@en .
+
+###  https://w3id.org/aio/workflow#Role_Interception
+aiowf:Role_Interception a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "interception"@en ;
+    skos:definition "Splits precipitation into interception loss and throughfall."@en .
+
+###  https://w3id.org/aio/workflow#Role_Morphology
+aiowf:Role_Morphology a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "morphological update"@en ;
+    skos:definition "Updates bed elevation from sediment flux divergence."@en .
+
+###  https://w3id.org/aio/workflow#Role_PET
+aiowf:Role_PET a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "potential evapotranspiration"@en ;
+    skos:definition "Estimates atmospheric evaporative demand."@en .
+
+###  https://w3id.org/aio/workflow#Role_PollutantLoading
+aiowf:Role_PollutantLoading a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "pollutant loading"@en ;
+    skos:definition "Generates pollutant loads from land surfaces (build-up, wash-off)."@en .
+
+###  https://w3id.org/aio/workflow#Role_RunoffTransform
+aiowf:Role_RunoffTransform a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "runoff transform"@en ;
+    skos:definition "Turns excess rainfall into an outflow hydrograph at the sub-catchment outlet."@en .
+
+###  https://w3id.org/aio/workflow#Role_SedimentTransport
+aiowf:Role_SedimentTransport a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "sediment transport"@en ;
+    skos:definition "Computes sediment transport capacity or flux from the flow."@en .
+
+###  https://w3id.org/aio/workflow#Role_Snow
+aiowf:Role_Snow a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "snow accumulation and melt"@en ;
+    skos:definition "Stores solid precipitation and releases melt water."@en .
+
+###  https://w3id.org/aio/workflow#Role_SoilWaterBudget
+aiowf:Role_SoilWaterBudget a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "soil water budget"@en ;
+    skos:definition "Tracks soil moisture storage and percolation in the unsaturated zone."@en .
+
+###  https://w3id.org/aio/workflow#Role_SoluteTransport
+aiowf:Role_SoluteTransport a aiowf:ComponentRole ,
+        owl:NamedIndividual ;
+    rdfs:label "solute transport"@en ;
+    skos:definition "Transports dissolved substances with the flow (advection, dispersion, decay)."@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance
+aiowf:Tpl_ContinuousWaterBalance a aiowf:ChainTemplate ,
+        owl:NamedIndividual ;
+    aiowf:deliversOutput aio:EvapotranspirationSeries ,
+        aio:Hydrograph ,
+        aio:LowFlowIndicator ,
+        aio:SnowWaterEquivalentSeries ,
+        aio:SoilMoistureMap ,
+        aio:WaterBalance ;
+    aiowf:hasSlot aiowf:Tpl_ContinuousWaterBalance_S1 ,
+        aiowf:Tpl_ContinuousWaterBalance_S10 ,
+        aiowf:Tpl_ContinuousWaterBalance_S2 ,
+        aiowf:Tpl_ContinuousWaterBalance_S3 ,
+        aiowf:Tpl_ContinuousWaterBalance_S4 ,
+        aiowf:Tpl_ContinuousWaterBalance_S5 ,
+        aiowf:Tpl_ContinuousWaterBalance_S6 ,
+        aiowf:Tpl_ContinuousWaterBalance_S7 ,
+        aiowf:Tpl_ContinuousWaterBalance_S8 ,
+        aiowf:Tpl_ContinuousWaterBalance_S9 ;
+    aiowf:servesChallenge aio:ClimateChange ,
+        aio:Drought ,
+        aio:LandUseChange ,
+        aio:WaterAvailabilty ;
+    rdfs:label "continuous water balance"@en ;
+    skos:definition "Long continuous simulation of the catchment water balance and streamflow."@en ;
+    skos:note "The slow groundwater contribution must be represented: fill the baseflow slot or the groundwater-flow slot."@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S1
+aiowf:Tpl_ContinuousWaterBalance_S1 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "1"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_PET ;
+    rdfs:label "continuous water balance – slot 1: potential evapotranspiration"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S10
+aiowf:Tpl_ContinuousWaterBalance_S10 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "10"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ChannelRouting ;
+    rdfs:label "continuous water balance – slot 10: channel routing"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S2
+aiowf:Tpl_ContinuousWaterBalance_S2 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "2"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_Interception ;
+    rdfs:label "continuous water balance – slot 2: interception"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S3
+aiowf:Tpl_ContinuousWaterBalance_S3 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "3"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_Snow ;
+    rdfs:label "continuous water balance – slot 3: snow accumulation and melt"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S4
+aiowf:Tpl_ContinuousWaterBalance_S4 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "4"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_SoilWaterBudget ;
+    rdfs:label "continuous water balance – slot 4: soil water budget"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S5
+aiowf:Tpl_ContinuousWaterBalance_S5 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "5"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ActualET ;
+    rdfs:label "continuous water balance – slot 5: actual evapotranspiration"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S6
+aiowf:Tpl_ContinuousWaterBalance_S6 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "6"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ExcessRainfall ;
+    rdfs:label "continuous water balance – slot 6: excess rainfall (runoff production)"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S7
+aiowf:Tpl_ContinuousWaterBalance_S7 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "7"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_RunoffTransform ;
+    rdfs:label "continuous water balance – slot 7: runoff transform"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S8
+aiowf:Tpl_ContinuousWaterBalance_S8 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "8"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_Baseflow ;
+    rdfs:label "continuous water balance – slot 8: baseflow"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_ContinuousWaterBalance_S9
+aiowf:Tpl_ContinuousWaterBalance_S9 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "9"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_GroundwaterFlow ;
+    rdfs:label "continuous water balance – slot 9: groundwater flow"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_EventFloodHydrograph
+aiowf:Tpl_EventFloodHydrograph a aiowf:ChainTemplate ,
+        owl:NamedIndividual ;
+    aiowf:deliversOutput aio:Hydrograph ,
+        aio:PeakFlow ;
+    aiowf:hasSlot aiowf:Tpl_EventFloodHydrograph_S1 ,
+        aiowf:Tpl_EventFloodHydrograph_S2 ,
+        aiowf:Tpl_EventFloodHydrograph_S3 ,
+        aiowf:Tpl_EventFloodHydrograph_S4 ;
+    aiowf:servesChallenge aio:Flood ;
+    rdfs:label "event flood hydrograph"@en ;
+    skos:definition "Flood hydrograph at the outlet for a storm event."@en .
+
+###  https://w3id.org/aio/workflow#Tpl_EventFloodHydrograph_S1
+aiowf:Tpl_EventFloodHydrograph_S1 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "1"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ExcessRainfall ;
+    rdfs:label "event flood hydrograph – slot 1: excess rainfall (runoff production)"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_EventFloodHydrograph_S2
+aiowf:Tpl_EventFloodHydrograph_S2 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "2"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_RunoffTransform ;
+    rdfs:label "event flood hydrograph – slot 2: runoff transform"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_EventFloodHydrograph_S3
+aiowf:Tpl_EventFloodHydrograph_S3 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "3"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_Baseflow ;
+    rdfs:label "event flood hydrograph – slot 3: baseflow"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_EventFloodHydrograph_S4
+aiowf:Tpl_EventFloodHydrograph_S4 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "4"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ChannelRouting ;
+    rdfs:label "event flood hydrograph – slot 4: channel routing"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_FloodInundation
+aiowf:Tpl_FloodInundation a aiowf:ChainTemplate ,
+        owl:NamedIndividual ;
+    aiowf:deliversOutput aio:FloodExtentMap ,
+        aio:FloodHazardMap ,
+        aio:Hydrograph ,
+        aio:WaterLevelSeries ;
+    aiowf:hasSlot aiowf:Tpl_FloodInundation_S1 ,
+        aiowf:Tpl_FloodInundation_S2 ,
+        aiowf:Tpl_FloodInundation_S3 ,
+        aiowf:Tpl_FloodInundation_S4 ,
+        aiowf:Tpl_FloodInundation_S5 ;
+    aiowf:servesChallenge aio:Flood ;
+    rdfs:label "flood inundation mapping"@en ;
+    skos:definition "Event hydrology feeding a hydraulic model of the river and floodplain."@en .
+
+###  https://w3id.org/aio/workflow#Tpl_FloodInundation_S1
+aiowf:Tpl_FloodInundation_S1 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "1"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ExcessRainfall ;
+    rdfs:label "flood inundation mapping – slot 1: excess rainfall (runoff production)"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_FloodInundation_S2
+aiowf:Tpl_FloodInundation_S2 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "2"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_RunoffTransform ;
+    rdfs:label "flood inundation mapping – slot 2: runoff transform"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_FloodInundation_S3
+aiowf:Tpl_FloodInundation_S3 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "3"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_Baseflow ;
+    rdfs:label "flood inundation mapping – slot 3: baseflow"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_FloodInundation_S4
+aiowf:Tpl_FloodInundation_S4 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "4"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ChannelRouting ;
+    rdfs:label "flood inundation mapping – slot 4: channel routing"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_FloodInundation_S5
+aiowf:Tpl_FloodInundation_S5 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "5"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_Hydraulics ;
+    rdfs:label "flood inundation mapping – slot 5: hydraulics"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_Morphodynamics
+aiowf:Tpl_Morphodynamics a aiowf:ChainTemplate ,
+        owl:NamedIndividual ;
+    aiowf:deliversOutput aio:BedEvolutionMap ,
+        aio:SedimentLoad ;
+    aiowf:hasSlot aiowf:Tpl_Morphodynamics_S1 ,
+        aiowf:Tpl_Morphodynamics_S2 ,
+        aiowf:Tpl_Morphodynamics_S3 ,
+        aiowf:Tpl_Morphodynamics_S4 ;
+    aiowf:servesChallenge aio:LandUseChange ,
+        aio:WaterQuality ;
+    rdfs:label "river morphodynamics"@en ;
+    skos:definition "Hydraulics driving sediment transport and bed evolution."@en .
+
+###  https://w3id.org/aio/workflow#Tpl_Morphodynamics_S1
+aiowf:Tpl_Morphodynamics_S1 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "1"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ChannelRouting ;
+    rdfs:label "river morphodynamics – slot 1: channel routing"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_Morphodynamics_S2
+aiowf:Tpl_Morphodynamics_S2 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "2"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_Hydraulics ;
+    rdfs:label "river morphodynamics – slot 2: hydraulics"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_Morphodynamics_S3
+aiowf:Tpl_Morphodynamics_S3 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "3"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_SedimentTransport ;
+    rdfs:label "river morphodynamics – slot 3: sediment transport"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_Morphodynamics_S4
+aiowf:Tpl_Morphodynamics_S4 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "4"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_Morphology ;
+    rdfs:label "river morphodynamics – slot 4: morphological update"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_RechargeGroundwater
+aiowf:Tpl_RechargeGroundwater a aiowf:ChainTemplate ,
+        owl:NamedIndividual ;
+    aiowf:deliversOutput aio:GroundwaterLevelSeries ,
+        aio:PiezometricMap ,
+        aio:RechargeMap ;
+    aiowf:hasSlot aiowf:Tpl_RechargeGroundwater_S1 ,
+        aiowf:Tpl_RechargeGroundwater_S2 ,
+        aiowf:Tpl_RechargeGroundwater_S3 ,
+        aiowf:Tpl_RechargeGroundwater_S4 ,
+        aiowf:Tpl_RechargeGroundwater_S5 ;
+    aiowf:servesChallenge aio:ClimateChange ,
+        aio:Drought ,
+        aio:WaterAvailabilty ;
+    rdfs:label "recharge to groundwater"@en ;
+    skos:definition "Soil water budget computing recharge that drives a groundwater flow model."@en .
+
+###  https://w3id.org/aio/workflow#Tpl_RechargeGroundwater_S1
+aiowf:Tpl_RechargeGroundwater_S1 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "1"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_PET ;
+    rdfs:label "recharge to groundwater – slot 1: potential evapotranspiration"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_RechargeGroundwater_S2
+aiowf:Tpl_RechargeGroundwater_S2 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "2"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_SoilWaterBudget ;
+    rdfs:label "recharge to groundwater – slot 2: soil water budget"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_RechargeGroundwater_S3
+aiowf:Tpl_RechargeGroundwater_S3 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "3"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ActualET ;
+    rdfs:label "recharge to groundwater – slot 3: actual evapotranspiration"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_RechargeGroundwater_S4
+aiowf:Tpl_RechargeGroundwater_S4 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "4"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_GroundwaterFlow ;
+    rdfs:label "recharge to groundwater – slot 4: groundwater flow"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_RechargeGroundwater_S5
+aiowf:Tpl_RechargeGroundwater_S5 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "5"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ChannelRouting ;
+    rdfs:label "recharge to groundwater – slot 5: channel routing"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_UrbanWaterQuality
+aiowf:Tpl_UrbanWaterQuality a aiowf:ChainTemplate ,
+        owl:NamedIndividual ;
+    aiowf:deliversOutput aio:Hydrograph ,
+        aio:PollutantConcentrationSeries ,
+        aio:PollutantLoadEstimate ;
+    aiowf:hasSlot aiowf:Tpl_UrbanWaterQuality_S1 ,
+        aiowf:Tpl_UrbanWaterQuality_S2 ,
+        aiowf:Tpl_UrbanWaterQuality_S3 ,
+        aiowf:Tpl_UrbanWaterQuality_S4 ,
+        aiowf:Tpl_UrbanWaterQuality_S5 ;
+    aiowf:servesChallenge aio:WaterQuality ;
+    rdfs:label "urban runoff quality"@en ;
+    skos:definition "Urban runoff generation with pollutant build-up/wash-off routed through the network."@en .
+
+###  https://w3id.org/aio/workflow#Tpl_UrbanWaterQuality_S1
+aiowf:Tpl_UrbanWaterQuality_S1 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "1"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ExcessRainfall ;
+    rdfs:label "urban runoff quality – slot 1: excess rainfall (runoff production)"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_UrbanWaterQuality_S2
+aiowf:Tpl_UrbanWaterQuality_S2 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "2"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_RunoffTransform ;
+    rdfs:label "urban runoff quality – slot 2: runoff transform"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_UrbanWaterQuality_S3
+aiowf:Tpl_UrbanWaterQuality_S3 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "true"^^xsd:boolean ;
+    aiowf:slotOrder "3"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_PollutantLoading ;
+    rdfs:label "urban runoff quality – slot 3: pollutant loading"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_UrbanWaterQuality_S4
+aiowf:Tpl_UrbanWaterQuality_S4 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "4"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_ChannelRouting ;
+    rdfs:label "urban runoff quality – slot 4: channel routing"@en .
+
+###  https://w3id.org/aio/workflow#Tpl_UrbanWaterQuality_S5
+aiowf:Tpl_UrbanWaterQuality_S5 a aiowf:ChainSlot ,
+        owl:NamedIndividual ;
+    aiowf:isMandatorySlot "false"^^xsd:boolean ;
+    aiowf:slotOrder "5"^^xsd:integer ;
+    aiowf:slotRole aiowf:Role_SoluteTransport ;
+    rdfs:label "urban runoff quality – slot 5: solute transport"@en .
+
+###  https://w3id.org/aio/workflow#TwoWayCoupling
+aiowf:TwoWayCoupling a aiowf:CouplingType ,
+        owl:NamedIndividual ;
+    rdfs:label "two-way"@en ;
+    skos:definition "Components exchange states during the run in both directions (e.g. river–aquifer exchange)."@en .
+
+#################################################################
+#    Anonymous expressions
+#################################################################
+
+_:node100 rdf:first aiowf:Role_ActualET ;
+    rdf:rest _:node101 .
+
+_:node101 rdf:first aiowf:Role_Baseflow ;
+    rdf:rest _:node102 .
+
+_:node102 rdf:first aiowf:Role_ChannelRouting ;
+    rdf:rest _:node103 .
+
+_:node103 rdf:first aiowf:Role_ExcessRainfall ;
+    rdf:rest _:node104 .
+
+_:node104 rdf:first aiowf:Role_GroundwaterFlow ;
+    rdf:rest _:node105 .
+
+_:node105 rdf:first aiowf:Role_HeatTransport ;
+    rdf:rest _:node106 .
+
+_:node106 rdf:first aiowf:Role_Hydraulics ;
+    rdf:rest _:node107 .
+
+_:node107 rdf:first aiowf:Role_Interception ;
+    rdf:rest _:node108 .
+
+_:node108 rdf:first aiowf:Role_Morphology ;
+    rdf:rest _:node109 .
+
+_:node109 rdf:first aiowf:Role_PET ;
+    rdf:rest _:node110 .
+
+_:node11 rdf:first aiowf:isSourceOfInterface ;
+    rdf:rest _:node12 .
+
+_:node110 rdf:first aiowf:Role_PollutantLoading ;
+    rdf:rest _:node111 .
+
+_:node111 rdf:first aiowf:Role_RunoffTransform ;
+    rdf:rest _:node112 .
+
+_:node112 rdf:first aiowf:Role_SedimentTransport ;
+    rdf:rest _:node113 .
+
+_:node113 rdf:first aiowf:Role_Snow ;
+    rdf:rest _:node114 .
+
+_:node114 rdf:first aiowf:Role_SoilWaterBudget ;
+    rdf:rest _:node115 .
+
+_:node115 rdf:first aiowf:Role_SoluteTransport ;
+    rdf:rest rdf:nil .
+
+_:node12 rdf:first aiowf:toRole ;
+    rdf:rest rdf:nil .
+
+_:node95 a owl:AllDifferent ;
+    owl:distinctMembers _:node96 .
+
+_:node96 rdf:first aiowf:InternalCoupling ;
+    rdf:rest _:node97 .
+
+_:node97 rdf:first aiowf:OfflineOneWay ;
+    rdf:rest _:node98 .
+
+_:node98 rdf:first aiowf:TwoWayCoupling ;
+    rdf:rest rdf:nil .
+
+_:node99 a owl:AllDifferent ;
+    owl:distinctMembers _:node100 .

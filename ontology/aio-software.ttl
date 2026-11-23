@@ -1,0 +1,926 @@
+@prefix aio: <https://w3id.org/aio#> .
+@prefix aiosw: <https://w3id.org/aio/software#> .
+@prefix aiowf: <https://w3id.org/aio/workflow#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#  AIO extension: software implementations 0.9.0. Imports the core and model composition.
+#  More modules and workflows are generated into aio-software-generated.ttl by build_software_ttl.py.
+
+###  https://w3id.org/aio/software
+<https://w3id.org/aio/software> a owl:Ontology ;
+    dct:description "How methods are realised in software: software modules with their usual time step and resolution, and curated reference chains (standard-practice workflows) with their steps."@en ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dct:modified "2026-11-20"^^xsd:date ;
+    dct:title "AIO extension - software implementations"@en ;
+    owl:imports <https://w3id.org/aio/workflow> ,
+        <https://w3id.org/aio> ;
+    owl:versionIRI <https://w3id.org/aio/software/0.9.0> ;
+    owl:versionInfo "0.9.0" ;
+    vann:preferredNamespacePrefix "aiosw" ;
+    vann:preferredNamespaceUri "https://w3id.org/aio/software#" .
+
+#################################################################
+#    Object properties
+#################################################################
+
+###  https://w3id.org/aio/software#chainUsesSoftware
+aiosw:chainUsesSoftware a owl:ObjectProperty ;
+    owl:propertyChainAxiom _:node3 ;
+    rdfs:domain aiosw:ReferenceChain ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "chain uses software"@en ;
+    rdfs:range aio:SoftwarePlatform ;
+    skos:definition "Software needed to run the chain (inferred: hasStep ∘ stepSoftware)."@en .
+
+###  https://w3id.org/aio/software#coversProcess
+aiosw:coversProcess a owl:ObjectProperty ;
+    owl:propertyChainAxiom _:node8 ;
+    rdfs:domain aiosw:ReferenceChain ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "covers process"@en ;
+    rdfs:range aio:Process ;
+    skos:definition "Process modelled by at least one method of the chain (inferred: hasStep ∘ usesMethod ∘ modelsProcess)."@en .
+
+###  https://w3id.org/aio/software#hasCouplingType
+aiosw:hasCouplingType a owl:ObjectProperty ;
+    rdfs:domain aiosw:ReferenceChain ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "has coupling type"@en ;
+    rdfs:range aiowf:CouplingType ;
+    skos:definition "How the components of the chain are coupled."@en .
+
+###  https://w3id.org/aio/software#hasStep
+aiosw:hasStep a owl:ObjectProperty ;
+    rdfs:domain aiosw:ReferenceChain ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "has step"@en ;
+    rdfs:range aiosw:ChainStep ;
+    skos:definition "Step of the chain."@en .
+
+###  https://w3id.org/aio/software#instantiatesTemplate
+aiosw:instantiatesTemplate a owl:ObjectProperty ;
+    rdfs:domain aiosw:ReferenceChain ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "instantiates template"@en ;
+    rdfs:range aiowf:ChainTemplate ;
+    skos:definition "Template that the chain follows."@en .
+
+###  https://w3id.org/aio/software#stepRole
+aiosw:stepRole a owl:FunctionalProperty ,
+        owl:ObjectProperty ;
+    rdfs:domain aiosw:ChainStep ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "step role"@en ;
+    rdfs:range aiowf:ComponentRole ;
+    skos:definition "Role filled by the method in this step."@en .
+
+###  https://w3id.org/aio/software#stepSoftware
+aiosw:stepSoftware a owl:ObjectProperty ;
+    rdfs:domain aiosw:ChainStep ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "step software"@en ;
+    rdfs:range aio:SoftwarePlatform ;
+    skos:definition "Software that runs this step."@en .
+
+###  https://w3id.org/aio/software#usesMethod
+aiosw:usesMethod a owl:FunctionalProperty ,
+        owl:ObjectProperty ;
+    rdfs:domain aiosw:ChainStep ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "uses method"@en ;
+    rdfs:range aio:ModelingMethod ;
+    skos:definition "Method used in this step."@en .
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  https://w3id.org/aio/software#stepOrder
+aiosw:stepOrder a owl:DatatypeProperty ,
+        owl:FunctionalProperty ;
+    rdfs:domain aiosw:ChainStep ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "step order"@en ;
+    rdfs:range xsd:integer ;
+    skos:definition "Position of the step from upstream (1) to downstream."@en .
+
+#################################################################
+#    Classes
+#################################################################
+
+###  https://w3id.org/aio/software#ChainStep
+aiosw:ChainStep a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "chain step"@en ;
+    skos:definition "One method placed in one role of a reference chain."@en .
+
+###  https://w3id.org/aio/software#ReferenceChain
+aiosw:ReferenceChain a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/software> ;
+    rdfs:label "reference chain"@en ;
+    skos:definition "A curated, commonly used combination of methods for a chain template, with the software that implements it."@en .
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  https://w3id.org/aio/software#implementsMethod
+aiosw:implementsMethod rdfs:isDefinedBy <https://w3id.org/aio/software> .
+
+###  https://w3id.org/aio/software#moduleName
+aiosw:moduleName rdfs:isDefinedBy <https://w3id.org/aio/software> .
+
+###  https://w3id.org/aio/software#moduleOf
+aiosw:moduleOf rdfs:isDefinedBy <https://w3id.org/aio/software> .
+
+###  https://w3id.org/aio/software#moduleResolution
+aiosw:moduleResolution rdfs:isDefinedBy <https://w3id.org/aio/software> .
+
+###  https://w3id.org/aio/software#moduleSpatialUnit
+aiosw:moduleSpatialUnit rdfs:isDefinedBy <https://w3id.org/aio/software> .
+
+###  https://w3id.org/aio/software#moduleTimeStep
+aiosw:moduleTimeStep rdfs:isDefinedBy <https://w3id.org/aio/software> .
+
+###  https://w3id.org/aio/software#moduleTimeStepClass
+aiosw:moduleTimeStepClass rdfs:isDefinedBy <https://w3id.org/aio/software> .
+
+###  https://w3id.org/aio/software#RC_GR4J_Daily
+aiosw:RC_GR4J_Daily a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:Python-R ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:Evapotranspiration ,
+        aio:Runoff ;
+    aiosw:hasCouplingType aiowf:InternalCoupling ;
+    aiosw:hasStep aiosw:RC_GR4J_Daily_S1 ,
+        aiosw:RC_GR4J_Daily_S2 ,
+        aiosw:RC_GR4J_Daily_S3 ,
+        aiosw:RC_GR4J_Daily_S4 ,
+        aiosw:RC_GR4J_Daily_S5 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_ContinuousWaterBalance ;
+    rdfs:label "GR4J daily (R/Python)"@en ;
+    skos:note "Parsimonious lumped model (4 parameters); airGR in R."@en .
+
+###  https://w3id.org/aio/software#RC_GR4J_Daily_S1
+aiosw:RC_GR4J_Daily_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_PET ;
+    aiosw:stepSoftware aio:Python-R ;
+    aiosw:usesMethod aio:HargeavesMethod ;
+    rdfs:label "GR4J daily (R/Python) – 1: Hargreaves method"@en .
+
+###  https://w3id.org/aio/software#RC_GR4J_Daily_S2
+aiosw:RC_GR4J_Daily_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_SoilWaterBudget ;
+    aiosw:stepSoftware aio:Python-R ;
+    aiosw:usesMethod aio:GR4Jmodel ;
+    rdfs:label "GR4J daily (R/Python) – 2: GR4J model"@en .
+
+###  https://w3id.org/aio/software#RC_GR4J_Daily_S3
+aiosw:RC_GR4J_Daily_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ExcessRainfall ;
+    aiosw:stepSoftware aio:Python-R ;
+    aiosw:usesMethod aio:GR4Jmodel ;
+    rdfs:label "GR4J daily (R/Python) – 3: GR4J model"@en .
+
+###  https://w3id.org/aio/software#RC_GR4J_Daily_S4
+aiosw:RC_GR4J_Daily_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_RunoffTransform ;
+    aiosw:stepSoftware aio:Python-R ;
+    aiosw:usesMethod aio:GR4Jmodel ;
+    rdfs:label "GR4J daily (R/Python) – 4: GR4J model"@en .
+
+###  https://w3id.org/aio/software#RC_GR4J_Daily_S5
+aiosw:RC_GR4J_Daily_S5 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "5"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Baseflow ;
+    aiosw:stepSoftware aio:Python-R ;
+    aiosw:usesMethod aio:GR4Jmodel ;
+    rdfs:label "GR4J daily (R/Python) – 5: GR4J model"@en .
+
+###  https://w3id.org/aio/software#RC_HECRAS_1DSediment
+aiosw:RC_HECRAS_1DSediment a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:HEC-RAS ;
+    aiosw:coversProcess aio:ChannelFlow ,
+        aio:SedimentTransport ;
+    aiosw:hasCouplingType aiowf:InternalCoupling ;
+    aiosw:hasStep aiosw:RC_HECRAS_1DSediment_S1 ,
+        aiosw:RC_HECRAS_1DSediment_S2 ,
+        aiosw:RC_HECRAS_1DSediment_S3 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_Morphodynamics ;
+    rdfs:label "HEC-RAS 1D sediment"@en .
+
+###  https://w3id.org/aio/software#RC_HECRAS_1DSediment_S1
+aiosw:RC_HECRAS_1DSediment_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Hydraulics ;
+    aiosw:stepSoftware aio:HEC-RAS ;
+    aiosw:usesMethod aio:Saint-VenantEquations1D ;
+    rdfs:label "HEC-RAS 1D sediment – 1: 1D Saint-Venant equations"@en .
+
+###  https://w3id.org/aio/software#RC_HECRAS_1DSediment_S2
+aiosw:RC_HECRAS_1DSediment_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_SedimentTransport ;
+    aiosw:stepSoftware aio:HEC-RAS ;
+    aiosw:usesMethod aio:EngelundHansen ;
+    rdfs:label "HEC-RAS 1D sediment – 2: Engelund–Hansen formula"@en .
+
+###  https://w3id.org/aio/software#RC_HECRAS_1DSediment_S3
+aiosw:RC_HECRAS_1DSediment_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Morphology ;
+    aiosw:stepSoftware aio:HEC-RAS ;
+    aiosw:usesMethod aio:ExnerEquation ;
+    rdfs:label "HEC-RAS 1D sediment – 3: Exner equation"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_EventFlood
+aiosw:RC_HMS_EventFlood a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:HEC-HMS ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:ChannelFlow ,
+        aio:Infiltration ,
+        aio:Runoff ;
+    aiosw:hasCouplingType aiowf:InternalCoupling ;
+    aiosw:hasStep aiosw:RC_HMS_EventFlood_S1 ,
+        aiosw:RC_HMS_EventFlood_S2 ,
+        aiosw:RC_HMS_EventFlood_S3 ,
+        aiosw:RC_HMS_EventFlood_S4 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_EventFloodHydrograph ;
+    rdfs:label "HEC-HMS event flood (lumped)"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_EventFlood_S1
+aiosw:RC_HMS_EventFlood_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ExcessRainfall ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:SCS-CN ;
+    rdfs:label "HEC-HMS event flood (lumped) – 1: SCS curve number"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_EventFlood_S2
+aiosw:RC_HMS_EventFlood_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_RunoffTransform ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:Clark-UH ;
+    rdfs:label "HEC-HMS event flood (lumped) – 2: Clark unit hydrograph"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_EventFlood_S3
+aiosw:RC_HMS_EventFlood_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Baseflow ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:LinearReservoir ;
+    rdfs:label "HEC-HMS event flood (lumped) – 3: Linear Reservoir"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_EventFlood_S4
+aiosw:RC_HMS_EventFlood_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ChannelRouting ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:Muskingum-Cunge ;
+    rdfs:label "HEC-HMS event flood (lumped) – 4: Muskingum–Cunge routing"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_GriddedEventFlood
+aiosw:RC_HMS_GriddedEventFlood a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:HEC-HMS ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:ChannelFlow ,
+        aio:Infiltration ,
+        aio:Runoff ;
+    aiosw:hasCouplingType aiowf:InternalCoupling ;
+    aiosw:hasStep aiosw:RC_HMS_GriddedEventFlood_S1 ,
+        aiosw:RC_HMS_GriddedEventFlood_S2 ,
+        aiosw:RC_HMS_GriddedEventFlood_S3 ,
+        aiosw:RC_HMS_GriddedEventFlood_S4 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_EventFloodHydrograph ;
+    rdfs:label "HEC-HMS event flood (gridded)"@en ;
+    skos:note "Uses gridded SCS-CN with radar rainfall."@en .
+
+###  https://w3id.org/aio/software#RC_HMS_GriddedEventFlood_S1
+aiosw:RC_HMS_GriddedEventFlood_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ExcessRainfall ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:SCS-CN ;
+    rdfs:label "HEC-HMS event flood (gridded) – 1: SCS curve number"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_GriddedEventFlood_S2
+aiosw:RC_HMS_GriddedEventFlood_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_RunoffTransform ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:ModClark ;
+    rdfs:label "HEC-HMS event flood (gridded) – 2: ModClark"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_GriddedEventFlood_S3
+aiosw:RC_HMS_GriddedEventFlood_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Baseflow ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:LinearReservoir ;
+    rdfs:label "HEC-HMS event flood (gridded) – 3: Linear Reservoir"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_GriddedEventFlood_S4
+aiosw:RC_HMS_GriddedEventFlood_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ChannelRouting ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:Muskingum-Cunge ;
+    rdfs:label "HEC-HMS event flood (gridded) – 4: Muskingum–Cunge routing"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_RAS2D_Inundation
+aiosw:RC_HMS_RAS2D_Inundation a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:HEC-HMS ,
+        aio:HEC-RAS ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:ChannelFlow ,
+        aio:Infiltration ,
+        aio:Runoff ;
+    aiosw:hasCouplingType aiowf:OfflineOneWay ;
+    aiosw:hasStep aiosw:RC_HMS_RAS2D_Inundation_S1 ,
+        aiosw:RC_HMS_RAS2D_Inundation_S2 ,
+        aiosw:RC_HMS_RAS2D_Inundation_S3 ,
+        aiosw:RC_HMS_RAS2D_Inundation_S4 ,
+        aiosw:RC_HMS_RAS2D_Inundation_S5 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_FloodInundation ;
+    rdfs:label "HEC-HMS → HEC-RAS 2D inundation"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_RAS2D_Inundation_S1
+aiosw:RC_HMS_RAS2D_Inundation_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ExcessRainfall ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:SCS-CN ;
+    rdfs:label "HEC-HMS → HEC-RAS 2D inundation – 1: SCS curve number"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_RAS2D_Inundation_S2
+aiosw:RC_HMS_RAS2D_Inundation_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_RunoffTransform ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:Clark-UH ;
+    rdfs:label "HEC-HMS → HEC-RAS 2D inundation – 2: Clark unit hydrograph"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_RAS2D_Inundation_S3
+aiosw:RC_HMS_RAS2D_Inundation_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Baseflow ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:LinearReservoir ;
+    rdfs:label "HEC-HMS → HEC-RAS 2D inundation – 3: Linear Reservoir"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_RAS2D_Inundation_S4
+aiosw:RC_HMS_RAS2D_Inundation_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ChannelRouting ;
+    aiosw:stepSoftware aio:HEC-HMS ;
+    aiosw:usesMethod aio:Muskingum-Cunge ;
+    rdfs:label "HEC-HMS → HEC-RAS 2D inundation – 4: Muskingum–Cunge routing"@en .
+
+###  https://w3id.org/aio/software#RC_HMS_RAS2D_Inundation_S5
+aiosw:RC_HMS_RAS2D_Inundation_S5 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "5"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Hydraulics ;
+    aiosw:stepSoftware aio:HEC-RAS ;
+    aiosw:usesMethod aio:ShallowWaterEquations2D ;
+    rdfs:label "HEC-HMS → HEC-RAS 2D inundation – 5: 2D shallow water equations"@en .
+
+###  https://w3id.org/aio/software#RC_Iber_2DSediment
+aiosw:RC_Iber_2DSediment a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:IberPlus ;
+    aiosw:coversProcess aio:ChannelFlow ,
+        aio:Runoff ,
+        aio:SedimentTransport ;
+    aiosw:hasCouplingType aiowf:InternalCoupling ;
+    aiosw:hasStep aiosw:RC_Iber_2DSediment_S1 ,
+        aiosw:RC_Iber_2DSediment_S2 ,
+        aiosw:RC_Iber_2DSediment_S3 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_Morphodynamics ;
+    rdfs:label "Iber+ 2D bedload"@en .
+
+###  https://w3id.org/aio/software#RC_Iber_2DSediment_S1
+aiosw:RC_Iber_2DSediment_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Hydraulics ;
+    aiosw:stepSoftware aio:IberPlus ;
+    aiosw:usesMethod aio:ShallowWaterEquations2D ;
+    rdfs:label "Iber+ 2D bedload – 1: 2D shallow water equations"@en .
+
+###  https://w3id.org/aio/software#RC_Iber_2DSediment_S2
+aiosw:RC_Iber_2DSediment_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_SedimentTransport ;
+    aiosw:stepSoftware aio:IberPlus ;
+    aiosw:usesMethod aio:MeyerPeterMuller ;
+    rdfs:label "Iber+ 2D bedload – 2: Meyer-Peter–Müller formula"@en .
+
+###  https://w3id.org/aio/software#RC_Iber_2DSediment_S3
+aiosw:RC_Iber_2DSediment_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Morphology ;
+    aiosw:stepSoftware aio:IberPlus ;
+    aiosw:usesMethod aio:ExnerEquation ;
+    rdfs:label "Iber+ 2D bedload – 3: Exner equation"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11
+aiosw:RC_MIKESHE_MIKE11 a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:MIKE11 ,
+        aio:MIKESHE ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:ChannelFlow ,
+        aio:Evapotranspiration ,
+        aio:GroundWaterFlow ,
+        aio:Infiltration ,
+        aio:Recharge ,
+        aio:Runoff ,
+        aio:Snowmelt ;
+    aiosw:hasCouplingType aiowf:TwoWayCoupling ;
+    aiosw:hasStep aiosw:RC_MIKESHE_MIKE11_S1 ,
+        aiosw:RC_MIKESHE_MIKE11_S2 ,
+        aiosw:RC_MIKESHE_MIKE11_S3 ,
+        aiosw:RC_MIKESHE_MIKE11_S4 ,
+        aiosw:RC_MIKESHE_MIKE11_S5 ,
+        aiosw:RC_MIKESHE_MIKE11_S6 ,
+        aiosw:RC_MIKESHE_MIKE11_S7 ,
+        aiosw:RC_MIKESHE_MIKE11_S8 ,
+        aiosw:RC_MIKESHE_MIKE11_S9 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_ContinuousWaterBalance ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated"@en ;
+    skos:note "Physically based, many parameters; river–aquifer exchange in both directions."@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S1
+aiosw:RC_MIKESHE_MIKE11_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_PET ;
+    aiosw:stepSoftware aio:MIKESHE ;
+    aiosw:usesMethod aio:Penman-Monteih ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 1: Penman–Monteith equation"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S2
+aiosw:RC_MIKESHE_MIKE11_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Interception ;
+    aiosw:stepSoftware aio:MIKESHE ;
+    aiosw:usesMethod aio:RutterModel ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 2: Rutter interception model"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S3
+aiosw:RC_MIKESHE_MIKE11_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Snow ;
+    aiosw:stepSoftware aio:MIKESHE ;
+    aiosw:usesMethod aio:TemperatureIndexMethod ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 3: temperature-index (degree-day) snowmelt method"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S4
+aiosw:RC_MIKESHE_MIKE11_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_SoilWaterBudget ;
+    aiosw:stepSoftware aio:MIKESHE ;
+    aiosw:usesMethod aio:RichardsEquation ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 4: Richards equation"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S5
+aiosw:RC_MIKESHE_MIKE11_S5 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "5"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ActualET ;
+    aiosw:stepSoftware aio:MIKESHE ;
+    aiosw:usesMethod aio:KristenJensen ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 5: Kristensen–Jensen method"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S6
+aiosw:RC_MIKESHE_MIKE11_S6 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "6"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ExcessRainfall ;
+    aiosw:stepSoftware aio:MIKESHE ;
+    aiosw:usesMethod aio:RichardsEquation ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 6: Richards equation"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S7
+aiosw:RC_MIKESHE_MIKE11_S7 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "7"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_RunoffTransform ;
+    aiosw:stepSoftware aio:MIKESHE ;
+    aiosw:usesMethod aio:DiffusiveWave2D ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 7: 2D diffusive wave"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S8
+aiosw:RC_MIKESHE_MIKE11_S8 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "8"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_GroundwaterFlow ;
+    aiosw:stepSoftware aio:MIKESHE ;
+    aiosw:usesMethod aio:FiniteDifferenceGroundwaterFlow ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 8: Finite Difference Groundwater Flow"@en .
+
+###  https://w3id.org/aio/software#RC_MIKESHE_MIKE11_S9
+aiosw:RC_MIKESHE_MIKE11_S9 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "9"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ChannelRouting ;
+    aiosw:stepSoftware aio:MIKE11 ;
+    aiosw:usesMethod aio:Saint-VenantEquations1D ;
+    rdfs:label "MIKE SHE + MIKE 11 integrated – 9: 1D Saint-Venant equations"@en .
+
+###  https://w3id.org/aio/software#RC_SIM2
+aiosw:RC_SIM2 a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:ISBA ,
+        aio:SIM2 ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:Evapotranspiration ,
+        aio:GroundWaterFlow ,
+        aio:Infiltration ,
+        aio:Recharge ;
+    aiosw:hasCouplingType aiowf:OfflineOneWay ;
+    aiosw:hasStep aiosw:RC_SIM2_S1 ,
+        aiosw:RC_SIM2_S2 ,
+        aiosw:RC_SIM2_S3 ,
+        aiosw:RC_SIM2_S4 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_RechargeGroundwater ;
+    rdfs:label "SIM2 (SAFRAN–ISBA–MODCOU)"@en ;
+    skos:note "Météo-France chain: SAFRAN forcing, ISBA surface, MODCOU groundwater and routing. Run operationally; outputs available as open data (DonneesQuotidiennesSIM)."@en .
+
+###  https://w3id.org/aio/software#RC_SIM2_S1
+aiosw:RC_SIM2_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_PET ;
+    aiosw:stepSoftware aio:ISBA ;
+    aiosw:usesMethod aio:Penman-Monteih ;
+    rdfs:label "SIM2 (SAFRAN–ISBA–MODCOU) – 1: Penman–Monteith equation"@en .
+
+###  https://w3id.org/aio/software#RC_SIM2_S2
+aiosw:RC_SIM2_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_SoilWaterBudget ;
+    aiosw:stepSoftware aio:ISBA ;
+    aiosw:usesMethod aio:LayeredSoilWaterBudget ;
+    rdfs:label "SIM2 (SAFRAN–ISBA–MODCOU) – 2: Layered Soil Water Budget"@en .
+
+###  https://w3id.org/aio/software#RC_SIM2_S3
+aiosw:RC_SIM2_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ActualET ;
+    aiosw:stepSoftware aio:ISBA ;
+    aiosw:usesMethod aio:RootzoneStress ;
+    rdfs:label "SIM2 (SAFRAN–ISBA–MODCOU) – 3: Rootzone Stress"@en .
+
+###  https://w3id.org/aio/software#RC_SIM2_S4
+aiosw:RC_SIM2_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_GroundwaterFlow ;
+    aiosw:stepSoftware aio:SIM2 ;
+    aiosw:usesMethod aio:FiniteDifferenceGroundwaterFlow ;
+    rdfs:label "SIM2 (SAFRAN–ISBA–MODCOU) – 4: Finite Difference Groundwater Flow"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB
+aiosw:RC_SWAT_ContinuousWB a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:SWAT ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:ChannelFlow ,
+        aio:Evapotranspiration ,
+        aio:Infiltration ,
+        aio:Recharge ,
+        aio:Runoff ,
+        aio:Snowmelt ;
+    aiosw:hasCouplingType aiowf:InternalCoupling ;
+    aiosw:hasStep aiosw:RC_SWAT_ContinuousWB_S1 ,
+        aiosw:RC_SWAT_ContinuousWB_S2 ,
+        aiosw:RC_SWAT_ContinuousWB_S3 ,
+        aiosw:RC_SWAT_ContinuousWB_S4 ,
+        aiosw:RC_SWAT_ContinuousWB_S5 ,
+        aiosw:RC_SWAT_ContinuousWB_S6 ,
+        aiosw:RC_SWAT_ContinuousWB_S7 ,
+        aiosw:RC_SWAT_ContinuousWB_S8 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_ContinuousWaterBalance ;
+    rdfs:label "SWAT continuous water balance"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB_S1
+aiosw:RC_SWAT_ContinuousWB_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_PET ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:Penman-Monteih ;
+    rdfs:label "SWAT continuous water balance – 1: Penman–Monteith equation"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB_S2
+aiosw:RC_SWAT_ContinuousWB_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Snow ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:TemperatureIndexMethod ;
+    rdfs:label "SWAT continuous water balance – 2: temperature-index (degree-day) snowmelt method"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB_S3
+aiosw:RC_SWAT_ContinuousWB_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_SoilWaterBudget ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:LayeredSoilWaterBudget ;
+    rdfs:label "SWAT continuous water balance – 3: Layered Soil Water Budget"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB_S4
+aiosw:RC_SWAT_ContinuousWB_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ActualET ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:RootzoneStress ;
+    rdfs:label "SWAT continuous water balance – 4: Rootzone Stress"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB_S5
+aiosw:RC_SWAT_ContinuousWB_S5 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "5"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ExcessRainfall ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:SCS-CN ;
+    rdfs:label "SWAT continuous water balance – 5: SCS curve number"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB_S6
+aiosw:RC_SWAT_ContinuousWB_S6 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "6"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_RunoffTransform ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:ConceptualRoutingReservoir ;
+    rdfs:label "SWAT continuous water balance – 6: Conceptual Routing Reservoir"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB_S7
+aiosw:RC_SWAT_ContinuousWB_S7 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "7"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Baseflow ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:LinearReservoir ;
+    rdfs:label "SWAT continuous water balance – 7: Linear Reservoir"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_ContinuousWB_S8
+aiosw:RC_SWAT_ContinuousWB_S8 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "8"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ChannelRouting ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:Muskingum-Cunge ;
+    rdfs:label "SWAT continuous water balance – 8: Muskingum–Cunge routing"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_MODFLOW
+aiosw:RC_SWAT_MODFLOW a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:MODFLOW ,
+        aio:SWAT ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:ChannelFlow ,
+        aio:Evapotranspiration ,
+        aio:GroundWaterFlow ,
+        aio:Infiltration ,
+        aio:Recharge ;
+    aiosw:hasCouplingType aiowf:TwoWayCoupling ;
+    aiosw:hasStep aiosw:RC_SWAT_MODFLOW_S1 ,
+        aiosw:RC_SWAT_MODFLOW_S2 ,
+        aiosw:RC_SWAT_MODFLOW_S3 ,
+        aiosw:RC_SWAT_MODFLOW_S4 ,
+        aiosw:RC_SWAT_MODFLOW_S5 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_RechargeGroundwater ;
+    rdfs:label "SWAT–MODFLOW"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_MODFLOW_S1
+aiosw:RC_SWAT_MODFLOW_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_PET ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:Penman-Monteih ;
+    rdfs:label "SWAT–MODFLOW – 1: Penman–Monteith equation"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_MODFLOW_S2
+aiosw:RC_SWAT_MODFLOW_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_SoilWaterBudget ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:LayeredSoilWaterBudget ;
+    rdfs:label "SWAT–MODFLOW – 2: Layered Soil Water Budget"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_MODFLOW_S3
+aiosw:RC_SWAT_MODFLOW_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ActualET ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:RootzoneStress ;
+    rdfs:label "SWAT–MODFLOW – 3: Rootzone Stress"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_MODFLOW_S4
+aiosw:RC_SWAT_MODFLOW_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_GroundwaterFlow ;
+    aiosw:stepSoftware aio:MODFLOW ;
+    aiosw:usesMethod aio:FiniteDifferenceGroundwaterFlow ;
+    rdfs:label "SWAT–MODFLOW – 4: Finite Difference Groundwater Flow"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_MODFLOW_S5
+aiosw:RC_SWAT_MODFLOW_S5 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "5"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ChannelRouting ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:Muskingum-Cunge ;
+    rdfs:label "SWAT–MODFLOW – 5: Muskingum–Cunge routing"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_TELEMAC2D_Inundation
+aiosw:RC_SWAT_TELEMAC2D_Inundation a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:SWAT ,
+        aio:TELEMAC-2D ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:ChannelFlow ,
+        aio:Infiltration ,
+        aio:Runoff ;
+    aiosw:hasCouplingType aiowf:OfflineOneWay ;
+    aiosw:hasStep aiosw:RC_SWAT_TELEMAC2D_Inundation_S1 ,
+        aiosw:RC_SWAT_TELEMAC2D_Inundation_S2 ,
+        aiosw:RC_SWAT_TELEMAC2D_Inundation_S3 ,
+        aiosw:RC_SWAT_TELEMAC2D_Inundation_S4 ,
+        aiosw:RC_SWAT_TELEMAC2D_Inundation_S5 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_FloodInundation ;
+    rdfs:label "SWAT (sub-daily) → TELEMAC-2D inundation, open source"@en ;
+    skos:note "Fully open-source alternative; SWAT must run at a sub-daily step."@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_TELEMAC2D_Inundation_S1
+aiosw:RC_SWAT_TELEMAC2D_Inundation_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ExcessRainfall ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:SCS-CN ;
+    rdfs:label "SWAT (sub-daily) → TELEMAC-2D inundation, open source – 1: SCS curve number"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_TELEMAC2D_Inundation_S2
+aiosw:RC_SWAT_TELEMAC2D_Inundation_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_RunoffTransform ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:SCS-UH ;
+    rdfs:label "SWAT (sub-daily) → TELEMAC-2D inundation, open source – 2: SCS unit hydrograph"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_TELEMAC2D_Inundation_S3
+aiosw:RC_SWAT_TELEMAC2D_Inundation_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Baseflow ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:LinearReservoir ;
+    rdfs:label "SWAT (sub-daily) → TELEMAC-2D inundation, open source – 3: Linear Reservoir"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_TELEMAC2D_Inundation_S4
+aiosw:RC_SWAT_TELEMAC2D_Inundation_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ChannelRouting ;
+    aiosw:stepSoftware aio:SWAT ;
+    aiosw:usesMethod aio:Muskingum-Cunge ;
+    rdfs:label "SWAT (sub-daily) → TELEMAC-2D inundation, open source – 4: Muskingum–Cunge routing"@en .
+
+###  https://w3id.org/aio/software#RC_SWAT_TELEMAC2D_Inundation_S5
+aiosw:RC_SWAT_TELEMAC2D_Inundation_S5 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "5"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_Hydraulics ;
+    aiosw:stepSoftware aio:TELEMAC-2D ;
+    aiosw:usesMethod aio:ShallowWaterEquations2D ;
+    rdfs:label "SWAT (sub-daily) → TELEMAC-2D inundation, open source – 5: 2D shallow water equations"@en .
+
+###  https://w3id.org/aio/software#RC_SWMM_UrbanQuality
+aiosw:RC_SWMM_UrbanQuality a aiosw:ReferenceChain ,
+        owl:NamedIndividual ;
+    aiosw:chainUsesSoftware aio:SWMM ;
+    aiosw:coversProcess aio:Baseflow ,
+        aio:ChannelFlow ,
+        aio:Infiltration ,
+        aio:PollutantTransport ,
+        aio:Runoff ;
+    aiosw:hasCouplingType aiowf:InternalCoupling ;
+    aiosw:hasStep aiosw:RC_SWMM_UrbanQuality_S1 ,
+        aiosw:RC_SWMM_UrbanQuality_S2 ,
+        aiosw:RC_SWMM_UrbanQuality_S3 ,
+        aiosw:RC_SWMM_UrbanQuality_S4 ;
+    aiosw:instantiatesTemplate aiowf:Tpl_UrbanWaterQuality ;
+    rdfs:label "SWMM urban runoff quality"@en ;
+    skos:note "Dynamic-wave routing in the pipe network."@en .
+
+###  https://w3id.org/aio/software#RC_SWMM_UrbanQuality_S1
+aiosw:RC_SWMM_UrbanQuality_S1 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "1"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ExcessRainfall ;
+    aiosw:stepSoftware aio:SWMM ;
+    aiosw:usesMethod aio:HortonInfiltrationModel ;
+    rdfs:label "SWMM urban runoff quality – 1: Horton infiltration model"@en .
+
+###  https://w3id.org/aio/software#RC_SWMM_UrbanQuality_S2
+aiosw:RC_SWMM_UrbanQuality_S2 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "2"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_RunoffTransform ;
+    aiosw:stepSoftware aio:SWMM ;
+    aiosw:usesMethod aio:NonLinearReservoir ;
+    rdfs:label "SWMM urban runoff quality – 2: Non Linear Reservoir"@en .
+
+###  https://w3id.org/aio/software#RC_SWMM_UrbanQuality_S3
+aiosw:RC_SWMM_UrbanQuality_S3 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "3"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_PollutantLoading ;
+    aiosw:stepSoftware aio:SWMM ;
+    aiosw:usesMethod aio:PollutantBuildupWashoff ;
+    rdfs:label "SWMM urban runoff quality – 3: pollutant buildup–washoff"@en .
+
+###  https://w3id.org/aio/software#RC_SWMM_UrbanQuality_S4
+aiosw:RC_SWMM_UrbanQuality_S4 a aiosw:ChainStep ,
+        owl:NamedIndividual ;
+    aiosw:stepOrder "4"^^xsd:integer ;
+    aiosw:stepRole aiowf:Role_ChannelRouting ;
+    aiosw:stepSoftware aio:SWMM ;
+    aiosw:usesMethod aio:Saint-VenantEquations1D ;
+    rdfs:label "SWMM urban runoff quality – 4: 1D Saint-Venant equations"@en .
+
+###  https://w3id.org/aio/software#SoftwareModule
+aiosw:SoftwareModule rdfs:isDefinedBy <https://w3id.org/aio/software> .
+
+#################################################################
+#    Anonymous expressions
+#################################################################
+
+_:node10 rdf:first aio:modelsProcess ;
+    rdf:rest rdf:nil .
+
+_:node3 rdf:first aiosw:hasStep ;
+    rdf:rest _:node4 .
+
+_:node4 rdf:first aiosw:stepSoftware ;
+    rdf:rest rdf:nil .
+
+_:node8 rdf:first aiosw:hasStep ;
+    rdf:rest _:node9 .
+
+_:node9 rdf:first aiosw:usesMethod ;
+    rdf:rest _:node10 .

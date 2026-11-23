@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Protégé reads this file to resolve owl:imports to the local files instead of the web:
+     open aio-software.ttl (or any extension) and the core and model composition load with it. -->
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri id="AIO core" name="https://w3id.org/aio" uri="aio-core.ttl"/>
+    <uri id="AIO core 0.9.0" name="https://w3id.org/aio/0.9.0" uri="aio-core.ttl"/>
+    <uri id="AIO study requirements" name="https://w3id.org/aio/requirements" uri="aio-requirements.ttl"/>
+    <uri id="AIO model composition" name="https://w3id.org/aio/workflow" uri="aio-workflow.ttl"/>
+    <uri id="AIO software implementations" name="https://w3id.org/aio/software" uri="aio-software.ttl"/>
+    <uri id="AIO alignments" name="https://w3id.org/aio/alignments" uri="aio-alignments.ttl"/>
+</catalog>

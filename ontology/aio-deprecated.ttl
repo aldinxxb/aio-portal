@@ -1,0 +1,1398 @@
+@prefix aio: <https://w3id.org/aio#> .
+@prefix aioreq: <https://w3id.org/aio/requirements#> .
+@prefix aiosw: <https://w3id.org/aio/software#> .
+@prefix aiowf: <https://w3id.org/aio/workflow#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#  IRIs of AIO 0.8.0 that moved to an extension in 0.9.0: each is replaced by the same
+#  local name in the extension's namespace.
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  https://w3id.org/aio#allowedLiteral
+aio:allowedLiteral dct:isReplacedBy aioreq:allowedLiteral ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#allowedValue
+aio:allowedValue dct:isReplacedBy aioreq:allowedValue ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#appliesToVariableType
+aio:appliesToVariableType dct:isReplacedBy aioreq:appliesToVariableType ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#canFeed
+aio:canFeed dct:isReplacedBy aiowf:canFeed ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#ChainSlot
+aio:ChainSlot dct:isReplacedBy aiowf:ChainSlot ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#ChainStep
+aio:ChainStep dct:isReplacedBy aiosw:ChainStep ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#ChainTemplate
+aio:ChainTemplate dct:isReplacedBy aiowf:ChainTemplate ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#chainUsesSoftware
+aio:chainUsesSoftware dct:isReplacedBy aiosw:chainUsesSoftware ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#ComponentRole
+aio:ComponentRole dct:isReplacedBy aiowf:ComponentRole ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#CouplingType
+aio:CouplingType dct:isReplacedBy aiowf:CouplingType ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#coversProcess
+aio:coversProcess dct:isReplacedBy aiosw:coversProcess ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#DataRequirement
+aio:DataRequirement dct:isReplacedBy aioreq:DataRequirement ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#deliversOutput
+aio:deliversOutput dct:isReplacedBy aiowf:deliversOutput ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#exchangesVariable
+aio:exchangesVariable dct:isReplacedBy aiowf:exchangesVariable ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#feedsRole
+aio:feedsRole dct:isReplacedBy aiowf:feedsRole ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#fillsRole
+aio:fillsRole dct:isReplacedBy aiowf:fillsRole ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#fromRole
+aio:fromRole dct:isReplacedBy aiowf:fromRole ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Hard
+aio:Hard dct:isReplacedBy aioreq:Hard ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#hasCouplingType
+aio:hasCouplingType dct:isReplacedBy aiosw:hasCouplingType ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#hasInseparableRoles
+aio:hasInseparableRoles dct:isReplacedBy aiowf:hasInseparableRoles ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#hasSlot
+aio:hasSlot dct:isReplacedBy aiowf:hasSlot ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#hasStep
+aio:hasStep dct:isReplacedBy aiosw:hasStep ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#hasStrength
+aio:hasStrength dct:isReplacedBy aioreq:hasStrength ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#hasTypicalCoupling
+aio:hasTypicalCoupling dct:isReplacedBy aiowf:hasTypicalCoupling ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_ActualET_SoilWaterBudget_ActualEvapotranspiration
+aio:IF_ActualET_SoilWaterBudget_ActualEvapotranspiration dct:isReplacedBy aiowf:IF_ActualET_SoilWaterBudget_ActualEvapotranspiration ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_Baseflow_ChannelRouting_BaseFlowContribution
+aio:IF_Baseflow_ChannelRouting_BaseFlowContribution dct:isReplacedBy aiowf:IF_Baseflow_ChannelRouting_BaseFlowContribution ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_ChannelRouting_Hydraulics_Discharge
+aio:IF_ChannelRouting_Hydraulics_Discharge dct:isReplacedBy aiowf:IF_ChannelRouting_Hydraulics_Discharge ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_ExcessRainfall_Baseflow_InfiltrationRate
+aio:IF_ExcessRainfall_Baseflow_InfiltrationRate dct:isReplacedBy aiowf:IF_ExcessRainfall_Baseflow_InfiltrationRate ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_ExcessRainfall_PollutantLoading_RunoffVolume
+aio:IF_ExcessRainfall_PollutantLoading_RunoffVolume dct:isReplacedBy aiowf:IF_ExcessRainfall_PollutantLoading_RunoffVolume ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_ExcessRainfall_RunoffTransform_EffectiveRainfall
+aio:IF_ExcessRainfall_RunoffTransform_EffectiveRainfall dct:isReplacedBy aiowf:IF_ExcessRainfall_RunoffTransform_EffectiveRainfall ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_GroundwaterFlow_ChannelRouting_BaseFlowContribution
+aio:IF_GroundwaterFlow_ChannelRouting_BaseFlowContribution dct:isReplacedBy aiowf:IF_GroundwaterFlow_ChannelRouting_BaseFlowContribution ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_GroundwaterFlow_HeatTransport_GroundwaterFlux
+aio:IF_GroundwaterFlow_HeatTransport_GroundwaterFlux dct:isReplacedBy aiowf:IF_GroundwaterFlow_HeatTransport_GroundwaterFlux ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_GroundwaterFlow_SoluteTransport_FlowVelocity
+aio:IF_GroundwaterFlow_SoluteTransport_FlowVelocity dct:isReplacedBy aiowf:IF_GroundwaterFlow_SoluteTransport_FlowVelocity ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_Hydraulics_SedimentTransport_ShearStress
+aio:IF_Hydraulics_SedimentTransport_ShearStress dct:isReplacedBy aiowf:IF_Hydraulics_SedimentTransport_ShearStress ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_Hydraulics_SoluteTransport_FlowVelocity
+aio:IF_Hydraulics_SoluteTransport_FlowVelocity dct:isReplacedBy aiowf:IF_Hydraulics_SoluteTransport_FlowVelocity ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_Interception_ExcessRainfall_Throughfall
+aio:IF_Interception_ExcessRainfall_Throughfall dct:isReplacedBy aiowf:IF_Interception_ExcessRainfall_Throughfall ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_Interception_SoilWaterBudget_Throughfall
+aio:IF_Interception_SoilWaterBudget_Throughfall dct:isReplacedBy aiowf:IF_Interception_SoilWaterBudget_Throughfall ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_PET_ActualET_PotentialEvapotranspiration
+aio:IF_PET_ActualET_PotentialEvapotranspiration dct:isReplacedBy aiowf:IF_PET_ActualET_PotentialEvapotranspiration ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_PET_Interception_PotentialEvapotranspiration
+aio:IF_PET_Interception_PotentialEvapotranspiration dct:isReplacedBy aiowf:IF_PET_Interception_PotentialEvapotranspiration ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_PET_SoilWaterBudget_PotentialEvapotranspiration
+aio:IF_PET_SoilWaterBudget_PotentialEvapotranspiration dct:isReplacedBy aiowf:IF_PET_SoilWaterBudget_PotentialEvapotranspiration ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_PollutantLoading_SoluteTransport_PollutantLoad
+aio:IF_PollutantLoading_SoluteTransport_PollutantLoad dct:isReplacedBy aiowf:IF_PollutantLoading_SoluteTransport_PollutantLoad ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_RunoffTransform_ChannelRouting_Discharge
+aio:IF_RunoffTransform_ChannelRouting_Discharge dct:isReplacedBy aiowf:IF_RunoffTransform_ChannelRouting_Discharge ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_RunoffTransform_Hydraulics_Discharge
+aio:IF_RunoffTransform_Hydraulics_Discharge dct:isReplacedBy aiowf:IF_RunoffTransform_Hydraulics_Discharge ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_SedimentTransport_Morphology_SedimentDischarge
+aio:IF_SedimentTransport_Morphology_SedimentDischarge dct:isReplacedBy aiowf:IF_SedimentTransport_Morphology_SedimentDischarge ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_Snow_ExcessRainfall_SnowmeltAmount
+aio:IF_Snow_ExcessRainfall_SnowmeltAmount dct:isReplacedBy aiowf:IF_Snow_ExcessRainfall_SnowmeltAmount ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_Snow_SoilWaterBudget_SnowmeltAmount
+aio:IF_Snow_SoilWaterBudget_SnowmeltAmount dct:isReplacedBy aiowf:IF_Snow_SoilWaterBudget_SnowmeltAmount ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_SoilWaterBudget_ActualET_SoilMoisture
+aio:IF_SoilWaterBudget_ActualET_SoilMoisture dct:isReplacedBy aiowf:IF_SoilWaterBudget_ActualET_SoilMoisture ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_SoilWaterBudget_Baseflow_RechargeRate
+aio:IF_SoilWaterBudget_Baseflow_RechargeRate dct:isReplacedBy aiowf:IF_SoilWaterBudget_Baseflow_RechargeRate ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_SoilWaterBudget_ExcessRainfall_SoilMoisture
+aio:IF_SoilWaterBudget_ExcessRainfall_SoilMoisture dct:isReplacedBy aiowf:IF_SoilWaterBudget_ExcessRainfall_SoilMoisture ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#IF_SoilWaterBudget_GroundwaterFlow_RechargeRate
+aio:IF_SoilWaterBudget_GroundwaterFlow_RechargeRate dct:isReplacedBy aiowf:IF_SoilWaterBudget_GroundwaterFlow_RechargeRate ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#implementsMethod
+aio:implementsMethod dct:isReplacedBy aiosw:implementsMethod ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#impliesRequirement
+aio:impliesRequirement dct:isReplacedBy aioreq:impliesRequirement ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#instantiatesTemplate
+aio:instantiatesTemplate dct:isReplacedBy aiosw:instantiatesTemplate ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#InternalCoupling
+aio:InternalCoupling dct:isReplacedBy aiowf:InternalCoupling ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#isMandatorySlot
+aio:isMandatorySlot dct:isReplacedBy aiowf:isMandatorySlot ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#isSourceOfInterface
+aio:isSourceOfInterface dct:isReplacedBy aiowf:isSourceOfInterface ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#MethodRequirement
+aio:MethodRequirement dct:isReplacedBy aioreq:MethodRequirement ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_Clark_UH
+aio:Module_HEC_HMS_Clark_UH dct:isReplacedBy aiosw:Module_HEC_HMS_Clark_UH ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_DiffusiveWave2D
+aio:Module_HEC_HMS_DiffusiveWave2D dct:isReplacedBy aiosw:Module_HEC_HMS_DiffusiveWave2D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_Green_Ampt
+aio:Module_HEC_HMS_Green_Ampt dct:isReplacedBy aiosw:Module_HEC_HMS_Green_Ampt ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_KinematicWave
+aio:Module_HEC_HMS_KinematicWave dct:isReplacedBy aiosw:Module_HEC_HMS_KinematicWave ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_LinearReservoir
+aio:Module_HEC_HMS_LinearReservoir dct:isReplacedBy aiosw:Module_HEC_HMS_LinearReservoir ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_ModClark
+aio:Module_HEC_HMS_ModClark dct:isReplacedBy aiosw:Module_HEC_HMS_ModClark ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_Muskingum_Cunge
+aio:Module_HEC_HMS_Muskingum_Cunge dct:isReplacedBy aiosw:Module_HEC_HMS_Muskingum_Cunge ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_Penman_Monteih
+aio:Module_HEC_HMS_Penman_Monteih dct:isReplacedBy aiosw:Module_HEC_HMS_Penman_Monteih ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_SCS_CN
+aio:Module_HEC_HMS_SCS_CN dct:isReplacedBy aiosw:Module_HEC_HMS_SCS_CN ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_HMS_SoilMoistureAccounting
+aio:Module_HEC_HMS_SoilMoistureAccounting dct:isReplacedBy aiosw:Module_HEC_HMS_SoilMoistureAccounting ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_RAS_DiffusiveWave2D
+aio:Module_HEC_RAS_DiffusiveWave2D dct:isReplacedBy aiosw:Module_HEC_RAS_DiffusiveWave2D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_RAS_EngelundHansen
+aio:Module_HEC_RAS_EngelundHansen dct:isReplacedBy aiosw:Module_HEC_RAS_EngelundHansen ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_RAS_ExnerEquation
+aio:Module_HEC_RAS_ExnerEquation dct:isReplacedBy aiosw:Module_HEC_RAS_ExnerEquation ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_RAS_Saint_VenantEquations1D
+aio:Module_HEC_RAS_Saint_VenantEquations1D dct:isReplacedBy aiosw:Module_HEC_RAS_Saint_VenantEquations1D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_RAS_SCS_CN
+aio:Module_HEC_RAS_SCS_CN dct:isReplacedBy aiosw:Module_HEC_RAS_SCS_CN ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_HEC_RAS_ShallowWaterEquations2D
+aio:Module_HEC_RAS_ShallowWaterEquations2D dct:isReplacedBy aiosw:Module_HEC_RAS_ShallowWaterEquations2D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_IberPlus_ExnerEquation
+aio:Module_IberPlus_ExnerEquation dct:isReplacedBy aiosw:Module_IberPlus_ExnerEquation ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_IberPlus_MeyerPeterMuller
+aio:Module_IberPlus_MeyerPeterMuller dct:isReplacedBy aiosw:Module_IberPlus_MeyerPeterMuller ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_IberPlus_ShallowWaterEquations2D
+aio:Module_IberPlus_ShallowWaterEquations2D dct:isReplacedBy aiosw:Module_IberPlus_ShallowWaterEquations2D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_ISBA_LayeredSoilWaterBudget
+aio:Module_ISBA_LayeredSoilWaterBudget dct:isReplacedBy aiosw:Module_ISBA_LayeredSoilWaterBudget ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_ISBA_Penman_Monteih
+aio:Module_ISBA_Penman_Monteih dct:isReplacedBy aiosw:Module_ISBA_Penman_Monteih ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_ISBA_RootzoneStress
+aio:Module_ISBA_RootzoneStress dct:isReplacedBy aiosw:Module_ISBA_RootzoneStress ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKE11_Saint_VenantEquations1D
+aio:Module_MIKE11_Saint_VenantEquations1D dct:isReplacedBy aiosw:Module_MIKE11_Saint_VenantEquations1D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKE21_ShallowWaterEquations2D
+aio:Module_MIKE21_ShallowWaterEquations2D dct:isReplacedBy aiosw:Module_MIKE21_ShallowWaterEquations2D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_DiffusiveWave2D
+aio:Module_MIKESHE_DiffusiveWave2D dct:isReplacedBy aiosw:Module_MIKESHE_DiffusiveWave2D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_FiniteDifferenceGroundwaterFlow
+aio:Module_MIKESHE_FiniteDifferenceGroundwaterFlow dct:isReplacedBy aiosw:Module_MIKESHE_FiniteDifferenceGroundwaterFlow ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_Green_Ampt
+aio:Module_MIKESHE_Green_Ampt dct:isReplacedBy aiosw:Module_MIKESHE_Green_Ampt ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_KristenJensen
+aio:Module_MIKESHE_KristenJensen dct:isReplacedBy aiosw:Module_MIKESHE_KristenJensen ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_LinearReservoir
+aio:Module_MIKESHE_LinearReservoir dct:isReplacedBy aiosw:Module_MIKESHE_LinearReservoir ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_Penman_Monteih
+aio:Module_MIKESHE_Penman_Monteih dct:isReplacedBy aiosw:Module_MIKESHE_Penman_Monteih ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_RichardsEquation
+aio:Module_MIKESHE_RichardsEquation dct:isReplacedBy aiosw:Module_MIKESHE_RichardsEquation ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_RutterModel
+aio:Module_MIKESHE_RutterModel dct:isReplacedBy aiosw:Module_MIKESHE_RutterModel ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MIKESHE_TemperatureIndexMethod
+aio:Module_MIKESHE_TemperatureIndexMethod dct:isReplacedBy aiosw:Module_MIKESHE_TemperatureIndexMethod ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_MODFLOW_FiniteDifferenceGroundwaterFlow
+aio:Module_MODFLOW_FiniteDifferenceGroundwaterFlow dct:isReplacedBy aiosw:Module_MODFLOW_FiniteDifferenceGroundwaterFlow ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_Python_R_GR4Jmodel
+aio:Module_Python_R_GR4Jmodel dct:isReplacedBy aiosw:Module_Python_R_GR4Jmodel ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_Python_R_HargeavesMethod
+aio:Module_Python_R_HargeavesMethod dct:isReplacedBy aiosw:Module_Python_R_HargeavesMethod ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SIM2_FiniteDifferenceGroundwaterFlow
+aio:Module_SIM2_FiniteDifferenceGroundwaterFlow dct:isReplacedBy aiosw:Module_SIM2_FiniteDifferenceGroundwaterFlow ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_ConceptualRoutingReservoir
+aio:Module_SWAT_ConceptualRoutingReservoir dct:isReplacedBy aiosw:Module_SWAT_ConceptualRoutingReservoir ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_Green_Ampt
+aio:Module_SWAT_Green_Ampt dct:isReplacedBy aiosw:Module_SWAT_Green_Ampt ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_LayeredSoilWaterBudget
+aio:Module_SWAT_LayeredSoilWaterBudget dct:isReplacedBy aiosw:Module_SWAT_LayeredSoilWaterBudget ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_LinearReservoir
+aio:Module_SWAT_LinearReservoir dct:isReplacedBy aiosw:Module_SWAT_LinearReservoir ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_Muskingum_Cunge
+aio:Module_SWAT_Muskingum_Cunge dct:isReplacedBy aiosw:Module_SWAT_Muskingum_Cunge ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_Penman_Monteih
+aio:Module_SWAT_Penman_Monteih dct:isReplacedBy aiosw:Module_SWAT_Penman_Monteih ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_PollutantBuildupWashoff
+aio:Module_SWAT_PollutantBuildupWashoff dct:isReplacedBy aiosw:Module_SWAT_PollutantBuildupWashoff ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_RootzoneStress
+aio:Module_SWAT_RootzoneStress dct:isReplacedBy aiosw:Module_SWAT_RootzoneStress ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_SCS_CN
+aio:Module_SWAT_SCS_CN dct:isReplacedBy aiosw:Module_SWAT_SCS_CN ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_SCS_UH
+aio:Module_SWAT_SCS_UH dct:isReplacedBy aiosw:Module_SWAT_SCS_UH ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWAT_TemperatureIndexMethod
+aio:Module_SWAT_TemperatureIndexMethod dct:isReplacedBy aiosw:Module_SWAT_TemperatureIndexMethod ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWMM_HortonInfiltrationModel
+aio:Module_SWMM_HortonInfiltrationModel dct:isReplacedBy aiosw:Module_SWMM_HortonInfiltrationModel ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWMM_NonLinearReservoir
+aio:Module_SWMM_NonLinearReservoir dct:isReplacedBy aiosw:Module_SWMM_NonLinearReservoir ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWMM_PollutantBuildupWashoff
+aio:Module_SWMM_PollutantBuildupWashoff dct:isReplacedBy aiosw:Module_SWMM_PollutantBuildupWashoff ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_SWMM_Saint_VenantEquations1D
+aio:Module_SWMM_Saint_VenantEquations1D dct:isReplacedBy aiosw:Module_SWMM_Saint_VenantEquations1D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_TELEMAC_2D_ShallowWaterEquations2D
+aio:Module_TELEMAC_2D_ShallowWaterEquations2D dct:isReplacedBy aiosw:Module_TELEMAC_2D_ShallowWaterEquations2D ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Module_TELEMAC_FiniteVolumeSedimentTransport
+aio:Module_TELEMAC_FiniteVolumeSedimentTransport dct:isReplacedBy aiosw:Module_TELEMAC_FiniteVolumeSedimentTransport ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#moduleName
+aio:moduleName dct:isReplacedBy aiosw:moduleName ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#moduleOf
+aio:moduleOf dct:isReplacedBy aiosw:moduleOf ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#moduleResolution
+aio:moduleResolution dct:isReplacedBy aiosw:moduleResolution ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#moduleSpatialUnit
+aio:moduleSpatialUnit dct:isReplacedBy aiosw:moduleSpatialUnit ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#moduleTimeStep
+aio:moduleTimeStep dct:isReplacedBy aiosw:moduleTimeStep ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#moduleTimeStepClass
+aio:moduleTimeStepClass dct:isReplacedBy aiosw:moduleTimeStepClass ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#OfflineOneWay
+aio:OfflineOneWay dct:isReplacedBy aiowf:OfflineOneWay ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#onProperty
+aio:onProperty dct:isReplacedBy aioreq:onProperty ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#PresentationRequirement
+aio:PresentationRequirement dct:isReplacedBy aioreq:PresentationRequirement ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#rationale
+aio:rationale dct:isReplacedBy aioreq:rationale ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_GR4J_Daily
+aio:RC_GR4J_Daily dct:isReplacedBy aiosw:RC_GR4J_Daily ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_GR4J_Daily_S1
+aio:RC_GR4J_Daily_S1 dct:isReplacedBy aiosw:RC_GR4J_Daily_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_GR4J_Daily_S2
+aio:RC_GR4J_Daily_S2 dct:isReplacedBy aiosw:RC_GR4J_Daily_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_GR4J_Daily_S3
+aio:RC_GR4J_Daily_S3 dct:isReplacedBy aiosw:RC_GR4J_Daily_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_GR4J_Daily_S4
+aio:RC_GR4J_Daily_S4 dct:isReplacedBy aiosw:RC_GR4J_Daily_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_GR4J_Daily_S5
+aio:RC_GR4J_Daily_S5 dct:isReplacedBy aiosw:RC_GR4J_Daily_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HECRAS_1DSediment
+aio:RC_HECRAS_1DSediment dct:isReplacedBy aiosw:RC_HECRAS_1DSediment ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HECRAS_1DSediment_S1
+aio:RC_HECRAS_1DSediment_S1 dct:isReplacedBy aiosw:RC_HECRAS_1DSediment_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HECRAS_1DSediment_S2
+aio:RC_HECRAS_1DSediment_S2 dct:isReplacedBy aiosw:RC_HECRAS_1DSediment_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HECRAS_1DSediment_S3
+aio:RC_HECRAS_1DSediment_S3 dct:isReplacedBy aiosw:RC_HECRAS_1DSediment_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_EventFlood
+aio:RC_HMS_EventFlood dct:isReplacedBy aiosw:RC_HMS_EventFlood ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_EventFlood_S1
+aio:RC_HMS_EventFlood_S1 dct:isReplacedBy aiosw:RC_HMS_EventFlood_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_EventFlood_S2
+aio:RC_HMS_EventFlood_S2 dct:isReplacedBy aiosw:RC_HMS_EventFlood_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_EventFlood_S3
+aio:RC_HMS_EventFlood_S3 dct:isReplacedBy aiosw:RC_HMS_EventFlood_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_EventFlood_S4
+aio:RC_HMS_EventFlood_S4 dct:isReplacedBy aiosw:RC_HMS_EventFlood_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_GriddedEventFlood
+aio:RC_HMS_GriddedEventFlood dct:isReplacedBy aiosw:RC_HMS_GriddedEventFlood ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_GriddedEventFlood_S1
+aio:RC_HMS_GriddedEventFlood_S1 dct:isReplacedBy aiosw:RC_HMS_GriddedEventFlood_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_GriddedEventFlood_S2
+aio:RC_HMS_GriddedEventFlood_S2 dct:isReplacedBy aiosw:RC_HMS_GriddedEventFlood_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_GriddedEventFlood_S3
+aio:RC_HMS_GriddedEventFlood_S3 dct:isReplacedBy aiosw:RC_HMS_GriddedEventFlood_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_GriddedEventFlood_S4
+aio:RC_HMS_GriddedEventFlood_S4 dct:isReplacedBy aiosw:RC_HMS_GriddedEventFlood_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_KinematicWave
+aio:RC_HMS_KinematicWave dct:isReplacedBy aiosw:RC_HMS_KinematicWave ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_KinematicWave_S1
+aio:RC_HMS_KinematicWave_S1 dct:isReplacedBy aiosw:RC_HMS_KinematicWave_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_KinematicWave_S2
+aio:RC_HMS_KinematicWave_S2 dct:isReplacedBy aiosw:RC_HMS_KinematicWave_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_KinematicWave_S3
+aio:RC_HMS_KinematicWave_S3 dct:isReplacedBy aiosw:RC_HMS_KinematicWave_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS1D_Inundation
+aio:RC_HMS_RAS1D_Inundation dct:isReplacedBy aiosw:RC_HMS_RAS1D_Inundation ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS1D_Inundation_S1
+aio:RC_HMS_RAS1D_Inundation_S1 dct:isReplacedBy aiosw:RC_HMS_RAS1D_Inundation_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS1D_Inundation_S2
+aio:RC_HMS_RAS1D_Inundation_S2 dct:isReplacedBy aiosw:RC_HMS_RAS1D_Inundation_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS1D_Inundation_S3
+aio:RC_HMS_RAS1D_Inundation_S3 dct:isReplacedBy aiosw:RC_HMS_RAS1D_Inundation_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS1D_Inundation_S4
+aio:RC_HMS_RAS1D_Inundation_S4 dct:isReplacedBy aiosw:RC_HMS_RAS1D_Inundation_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS2D_Inundation
+aio:RC_HMS_RAS2D_Inundation dct:isReplacedBy aiosw:RC_HMS_RAS2D_Inundation ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS2D_Inundation_S1
+aio:RC_HMS_RAS2D_Inundation_S1 dct:isReplacedBy aiosw:RC_HMS_RAS2D_Inundation_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS2D_Inundation_S2
+aio:RC_HMS_RAS2D_Inundation_S2 dct:isReplacedBy aiosw:RC_HMS_RAS2D_Inundation_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS2D_Inundation_S3
+aio:RC_HMS_RAS2D_Inundation_S3 dct:isReplacedBy aiosw:RC_HMS_RAS2D_Inundation_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS2D_Inundation_S4
+aio:RC_HMS_RAS2D_Inundation_S4 dct:isReplacedBy aiosw:RC_HMS_RAS2D_Inundation_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_RAS2D_Inundation_S5
+aio:RC_HMS_RAS2D_Inundation_S5 dct:isReplacedBy aiosw:RC_HMS_RAS2D_Inundation_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_SMA_Continuous
+aio:RC_HMS_SMA_Continuous dct:isReplacedBy aiosw:RC_HMS_SMA_Continuous ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_SMA_Continuous_S1
+aio:RC_HMS_SMA_Continuous_S1 dct:isReplacedBy aiosw:RC_HMS_SMA_Continuous_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_SMA_Continuous_S2
+aio:RC_HMS_SMA_Continuous_S2 dct:isReplacedBy aiosw:RC_HMS_SMA_Continuous_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_SMA_Continuous_S3
+aio:RC_HMS_SMA_Continuous_S3 dct:isReplacedBy aiosw:RC_HMS_SMA_Continuous_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_SMA_Continuous_S4
+aio:RC_HMS_SMA_Continuous_S4 dct:isReplacedBy aiosw:RC_HMS_SMA_Continuous_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_SMA_Continuous_S5
+aio:RC_HMS_SMA_Continuous_S5 dct:isReplacedBy aiosw:RC_HMS_SMA_Continuous_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_HMS_SMA_Continuous_S6
+aio:RC_HMS_SMA_Continuous_S6 dct:isReplacedBy aiosw:RC_HMS_SMA_Continuous_S6 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_Iber_2DSediment
+aio:RC_Iber_2DSediment dct:isReplacedBy aiosw:RC_Iber_2DSediment ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_Iber_2DSediment_S1
+aio:RC_Iber_2DSediment_S1 dct:isReplacedBy aiosw:RC_Iber_2DSediment_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_Iber_2DSediment_S2
+aio:RC_Iber_2DSediment_S2 dct:isReplacedBy aiosw:RC_Iber_2DSediment_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_Iber_2DSediment_S3
+aio:RC_Iber_2DSediment_S3 dct:isReplacedBy aiosw:RC_Iber_2DSediment_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_LinearReservoirSZ
+aio:RC_MIKESHE_LinearReservoirSZ dct:isReplacedBy aiosw:RC_MIKESHE_LinearReservoirSZ ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_LinearReservoirSZ_S1
+aio:RC_MIKESHE_LinearReservoirSZ_S1 dct:isReplacedBy aiosw:RC_MIKESHE_LinearReservoirSZ_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_LinearReservoirSZ_S2
+aio:RC_MIKESHE_LinearReservoirSZ_S2 dct:isReplacedBy aiosw:RC_MIKESHE_LinearReservoirSZ_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_LinearReservoirSZ_S3
+aio:RC_MIKESHE_LinearReservoirSZ_S3 dct:isReplacedBy aiosw:RC_MIKESHE_LinearReservoirSZ_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_LinearReservoirSZ_S4
+aio:RC_MIKESHE_LinearReservoirSZ_S4 dct:isReplacedBy aiosw:RC_MIKESHE_LinearReservoirSZ_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_LinearReservoirSZ_S5
+aio:RC_MIKESHE_LinearReservoirSZ_S5 dct:isReplacedBy aiosw:RC_MIKESHE_LinearReservoirSZ_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_LinearReservoirSZ_S6
+aio:RC_MIKESHE_LinearReservoirSZ_S6 dct:isReplacedBy aiosw:RC_MIKESHE_LinearReservoirSZ_S6 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11
+aio:RC_MIKESHE_MIKE11 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S1
+aio:RC_MIKESHE_MIKE11_S1 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S2
+aio:RC_MIKESHE_MIKE11_S2 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S3
+aio:RC_MIKESHE_MIKE11_S3 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S4
+aio:RC_MIKESHE_MIKE11_S4 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S5
+aio:RC_MIKESHE_MIKE11_S5 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S6
+aio:RC_MIKESHE_MIKE11_S6 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S6 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S7
+aio:RC_MIKESHE_MIKE11_S7 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S7 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S8
+aio:RC_MIKESHE_MIKE11_S8 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S8 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKE11_S9
+aio:RC_MIKESHE_MIKE11_S9 dct:isReplacedBy aiosw:RC_MIKESHE_MIKE11_S9 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKEFLOOD
+aio:RC_MIKESHE_MIKEFLOOD dct:isReplacedBy aiosw:RC_MIKESHE_MIKEFLOOD ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKEFLOOD_S1
+aio:RC_MIKESHE_MIKEFLOOD_S1 dct:isReplacedBy aiosw:RC_MIKESHE_MIKEFLOOD_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKEFLOOD_S2
+aio:RC_MIKESHE_MIKEFLOOD_S2 dct:isReplacedBy aiosw:RC_MIKESHE_MIKEFLOOD_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKEFLOOD_S3
+aio:RC_MIKESHE_MIKEFLOOD_S3 dct:isReplacedBy aiosw:RC_MIKESHE_MIKEFLOOD_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_MIKESHE_MIKEFLOOD_S4
+aio:RC_MIKESHE_MIKEFLOOD_S4 dct:isReplacedBy aiosw:RC_MIKESHE_MIKEFLOOD_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_RAS2D_RainOnGrid
+aio:RC_RAS2D_RainOnGrid dct:isReplacedBy aiosw:RC_RAS2D_RainOnGrid ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_RAS2D_RainOnGrid_S1
+aio:RC_RAS2D_RainOnGrid_S1 dct:isReplacedBy aiosw:RC_RAS2D_RainOnGrid_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_RAS2D_RainOnGrid_S2
+aio:RC_RAS2D_RainOnGrid_S2 dct:isReplacedBy aiosw:RC_RAS2D_RainOnGrid_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_RAS2D_RainOnGrid_S3
+aio:RC_RAS2D_RainOnGrid_S3 dct:isReplacedBy aiosw:RC_RAS2D_RainOnGrid_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SIM2
+aio:RC_SIM2 dct:isReplacedBy aiosw:RC_SIM2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SIM2_S1
+aio:RC_SIM2_S1 dct:isReplacedBy aiosw:RC_SIM2_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SIM2_S2
+aio:RC_SIM2_S2 dct:isReplacedBy aiosw:RC_SIM2_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SIM2_S3
+aio:RC_SIM2_S3 dct:isReplacedBy aiosw:RC_SIM2_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SIM2_S4
+aio:RC_SIM2_S4 dct:isReplacedBy aiosw:RC_SIM2_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB
+aio:RC_SWAT_ContinuousWB dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB_S1
+aio:RC_SWAT_ContinuousWB_S1 dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB_S2
+aio:RC_SWAT_ContinuousWB_S2 dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB_S3
+aio:RC_SWAT_ContinuousWB_S3 dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB_S4
+aio:RC_SWAT_ContinuousWB_S4 dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB_S5
+aio:RC_SWAT_ContinuousWB_S5 dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB_S6
+aio:RC_SWAT_ContinuousWB_S6 dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB_S6 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB_S7
+aio:RC_SWAT_ContinuousWB_S7 dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB_S7 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_ContinuousWB_S8
+aio:RC_SWAT_ContinuousWB_S8 dct:isReplacedBy aiosw:RC_SWAT_ContinuousWB_S8 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_GreenAmpt_SubDaily
+aio:RC_SWAT_GreenAmpt_SubDaily dct:isReplacedBy aiosw:RC_SWAT_GreenAmpt_SubDaily ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_GreenAmpt_SubDaily_S1
+aio:RC_SWAT_GreenAmpt_SubDaily_S1 dct:isReplacedBy aiosw:RC_SWAT_GreenAmpt_SubDaily_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_GreenAmpt_SubDaily_S2
+aio:RC_SWAT_GreenAmpt_SubDaily_S2 dct:isReplacedBy aiosw:RC_SWAT_GreenAmpt_SubDaily_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_GreenAmpt_SubDaily_S3
+aio:RC_SWAT_GreenAmpt_SubDaily_S3 dct:isReplacedBy aiosw:RC_SWAT_GreenAmpt_SubDaily_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_MODFLOW
+aio:RC_SWAT_MODFLOW dct:isReplacedBy aiosw:RC_SWAT_MODFLOW ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_MODFLOW_S1
+aio:RC_SWAT_MODFLOW_S1 dct:isReplacedBy aiosw:RC_SWAT_MODFLOW_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_MODFLOW_S2
+aio:RC_SWAT_MODFLOW_S2 dct:isReplacedBy aiosw:RC_SWAT_MODFLOW_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_MODFLOW_S3
+aio:RC_SWAT_MODFLOW_S3 dct:isReplacedBy aiosw:RC_SWAT_MODFLOW_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_MODFLOW_S4
+aio:RC_SWAT_MODFLOW_S4 dct:isReplacedBy aiosw:RC_SWAT_MODFLOW_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_MODFLOW_S5
+aio:RC_SWAT_MODFLOW_S5 dct:isReplacedBy aiosw:RC_SWAT_MODFLOW_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_TELEMAC2D_Inundation
+aio:RC_SWAT_TELEMAC2D_Inundation dct:isReplacedBy aiosw:RC_SWAT_TELEMAC2D_Inundation ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_TELEMAC2D_Inundation_S1
+aio:RC_SWAT_TELEMAC2D_Inundation_S1 dct:isReplacedBy aiosw:RC_SWAT_TELEMAC2D_Inundation_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_TELEMAC2D_Inundation_S2
+aio:RC_SWAT_TELEMAC2D_Inundation_S2 dct:isReplacedBy aiosw:RC_SWAT_TELEMAC2D_Inundation_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_TELEMAC2D_Inundation_S3
+aio:RC_SWAT_TELEMAC2D_Inundation_S3 dct:isReplacedBy aiosw:RC_SWAT_TELEMAC2D_Inundation_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_TELEMAC2D_Inundation_S4
+aio:RC_SWAT_TELEMAC2D_Inundation_S4 dct:isReplacedBy aiosw:RC_SWAT_TELEMAC2D_Inundation_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_TELEMAC2D_Inundation_S5
+aio:RC_SWAT_TELEMAC2D_Inundation_S5 dct:isReplacedBy aiosw:RC_SWAT_TELEMAC2D_Inundation_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_WaterQuality
+aio:RC_SWAT_WaterQuality dct:isReplacedBy aiosw:RC_SWAT_WaterQuality ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_WaterQuality_S1
+aio:RC_SWAT_WaterQuality_S1 dct:isReplacedBy aiosw:RC_SWAT_WaterQuality_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_WaterQuality_S2
+aio:RC_SWAT_WaterQuality_S2 dct:isReplacedBy aiosw:RC_SWAT_WaterQuality_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_WaterQuality_S3
+aio:RC_SWAT_WaterQuality_S3 dct:isReplacedBy aiosw:RC_SWAT_WaterQuality_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWAT_WaterQuality_S4
+aio:RC_SWAT_WaterQuality_S4 dct:isReplacedBy aiosw:RC_SWAT_WaterQuality_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_Iber_DualDrainage
+aio:RC_SWMM_Iber_DualDrainage dct:isReplacedBy aiosw:RC_SWMM_Iber_DualDrainage ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_Iber_DualDrainage_S1
+aio:RC_SWMM_Iber_DualDrainage_S1 dct:isReplacedBy aiosw:RC_SWMM_Iber_DualDrainage_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_Iber_DualDrainage_S2
+aio:RC_SWMM_Iber_DualDrainage_S2 dct:isReplacedBy aiosw:RC_SWMM_Iber_DualDrainage_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_Iber_DualDrainage_S3
+aio:RC_SWMM_Iber_DualDrainage_S3 dct:isReplacedBy aiosw:RC_SWMM_Iber_DualDrainage_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_Iber_DualDrainage_S4
+aio:RC_SWMM_Iber_DualDrainage_S4 dct:isReplacedBy aiosw:RC_SWMM_Iber_DualDrainage_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_TELEMAC2D_DualDrainage
+aio:RC_SWMM_TELEMAC2D_DualDrainage dct:isReplacedBy aiosw:RC_SWMM_TELEMAC2D_DualDrainage ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_TELEMAC2D_DualDrainage_S1
+aio:RC_SWMM_TELEMAC2D_DualDrainage_S1 dct:isReplacedBy aiosw:RC_SWMM_TELEMAC2D_DualDrainage_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_TELEMAC2D_DualDrainage_S2
+aio:RC_SWMM_TELEMAC2D_DualDrainage_S2 dct:isReplacedBy aiosw:RC_SWMM_TELEMAC2D_DualDrainage_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_TELEMAC2D_DualDrainage_S3
+aio:RC_SWMM_TELEMAC2D_DualDrainage_S3 dct:isReplacedBy aiosw:RC_SWMM_TELEMAC2D_DualDrainage_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_TELEMAC2D_DualDrainage_S4
+aio:RC_SWMM_TELEMAC2D_DualDrainage_S4 dct:isReplacedBy aiosw:RC_SWMM_TELEMAC2D_DualDrainage_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanDrainage
+aio:RC_SWMM_UrbanDrainage dct:isReplacedBy aiosw:RC_SWMM_UrbanDrainage ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanDrainage_S1
+aio:RC_SWMM_UrbanDrainage_S1 dct:isReplacedBy aiosw:RC_SWMM_UrbanDrainage_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanDrainage_S2
+aio:RC_SWMM_UrbanDrainage_S2 dct:isReplacedBy aiosw:RC_SWMM_UrbanDrainage_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanDrainage_S3
+aio:RC_SWMM_UrbanDrainage_S3 dct:isReplacedBy aiosw:RC_SWMM_UrbanDrainage_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanQuality
+aio:RC_SWMM_UrbanQuality dct:isReplacedBy aiosw:RC_SWMM_UrbanQuality ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanQuality_S1
+aio:RC_SWMM_UrbanQuality_S1 dct:isReplacedBy aiosw:RC_SWMM_UrbanQuality_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanQuality_S2
+aio:RC_SWMM_UrbanQuality_S2 dct:isReplacedBy aiosw:RC_SWMM_UrbanQuality_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanQuality_S3
+aio:RC_SWMM_UrbanQuality_S3 dct:isReplacedBy aiosw:RC_SWMM_UrbanQuality_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_SWMM_UrbanQuality_S4
+aio:RC_SWMM_UrbanQuality_S4 dct:isReplacedBy aiosw:RC_SWMM_UrbanQuality_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_TELEMAC2D_GAIA
+aio:RC_TELEMAC2D_GAIA dct:isReplacedBy aiosw:RC_TELEMAC2D_GAIA ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_TELEMAC2D_GAIA_S1
+aio:RC_TELEMAC2D_GAIA_S1 dct:isReplacedBy aiosw:RC_TELEMAC2D_GAIA_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_TELEMAC2D_GAIA_S2
+aio:RC_TELEMAC2D_GAIA_S2 dct:isReplacedBy aiosw:RC_TELEMAC2D_GAIA_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RC_TELEMAC2D_GAIA_S3
+aio:RC_TELEMAC2D_GAIA_S3 dct:isReplacedBy aiosw:RC_TELEMAC2D_GAIA_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#ReferenceChain
+aio:ReferenceChain dct:isReplacedBy aiosw:ReferenceChain ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_BaselineVsScenario
+aio:Req_BaselineVsScenario dct:isReplacedBy aioreq:Req_BaselineVsScenario ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_CalibrationDataAvailable
+aio:Req_CalibrationDataAvailable dct:isReplacedBy aioreq:Req_CalibrationDataAvailable ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_ContinuousMode
+aio:Req_ContinuousMode dct:isReplacedBy aioreq:Req_ContinuousMode ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_DistributedPreferred
+aio:Req_DistributedPreferred dct:isReplacedBy aioreq:Req_DistributedPreferred ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_DriverIsInput
+aio:Req_DriverIsInput dct:isReplacedBy aioreq:Req_DriverIsInput ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_FastRuns
+aio:Req_FastRuns dct:isReplacedBy aioreq:Req_FastRuns ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_FewCalibrationParameters
+aio:Req_FewCalibrationParameters dct:isReplacedBy aioreq:Req_FewCalibrationParameters ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_FineTimeStep
+aio:Req_FineTimeStep dct:isReplacedBy aioreq:Req_FineTimeStep ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_ForecastData
+aio:Req_ForecastData dct:isReplacedBy aioreq:Req_ForecastData ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_ObservedData
+aio:Req_ObservedData dct:isReplacedBy aioreq:Req_ObservedData ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_OngoingData
+aio:Req_OngoingData dct:isReplacedBy aioreq:Req_OngoingData ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_PhysicallyBased
+aio:Req_PhysicallyBased dct:isReplacedBy aioreq:Req_PhysicallyBased ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_PreferContinuous
+aio:Req_PreferContinuous dct:isReplacedBy aioreq:Req_PreferContinuous ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_PreferProjectionData
+aio:Req_PreferProjectionData dct:isReplacedBy aioreq:Req_PreferProjectionData ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_ProducesExpectedOutput
+aio:Req_ProducesExpectedOutput dct:isReplacedBy aioreq:Req_ProducesExpectedOutput ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_ProducesStateVariable
+aio:Req_ProducesStateVariable dct:isReplacedBy aioreq:Req_ProducesStateVariable ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_ProjectionData
+aio:Req_ProjectionData dct:isReplacedBy aioreq:Req_ProjectionData ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_SideBySide
+aio:Req_SideBySide dct:isReplacedBy aioreq:Req_SideBySide ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_SpatialOutput
+aio:Req_SpatialOutput dct:isReplacedBy aioreq:Req_SpatialOutput ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_TimeSeriesData
+aio:Req_TimeSeriesData dct:isReplacedBy aioreq:Req_TimeSeriesData ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Req_TransientMode
+aio:Req_TransientMode dct:isReplacedBy aioreq:Req_TransientMode ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Requirement
+aio:Requirement dct:isReplacedBy aioreq:Requirement ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RequirementStrength
+aio:RequirementStrength dct:isReplacedBy aioreq:RequirementStrength ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#requirementWeight
+aio:requirementWeight dct:isReplacedBy aioreq:requirementWeight ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#requiresMatchingSpatialRepresentation
+aio:requiresMatchingSpatialRepresentation dct:isReplacedBy aiowf:requiresMatchingSpatialRepresentation ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_ActualET
+aio:Role_ActualET dct:isReplacedBy aiowf:Role_ActualET ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_Baseflow
+aio:Role_Baseflow dct:isReplacedBy aiowf:Role_Baseflow ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_ChannelRouting
+aio:Role_ChannelRouting dct:isReplacedBy aiowf:Role_ChannelRouting ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_ExcessRainfall
+aio:Role_ExcessRainfall dct:isReplacedBy aiowf:Role_ExcessRainfall ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_GroundwaterFlow
+aio:Role_GroundwaterFlow dct:isReplacedBy aiowf:Role_GroundwaterFlow ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_HeatTransport
+aio:Role_HeatTransport dct:isReplacedBy aiowf:Role_HeatTransport ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_Hydraulics
+aio:Role_Hydraulics dct:isReplacedBy aiowf:Role_Hydraulics ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_Interception
+aio:Role_Interception dct:isReplacedBy aiowf:Role_Interception ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_Morphology
+aio:Role_Morphology dct:isReplacedBy aiowf:Role_Morphology ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_PET
+aio:Role_PET dct:isReplacedBy aiowf:Role_PET ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_PollutantLoading
+aio:Role_PollutantLoading dct:isReplacedBy aiowf:Role_PollutantLoading ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_RunoffTransform
+aio:Role_RunoffTransform dct:isReplacedBy aiowf:Role_RunoffTransform ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_SedimentTransport
+aio:Role_SedimentTransport dct:isReplacedBy aiowf:Role_SedimentTransport ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_Snow
+aio:Role_Snow dct:isReplacedBy aiowf:Role_Snow ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_SoilWaterBudget
+aio:Role_SoilWaterBudget dct:isReplacedBy aiowf:Role_SoilWaterBudget ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Role_SoluteTransport
+aio:Role_SoluteTransport dct:isReplacedBy aiowf:Role_SoluteTransport ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#RoleInterface
+aio:RoleInterface dct:isReplacedBy aiowf:RoleInterface ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#ruleId
+aio:ruleId dct:isReplacedBy aioreq:ruleId ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#servesChallenge
+aio:servesChallenge dct:isReplacedBy aiowf:servesChallenge ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#slotOrder
+aio:slotOrder dct:isReplacedBy aiowf:slotOrder ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#slotRole
+aio:slotRole dct:isReplacedBy aiowf:slotRole ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Soft
+aio:Soft dct:isReplacedBy aioreq:Soft ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#SoftwareModule
+aio:SoftwareModule dct:isReplacedBy aiosw:SoftwareModule ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#stepOrder
+aio:stepOrder dct:isReplacedBy aiosw:stepOrder ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#stepRole
+aio:stepRole dct:isReplacedBy aiosw:stepRole ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#stepSoftware
+aio:stepSoftware dct:isReplacedBy aiosw:stepSoftware ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#substitutesInput
+aio:substitutesInput dct:isReplacedBy aiowf:substitutesInput ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#toRole
+aio:toRole dct:isReplacedBy aiowf:toRole ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance
+aio:Tpl_ContinuousWaterBalance dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S1
+aio:Tpl_ContinuousWaterBalance_S1 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S10
+aio:Tpl_ContinuousWaterBalance_S10 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S10 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S2
+aio:Tpl_ContinuousWaterBalance_S2 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S3
+aio:Tpl_ContinuousWaterBalance_S3 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S4
+aio:Tpl_ContinuousWaterBalance_S4 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S5
+aio:Tpl_ContinuousWaterBalance_S5 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S6
+aio:Tpl_ContinuousWaterBalance_S6 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S6 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S7
+aio:Tpl_ContinuousWaterBalance_S7 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S7 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S8
+aio:Tpl_ContinuousWaterBalance_S8 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S8 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_ContinuousWaterBalance_S9
+aio:Tpl_ContinuousWaterBalance_S9 dct:isReplacedBy aiowf:Tpl_ContinuousWaterBalance_S9 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_EventFloodHydrograph
+aio:Tpl_EventFloodHydrograph dct:isReplacedBy aiowf:Tpl_EventFloodHydrograph ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_EventFloodHydrograph_S1
+aio:Tpl_EventFloodHydrograph_S1 dct:isReplacedBy aiowf:Tpl_EventFloodHydrograph_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_EventFloodHydrograph_S2
+aio:Tpl_EventFloodHydrograph_S2 dct:isReplacedBy aiowf:Tpl_EventFloodHydrograph_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_EventFloodHydrograph_S3
+aio:Tpl_EventFloodHydrograph_S3 dct:isReplacedBy aiowf:Tpl_EventFloodHydrograph_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_EventFloodHydrograph_S4
+aio:Tpl_EventFloodHydrograph_S4 dct:isReplacedBy aiowf:Tpl_EventFloodHydrograph_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_FloodInundation
+aio:Tpl_FloodInundation dct:isReplacedBy aiowf:Tpl_FloodInundation ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_FloodInundation_S1
+aio:Tpl_FloodInundation_S1 dct:isReplacedBy aiowf:Tpl_FloodInundation_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_FloodInundation_S2
+aio:Tpl_FloodInundation_S2 dct:isReplacedBy aiowf:Tpl_FloodInundation_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_FloodInundation_S3
+aio:Tpl_FloodInundation_S3 dct:isReplacedBy aiowf:Tpl_FloodInundation_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_FloodInundation_S4
+aio:Tpl_FloodInundation_S4 dct:isReplacedBy aiowf:Tpl_FloodInundation_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_FloodInundation_S5
+aio:Tpl_FloodInundation_S5 dct:isReplacedBy aiowf:Tpl_FloodInundation_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_Morphodynamics
+aio:Tpl_Morphodynamics dct:isReplacedBy aiowf:Tpl_Morphodynamics ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_Morphodynamics_S1
+aio:Tpl_Morphodynamics_S1 dct:isReplacedBy aiowf:Tpl_Morphodynamics_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_Morphodynamics_S2
+aio:Tpl_Morphodynamics_S2 dct:isReplacedBy aiowf:Tpl_Morphodynamics_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_Morphodynamics_S3
+aio:Tpl_Morphodynamics_S3 dct:isReplacedBy aiowf:Tpl_Morphodynamics_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_Morphodynamics_S4
+aio:Tpl_Morphodynamics_S4 dct:isReplacedBy aiowf:Tpl_Morphodynamics_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_RechargeGroundwater
+aio:Tpl_RechargeGroundwater dct:isReplacedBy aiowf:Tpl_RechargeGroundwater ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_RechargeGroundwater_S1
+aio:Tpl_RechargeGroundwater_S1 dct:isReplacedBy aiowf:Tpl_RechargeGroundwater_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_RechargeGroundwater_S2
+aio:Tpl_RechargeGroundwater_S2 dct:isReplacedBy aiowf:Tpl_RechargeGroundwater_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_RechargeGroundwater_S3
+aio:Tpl_RechargeGroundwater_S3 dct:isReplacedBy aiowf:Tpl_RechargeGroundwater_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_RechargeGroundwater_S4
+aio:Tpl_RechargeGroundwater_S4 dct:isReplacedBy aiowf:Tpl_RechargeGroundwater_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_RechargeGroundwater_S5
+aio:Tpl_RechargeGroundwater_S5 dct:isReplacedBy aiowf:Tpl_RechargeGroundwater_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_UrbanWaterQuality
+aio:Tpl_UrbanWaterQuality dct:isReplacedBy aiowf:Tpl_UrbanWaterQuality ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_UrbanWaterQuality_S1
+aio:Tpl_UrbanWaterQuality_S1 dct:isReplacedBy aiowf:Tpl_UrbanWaterQuality_S1 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_UrbanWaterQuality_S2
+aio:Tpl_UrbanWaterQuality_S2 dct:isReplacedBy aiowf:Tpl_UrbanWaterQuality_S2 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_UrbanWaterQuality_S3
+aio:Tpl_UrbanWaterQuality_S3 dct:isReplacedBy aiowf:Tpl_UrbanWaterQuality_S3 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_UrbanWaterQuality_S4
+aio:Tpl_UrbanWaterQuality_S4 dct:isReplacedBy aiowf:Tpl_UrbanWaterQuality_S4 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#Tpl_UrbanWaterQuality_S5
+aio:Tpl_UrbanWaterQuality_S5 dct:isReplacedBy aiowf:Tpl_UrbanWaterQuality_S5 ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#TwoWayCoupling
+aio:TwoWayCoupling dct:isReplacedBy aiowf:TwoWayCoupling ;
+    owl:deprecated "true"^^xsd:boolean .
+
+###  https://w3id.org/aio#usesMethod
+aio:usesMethod dct:isReplacedBy aiosw:usesMethod ;
+    owl:deprecated "true"^^xsd:boolean .

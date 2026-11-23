@@ -1,0 +1,486 @@
+@prefix aio: <https://w3id.org/aio#> .
+@prefix aioreq: <https://w3id.org/aio/requirements#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#  AIO extension: study requirements 0.9.0. Imports the core.
+
+###  https://w3id.org/aio/requirements
+<https://w3id.org/aio/requirements> a owl:Ontology ;
+    dct:description "Rules that a study implies on the methods and data that can answer it (e.g. forecasting requires continuous simulation), with their strength and weight. Used by the recommendation to exclude or rank methods."@en ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dct:modified "2026-11-20"^^xsd:date ;
+    dct:title "AIO extension - study requirements"@en ;
+    owl:imports <https://w3id.org/aio> ;
+    owl:versionIRI <https://w3id.org/aio/requirements/0.9.0> ;
+    owl:versionInfo "0.9.0" ;
+    vann:preferredNamespacePrefix "aioreq" ;
+    vann:preferredNamespaceUri "https://w3id.org/aio/requirements#" .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  https://w3id.org/aio/requirements#appliesToVariableType
+aioreq:appliesToVariableType a owl:AnnotationProperty ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "applies to variable type"@en ;
+    skos:definition "Restricts a data requirement to input variables of these classes."@en .
+
+###  https://w3id.org/aio/requirements#onProperty
+aioreq:onProperty a owl:AnnotationProperty ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "on property"@en ;
+    skos:definition "For value rules: the property of the method or dataset that is constrained."@en .
+
+###  https://w3id.org/aio/requirements#rationale
+aioreq:rationale a owl:AnnotationProperty ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "rationale"@en ;
+    skos:definition "Sentence shown to the user to explain the rule."@en .
+
+#################################################################
+#    Object properties
+#################################################################
+
+###  https://w3id.org/aio/requirements#allowedValue
+aioreq:allowedValue a owl:ObjectProperty ;
+    rdfs:domain aioreq:Requirement ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "allowed value"@en ;
+    skos:definition "For value rules: the property in onProperty must take one of these values."@en .
+
+###  https://w3id.org/aio/requirements#hasStrength
+aioreq:hasStrength a owl:FunctionalProperty ,
+        owl:ObjectProperty ;
+    rdfs:domain aioreq:Requirement ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "has strength"@en ;
+    rdfs:range aioreq:RequirementStrength .
+
+###  https://w3id.org/aio/requirements#impliesRequirement
+aioreq:impliesRequirement a owl:ObjectProperty ;
+    rdfs:domain aio:ProblemDefinition ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "implies requirement"@en ;
+    rdfs:range aioreq:Requirement ;
+    skos:definition "Choosing this problem-definition value adds the requirement to the request."@en .
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  https://w3id.org/aio/requirements#allowedLiteral
+aioreq:allowedLiteral a owl:DatatypeProperty ;
+    rdfs:domain aioreq:Requirement ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "allowed literal"@en .
+
+###  https://w3id.org/aio/requirements#requirementWeight
+aioreq:requirementWeight a owl:DatatypeProperty ,
+        owl:FunctionalProperty ;
+    rdfs:domain aioreq:Requirement ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "requirement weight"@en ;
+    rdfs:range xsd:decimal .
+
+###  https://w3id.org/aio/requirements#ruleId
+aioreq:ruleId a owl:DatatypeProperty ,
+        owl:FunctionalProperty ;
+    rdfs:domain aioreq:Requirement ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "rule id"@en ;
+    rdfs:range xsd:string ;
+    skos:definition "For pattern rules: identifier of the check implemented by the recommendation engine (a SPARQL template)."@en .
+
+#################################################################
+#    Classes
+#################################################################
+
+###  https://w3id.org/aio/requirements#DataRequirement
+aioreq:DataRequirement a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "data requirement"@en ;
+    rdfs:subClassOf aioreq:Requirement ;
+    skos:definition "Rule on the datasets proposed for time-varying inputs (forcing); static parameters such as a DEM are not affected unless stated."@en .
+
+###  https://w3id.org/aio/requirements#MethodRequirement
+aioreq:MethodRequirement a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "method requirement"@en ;
+    rdfs:subClassOf aioreq:Requirement .
+
+###  https://w3id.org/aio/requirements#PresentationRequirement
+aioreq:PresentationRequirement a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "presentation requirement"@en ;
+    rdfs:subClassOf aioreq:Requirement ;
+    skos:definition "Rule on how results are shown (side by side, baseline vs scenario); never filters candidates."@en .
+
+###  https://w3id.org/aio/requirements#Requirement
+aioreq:Requirement a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "requirement"@en ;
+    skos:definition "A rule that a problem-definition value places on candidate methods, data or the presentation of results. Hard rules filter, soft rules change the score."@en .
+
+###  https://w3id.org/aio/requirements#RequirementStrength
+aioreq:RequirementStrength a owl:Class ;
+    rdfs:isDefinedBy <https://w3id.org/aio/requirements> ;
+    rdfs:label "requirement strength"@en .
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  https://w3id.org/aio#Assessement
+aio:Assessement aioreq:impliesRequirement aioreq:Req_ObservedData .
+
+###  https://w3id.org/aio#BedEvolutionMap
+aio:BedEvolutionMap aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput ,
+        aioreq:Req_SpatialOutput .
+
+###  https://w3id.org/aio#Classification
+aio:Classification aioreq:impliesRequirement aioreq:Req_DistributedPreferred .
+
+###  https://w3id.org/aio#ClimateChange
+aio:ClimateChange aioreq:impliesRequirement aioreq:Req_DriverIsInput ,
+        aioreq:Req_PreferProjectionData .
+
+###  https://w3id.org/aio#ClimateChangeFactor
+aio:ClimateChangeFactor aioreq:impliesRequirement aioreq:Req_ProjectionData .
+
+###  https://w3id.org/aio#Comparison
+aio:Comparison aioreq:impliesRequirement aioreq:Req_SideBySide .
+
+###  https://w3id.org/aio#CurrentScenario
+aio:CurrentScenario aioreq:impliesRequirement aioreq:Req_OngoingData .
+
+###  https://w3id.org/aio#Detection
+aio:Detection aioreq:impliesRequirement aioreq:Req_FineTimeStep ,
+        aioreq:Req_TransientMode .
+
+###  https://w3id.org/aio#Estimation
+aio:Estimation aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#EvapotranspirationSeries
+aio:EvapotranspirationSeries aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#FloodExtentMap
+aio:FloodExtentMap aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput ,
+        aioreq:Req_SpatialOutput .
+
+###  https://w3id.org/aio#FloodHazardMap
+aio:FloodHazardMap aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput ,
+        aioreq:Req_SpatialOutput .
+
+###  https://w3id.org/aio#Forecasting
+aio:Forecasting aioreq:impliesRequirement aioreq:Req_CalibrationDataAvailable ,
+        aioreq:Req_ContinuousMode ,
+        aioreq:Req_ForecastData .
+
+###  https://w3id.org/aio#FutureScenario
+aio:FutureScenario aioreq:impliesRequirement aioreq:Req_DriverIsInput ,
+        aioreq:Req_PhysicallyBased .
+
+###  https://w3id.org/aio#GroundwaterLevelSeries
+aio:GroundwaterLevelSeries aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#HistoricalScenario
+aio:HistoricalScenario aioreq:impliesRequirement aioreq:Req_TimeSeriesData .
+
+###  https://w3id.org/aio#Hydrograph
+aio:Hydrograph aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#ImpactAnalysis
+aio:ImpactAnalysis aioreq:impliesRequirement aioreq:Req_BaselineVsScenario ,
+        aioreq:Req_DriverIsInput .
+
+###  https://w3id.org/aio#LandUseChange
+aio:LandUseChange aioreq:impliesRequirement aioreq:Req_DriverIsInput .
+
+###  https://w3id.org/aio#LowFlowIndicator
+aio:LowFlowIndicator aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#Optimization
+aio:Optimization aioreq:impliesRequirement aioreq:Req_FastRuns ,
+        aioreq:Req_FewCalibrationParameters .
+
+###  https://w3id.org/aio#PeakFlow
+aio:PeakFlow aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#PiezometricMap
+aio:PiezometricMap aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput ,
+        aioreq:Req_SpatialOutput .
+
+###  https://w3id.org/aio#PollutantConcentrationSeries
+aio:PollutantConcentrationSeries aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#PollutantLoadEstimate
+aio:PollutantLoadEstimate aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#Prediction
+aio:Prediction aioreq:impliesRequirement aioreq:Req_PreferContinuous .
+
+###  https://w3id.org/aio#RechargeMap
+aio:RechargeMap aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput ,
+        aioreq:Req_SpatialOutput .
+
+###  https://w3id.org/aio#SedimentLoad
+aio:SedimentLoad aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#SnowWaterEquivalentSeries
+aio:SnowWaterEquivalentSeries aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#SoilMoistureMap
+aio:SoilMoistureMap aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput ,
+        aioreq:Req_SpatialOutput .
+
+###  https://w3id.org/aio#ThresholdDetection
+aio:ThresholdDetection aioreq:impliesRequirement aioreq:Req_FineTimeStep ,
+        aioreq:Req_ProducesStateVariable .
+
+###  https://w3id.org/aio#WaterBalance
+aio:WaterBalance aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#WaterLevelSeries
+aio:WaterLevelSeries aioreq:impliesRequirement aioreq:Req_ProducesExpectedOutput .
+
+###  https://w3id.org/aio#WhatIfScenario
+aio:WhatIfScenario aioreq:impliesRequirement aioreq:Req_DriverIsInput .
+
+###  https://w3id.org/aio/requirements#Hard
+aioreq:Hard a aioreq:RequirementStrength ,
+        owl:NamedIndividual ;
+    owl:differentFrom aioreq:Soft ;
+    rdfs:label "hard"@en ;
+    skos:definition "Candidates that fail the rule are excluded."@en .
+
+###  https://w3id.org/aio/requirements#Req_BaselineVsScenario
+aioreq:Req_BaselineVsScenario a aioreq:PresentationRequirement ,
+        owl:NamedIndividual ;
+    aioreq:rationale "Impact analysis compares a baseline run with a run where the driver is changed."@en ;
+    aioreq:ruleId "baseline-vs-scenario" ;
+    rdfs:label "baseline vs scenario"@en .
+
+###  https://w3id.org/aio/requirements#Req_CalibrationDataAvailable
+aioreq:Req_CalibrationDataAvailable a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:rationale "Operational use needs observed data to calibrate and validate the method."@en ;
+    aioreq:requirementWeight "0.10"^^xsd:decimal ;
+    aioreq:ruleId "calibration-data-available" ;
+    rdfs:label "calibration data available"@en .
+
+###  https://w3id.org/aio/requirements#Req_ContinuousMode
+aioreq:Req_ContinuousMode a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:Continuous ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:onProperty aio:hasTemporalMode ;
+    aioreq:rationale "Forecasting needs continuous simulation to carry the catchment state (soil moisture, storage) from one forecast to the next."@en ;
+    rdfs:label "continuous simulation required"@en .
+
+###  https://w3id.org/aio/requirements#Req_DistributedPreferred
+aioreq:Req_DistributedPreferred a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:FullyDistributed ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:onProperty aio:hasSpatialRepresentation ;
+    aioreq:rationale "Classification and zoning need spatially distributed results."@en ;
+    aioreq:requirementWeight "0.10"^^xsd:decimal ;
+    rdfs:label "distributed representation preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_DriverIsInput
+aioreq:Req_DriverIsInput a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:rationale "To change a driver in a scenario, a variable characterizing it must be an input or physical parameter of the method, not only a calibrated parameter."@en ;
+    aioreq:ruleId "driver-variable-is-input" ;
+    rdfs:label "driver is a method input"@en .
+
+###  https://w3id.org/aio/requirements#Req_FastRuns
+aioreq:Req_FastRuns a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:Lumped ,
+        aio:SemiDistributed ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:onProperty aio:hasSpatialRepresentation ;
+    aioreq:rationale "Optimization repeats many runs, so lumped or semi-distributed methods are more practical."@en ;
+    aioreq:requirementWeight "0.10"^^xsd:decimal ;
+    rdfs:label "fast runs preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_FewCalibrationParameters
+aioreq:Req_FewCalibrationParameters a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:rationale "Fewer calibration parameters make repeated optimization runs better constrained."@en ;
+    aioreq:requirementWeight "0.05"^^xsd:decimal ;
+    aioreq:ruleId "few-calibration-parameters" ;
+    rdfs:label "few calibration parameters preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_FineTimeStep
+aioreq:Req_FineTimeStep a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:Hourly ,
+        aio:SubHourly ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:onProperty aio:hasTypicalTimeStep ;
+    aioreq:rationale "Threshold exceedance and flash events are missed with daily or coarser time steps."@en ;
+    aioreq:requirementWeight "0.10"^^xsd:decimal ;
+    rdfs:label "fine time step preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_ForecastData
+aioreq:Req_ForecastData a aioreq:DataRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:ForecastProduct ,
+        aio:RealTimeFeed ;
+    aioreq:appliesToVariableType aio:FluxVariable ,
+        aio:StateVariable ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:onProperty aio:hasTemporalNature ;
+    aioreq:rationale "Running forecasts needs forecast or real-time input data."@en ;
+    aioreq:requirementWeight "0.15"^^xsd:decimal ;
+    rdfs:label "forecast or real-time forcing preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_ObservedData
+aioreq:Req_ObservedData a aioreq:DataRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:Observed ,
+        aio:Reanalysis ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:onProperty aio:hasProvenance ;
+    aioreq:rationale "An assessment of the present state is more credible with observed or reanalysis data."@en ;
+    aioreq:requirementWeight "0.10"^^xsd:decimal ;
+    rdfs:label "observed or reanalysis data preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_OngoingData
+aioreq:Req_OngoingData a aioreq:DataRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedLiteral "true"^^xsd:boolean ;
+    aioreq:appliesToVariableType aio:FluxVariable ,
+        aio:StateVariable ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:onProperty aio:isOngoing ;
+    aioreq:rationale "Studying current conditions needs datasets that are still updated."@en ;
+    rdfs:label "ongoing data required"@en .
+
+###  https://w3id.org/aio/requirements#Req_PhysicallyBased
+aioreq:Req_PhysicallyBased a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:rationale "Under changed conditions, calibrated conceptual parameters may no longer hold; physically meaningful parameters transfer better."@en ;
+    aioreq:requirementWeight "0.10"^^xsd:decimal ;
+    aioreq:ruleId "physical-parameters-dominant" ;
+    rdfs:label "physically based method preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_PreferContinuous
+aioreq:Req_PreferContinuous a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:Continuous ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:onProperty aio:hasTemporalMode ;
+    aioreq:rationale "Predictions are more reliable when the model simulates antecedent conditions continuously."@en ;
+    aioreq:requirementWeight "0.10"^^xsd:decimal ;
+    rdfs:label "continuous simulation preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_PreferProjectionData
+aioreq:Req_PreferProjectionData a aioreq:DataRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:ClimateProjection ;
+    aioreq:appliesToVariableType aio:FluxVariable ,
+        aio:StateVariable ;
+    aioreq:hasStrength aioreq:Soft ;
+    aioreq:onProperty aio:hasTemporalNature ;
+    aioreq:rationale "Climate change impacts are usually studied with climate projections; trend analysis on historical records is also possible."@en ;
+    aioreq:requirementWeight "0.15"^^xsd:decimal ;
+    rdfs:label "climate projections preferred"@en .
+
+###  https://w3id.org/aio/requirements#Req_ProducesExpectedOutput
+aioreq:Req_ProducesExpectedOutput a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:rationale "The method (or the chain of methods) must compute the variable behind the output you asked for."@en ;
+    aioreq:ruleId "produces-expected-output" ;
+    rdfs:label "produces the expected output"@en .
+
+###  https://w3id.org/aio/requirements#Req_ProducesStateVariable
+aioreq:Req_ProducesStateVariable a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:rationale "Threshold detection compares a state (water level, groundwater level, soil moisture) with a threshold."@en ;
+    aioreq:ruleId "produces-state-variable" ;
+    rdfs:label "produces a state variable"@en .
+
+###  https://w3id.org/aio/requirements#Req_ProjectionData
+aioreq:Req_ProjectionData a aioreq:DataRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:ClimateProjection ;
+    aioreq:appliesToVariableType aio:FluxVariable ,
+        aio:StateVariable ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:onProperty aio:hasTemporalNature ;
+    aioreq:rationale "Future climate impacts are studied by forcing the model with climate projections."@en ;
+    rdfs:label "climate projections required"@en .
+
+###  https://w3id.org/aio/requirements#Req_SideBySide
+aioreq:Req_SideBySide a aioreq:PresentationRequirement ,
+        owl:NamedIndividual ;
+    aioreq:rationale "Comparison shows at least two methods with their differences."@en ;
+    aioreq:ruleId "side-by-side" ;
+    rdfs:label "show alternatives side by side"@en .
+
+###  https://w3id.org/aio/requirements#Req_SpatialOutput
+aioreq:Req_SpatialOutput a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:rationale "A map requires a fully distributed or 2D/3D method."@en ;
+    aioreq:ruleId "spatially-distributed-output" ;
+    rdfs:label "spatially distributed output"@en .
+
+###  https://w3id.org/aio/requirements#Req_TimeSeriesData
+aioreq:Req_TimeSeriesData a aioreq:DataRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:TimeSeriesRecord ;
+    aioreq:appliesToVariableType aio:FluxVariable ,
+        aio:StateVariable ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:onProperty aio:hasTemporalNature ;
+    aioreq:rationale "Reproducing past conditions needs recorded time series for the forcing variables."@en ;
+    rdfs:label "historical time series required"@en .
+
+###  https://w3id.org/aio/requirements#Req_TransientMode
+aioreq:Req_TransientMode a aioreq:MethodRequirement ,
+        owl:NamedIndividual ;
+    aioreq:allowedValue aio:Continuous ,
+        aio:EventBased ;
+    aioreq:hasStrength aioreq:Hard ;
+    aioreq:onProperty aio:hasTemporalMode ;
+    aioreq:rationale "Detecting events needs a method that simulates change in time; steady-state methods cannot."@en ;
+    rdfs:label "transient simulation required"@en .
+
+###  https://w3id.org/aio/requirements#Soft
+aioreq:Soft a aioreq:RequirementStrength ,
+        owl:NamedIndividual ;
+    rdfs:label "soft"@en ;
+    skos:definition "Candidates that pass gain the weight; candidates that fail lose half of it."@en .
+
+#################################################################
+#    Anonymous expressions
+#################################################################
+
+_:node35 a owl:AllDisjointClasses ;
+    owl:members _:node36 .
+
+_:node36 rdf:first aioreq:DataRequirement ;
+    rdf:rest _:node37 .
+
+_:node37 rdf:first aioreq:MethodRequirement ;
+    rdf:rest _:node38 .
+
+_:node38 rdf:first aioreq:PresentationRequirement ;
+    rdf:rest rdf:nil .

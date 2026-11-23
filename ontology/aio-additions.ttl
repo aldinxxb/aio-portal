@@ -1,0 +1,55 @@
+@prefix aio: <https://w3id.org/aio#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#  Proposed additions to the AIO core - DRAFT FOR EXPERT VALIDATION.
+#  Once validated, merge these triples into aio-core.ttl and delete this file.
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  https://w3id.org/aio#validForModelResults
+aio:validForModelResults a owl:DatatypeProperty ,
+        owl:FunctionalProperty ;
+    rdfs:domain aio:Derivation ;
+    rdfs:label "valid for model results"@en ;
+    rdfs:range xsd:boolean ;
+    skos:definition "True when the derivation is an exact post-processing of what a model computes (integration, sum, difference), so a set-up computing the inputs delivers the derived variable. Absent or false: the derivation is a way of obtaining data and needs extra information (a rating curve, a site survey)."@en .
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  https://w3id.org/aio#Clark-UH
+aio:Clark-UH aio:hasTemporalMode aio:Continuous .
+
+###  https://w3id.org/aio#Derivation_RunoffVolume_fromDischarge
+aio:Derivation_RunoffVolume_fromDischarge a aio:Derivation ,
+        owl:NamedIndividual ;
+    aio:derivationMethod "time integration of the discharge at the outlet (volume under the hydrograph)"@en ;
+    aio:derivesVariable aio:RunoffVolume ;
+    aio:hasDataRelation aio:Discharge ,
+        aio:RunoffVolume ;
+    aio:requiresDerivationInput aio:Discharge ;
+    aio:validForModelResults "true"^^xsd:boolean ;
+    rdfs:label "RunoffVolume from Discharge"@en ;
+    skos:note "Draft for expert validation. Includes baseflow unless it is separated first."@en .
+
+###  https://w3id.org/aio#Derivation_RunoffVolume_fromEffectiveRainfall
+aio:Derivation_RunoffVolume_fromEffectiveRainfall a aio:Derivation ,
+        owl:NamedIndividual ;
+    aio:derivationMethod "time integration of effective rainfall over the catchment area"@en ;
+    aio:derivesVariable aio:RunoffVolume ;
+    aio:hasDataRelation aio:EffectiveRainfall ,
+        aio:RunoffVolume ;
+    aio:requiresDerivationInput aio:EffectiveRainfall ;
+    aio:validForModelResults "true"^^xsd:boolean ;
+    rdfs:label "RunoffVolume from EffectiveRainfall"@en ;
+    skos:note "Draft for expert validation."@en .
+
+###  https://w3id.org/aio#SCS-CN
+aio:SCS-CN aio:canBeImplementedIn aio:HEC-RAS .

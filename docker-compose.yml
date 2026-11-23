@@ -24,7 +24,17 @@ services:
           echo "repository aio already exists, nothing to do"; exit 0
         fi
         curl -sSf -X POST -F config=@/init/aio-config.ttl http://graphdb:7200/rest/repositories
-        curl -sSf -X POST -H "Content-Type: application/x-turtle" --data-binary @/ontology/aio-core.ttl http://graphdb:7200/repositories/aio/statements
+        # AIO 0.9.0: the core and each extension in its own graph (named by the module IRI), so a
+        # module can be reloaded alone; the portal's queries read all graphs together
+        load() { curl -sSf -X POST -H "Content-Type: application/x-turtle" --data-binary @/ontology/$$1 "http://graphdb:7200/repositories/aio/rdf-graphs/service?graph=$$2"; }
+        load aio-core.ttl                 https%3A%2F%2Fw3id.org%2Faio
+        load aio-additions.ttl            https%3A%2F%2Fw3id.org%2Faio
+        load aio-deprecated.ttl           https%3A%2F%2Fw3id.org%2Faio
+        load aio-requirements.ttl         https%3A%2F%2Fw3id.org%2Faio%2Frequirements
+        load aio-workflow.ttl             https%3A%2F%2Fw3id.org%2Faio%2Fworkflow
+        load aio-software.ttl             https%3A%2F%2Fw3id.org%2Faio%2Fsoftware
+        load aio-software-generated.ttl   https%3A%2F%2Fw3id.org%2Faio%2Fsoftware
+        load aio-alignments.ttl           https%3A%2F%2Fw3id.org%2Faio%2Falignments
         echo "ontology loaded"
 
   backend:
