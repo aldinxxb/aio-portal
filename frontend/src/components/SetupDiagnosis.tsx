@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getTerm, type Expr, type Term } from "../ontologyApi";
 import type { Action, Component, DataRow, Diagnosis, Improvement, Target } from "../setupApi";
 import { derivationText, KIND, NATURE, name, names, sourceOf, STATUS } from "../setupLabels";
+import { downloadText, openPrintable, portalStyles, reportFilename, reportHtml, reportMarkdown, type ReportContext } from "../report";
 import SetupDiagram from "./SetupDiagram";
 
 // The Diagnosis page, read from top to bottom like a report:
@@ -355,6 +356,21 @@ export default function SetupDiagnosis({ result, loading, accepted, declined, on
     return lines.filter((line, i) => line !== "" || lines[i - 1] !== "").join("\n");
   }
 
+  // ---- the report: a printable page (save as PDF) or a Markdown file ----
+  const [reportNote, setReportNote] = useState<string | null>(null);
+  function reportContext(): ReportContext {
+    const svg = document.querySelector(".diag-graph svg");
+    return { accepted, declined, link: window.location.href, diagram: svg ? svg.outerHTML : null, styles: portalStyles() };
+  }
+  function printReport() {
+    const opened = openPrintable(reportHtml(result, reportContext()));
+    setReportNote(opened ? null : "Your browser blocked the new window: allow pop-ups for this site, or download the Markdown file.");
+  }
+  function downloadReport() {
+    downloadText(reportFilename(result, "md"), reportMarkdown(result, reportContext()));
+    setReportNote(null);
+  }
+
   function copySummary() {
     navigator.clipboard?.writeText(summaryText()).then(() => {
       setCopied(true);
@@ -373,6 +389,16 @@ export default function SetupDiagnosis({ result, loading, accepted, declined, on
 
   return (
     <div className={loading ? "is-refreshing" : ""}>
+      <div className="report-bar">
+        <span className="muted">Keep or share this diagnosis: the study, the workflow, its data and sources, and what is left to do.</span>
+        <span className="report-actions">
+          <button className="btn btn-primary" onClick={printReport} disabled={loading}
+                  title="A report to print or save as PDF, with the set-up diagram">Report (PDF)</button>
+          <button className="btn" onClick={downloadReport} disabled={loading}
+                  title="The same report as a Markdown file, for a wiki, a repository or an e-mail">Markdown</button>
+        </span>
+        {reportNote && <span className="error report-note">{reportNote}</span>}
+      </div>
       <div className="diag-top">
         <section className="diag-graph">
           {/* the picture, at its own size */}

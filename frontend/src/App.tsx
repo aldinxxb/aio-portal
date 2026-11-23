@@ -248,19 +248,20 @@ export default function App() {
     }
     const same = found.entry === entryRef.current
       && addressOf(found.entry, found.state) === addressOf(found.entry, current.current);
-    if (!same) {
-      open(found.entry, found.state);
-      return;
-    }
-    // the same study: only the diagnosis opened or closed
-    if (!found.diagnosis && adjustingRef.current) closeDiagnosis();
-    else if (found.diagnosis && !adjustingRef.current) {
+    // another study (a link pasted in an open portal): open it, and its diagnosis if the link has one
+    if (!same) open(found.entry, found.state);
+    const shown = adjustingRef.current ? addressOf(found.entry, null, diagnosisState.current) : null;
+    const wanted = found.diagnosis ? addressOf(found.entry, null, found.diagnosis) : null;
+    if (!wanted) {
+      if (adjustingRef.current) closeDiagnosis();
+    } else if (wanted !== shown) {
       const request = fullSetupRequest((found.diagnosis as { request?: unknown }).request);
       if (request) {
         adjustingRef.current = true;
         diagnosisState.current = found.diagnosis;
         setAdjusting(request);
         setAdjustRun((n) => n + 1);
+        writeAddress(addressOf(found.entry, current.current, found.diagnosis));
       }
     }
   }
