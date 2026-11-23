@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from app import ontology, problem  # NEW: problem
+from app import knowledge, ontology, problem
 
 
 class URR(BaseModel):
@@ -18,6 +18,7 @@ class URR(BaseModel):
     entity: str | None = None                                      # e.g. River
     drivers: list[str] = Field(default_factory=list)               # e.g. Rainfall
     outputs: list[str] = Field(default_factory=list)               # e.g. Hydrograph
+    data_time_step: str | None = None                              # time step of the user's data
 
 
 def validate(urr: URR) -> dict:
@@ -39,10 +40,23 @@ def validate(urr: URR) -> dict:
         if variable not in known_variables:
             problems.append(f"Unknown variable: {variable}")
 
-    problems += problem.check(urr)  # NEW: goal, intent, scenario, entity, drivers, outputs
+    # names the ontology has replaced (Catchement -> Catchment) are accepted and translated
+    if urr.entity:
+        urr.entity = ontology.replacements().get(urr.entity, urr.entity)
+
+    problems += problem.check(urr)  # goal, intent, scenario, entity, drivers, outputs
+
+    known_steps = knowledge.load().hours
+    for step in ([urr.data_time_step] if urr.data_time_step else []) + list(urr.time_steps):
+        if step not in known_steps:
+            problems.append(f"Unknown time step: {step}")
 
     if urr.processes:
         processes = {"values": urr.processes, "source": "stated"}
+    elif urr.outputs and (from_outputs := processes_for_outputs(urr.challenge, urr.outputs, challenge_processes)):
+        # no process chosen, but outputs are: the processes the workflows delivering them model,
+        # so that methods are not penalised for processes the outputs do not need
+        processes = {"values": from_outputs, "source": "outputs"}
     else:
         processes = {"values": challenge_processes, "source": "derived"}
 
@@ -55,9 +69,26 @@ def validate(urr: URR) -> dict:
             "available_variables": urr.available_variables,
             "scales": urr.scales,
             "time_steps": urr.time_steps,
-            **problem.echo(urr),  # NEW
+            "data_time_step": urr.data_time_step,
+            **problem.echo(urr),
         },
     }
+
+
+def processes_for_outputs(challenge: str, outputs: list[str], challenge_processes: list[str]) -> list[str]:
+    """Processes of the challenge modelled by the standard workflows that deliver the outputs."""
+    k = knowledge.load()
+    found: set[str] = set()
+    for chain in k.chains.values():
+        template = k.templates.get(chain["template"], {})
+        if challenge in template.get("serves", set()) and set(outputs) & template.get("delivers", set()):
+            found |= chain["covers"]
+    if not found:                                       # no workflow: the methods computing the variables
+        wanted = set().union(*(k.output_variables.get(o, set()) for o in outputs))
+        for facts in k.facts.values():
+            if wanted & set(facts.get("producesOutput", [])):
+                found |= set(facts.get("modelsProcess", []))
+    return [p for p in challenge_processes if p in found]
 
 
 class Draft(BaseModel):
@@ -77,6 +108,22 @@ class Draft(BaseModel):
     entity: str | None = None
     drivers: list[str] = Field(default_factory=list)
     outputs: list[str] = Field(default_factory=list)
+    data_time_step: str | None = None
+
+
+class ChainRequest(URR):
+    """A URR plus the software licence the user accepts (None, "open" or "free") and,
+    optionally, the software they work in (only its workflows are then proposed)."""
+
+    licence: str | None = None
+    software: str | None = None
+
+
+class CombineRequest(BaseModel):
+    """Around one method: the data the user has and the software they work in."""
+
+    available_variables: list[str] = Field(default_factory=list)
+    software: str | None = None
 
 
 class CheckRequest(BaseModel):

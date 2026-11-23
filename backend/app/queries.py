@@ -1,6 +1,6 @@
 import re
 
-from app.config import ONTOLOGY_NS, QUERIES_DIR
+from app.config import MODULES, ONTOLOGY_NS, QUERIES_DIR
 
 # A name may contain only letters, digits, "_" and "-". Nothing else gets through.
 SAFE_NAME = re.compile(r"^[A-Za-z0-9_\-]+$")
@@ -25,5 +25,27 @@ def build(name: str, **concepts: str) -> str:
         placeholder = "{{" + key + "}}"
         if placeholder not in text:
             raise ValueError(f"Template {name!r} has no placeholder {placeholder}")
-        text = text.replace(placeholder, f"<{ONTOLOGY_NS}{check_name(value)}>")
+        text = text.replace(placeholder, f"<{iri(check_name(value))}>")
     return text
+
+# ---- the module of each term ------------------------------------------------------------------
+# Terms of the extensions live in their own namespace (aiowf:fillsRole). Which one is read
+# once from GraphDB: every IRI declared in an extension namespace. Anything else is core.
+_extension_iris: dict[str, str] | None = None
+
+
+def iri(name: str) -> str:
+    """The full IRI of a term given by its local name, in the module that defines it."""
+    global _extension_iris
+    if _extension_iris is None:
+        from app.sparql_client import run_select           # here: queries.py stays importable without GraphDB
+        filters = " || ".join(f'STRSTARTS(STR(?s), "{m["namespace"]}")' for k, m in MODULES.items() if k != "core")
+        rows = run_select(f"SELECT DISTINCT ?s WHERE {{ ?s ?p ?o FILTER(isIRI(?s) && ({filters})) }}")
+        _extension_iris = {r["s"].split("#")[-1]: r["s"] for r in rows}
+    return _extension_iris.get(name, ONTOLOGY_NS + name)
+
+
+def clear_names() -> None:
+    """Forget the term -> IRI table (after reloading the ontology)."""
+    global _extension_iris
+    _extension_iris = None

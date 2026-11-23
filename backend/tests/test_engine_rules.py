@@ -1,4 +1,4 @@
-"""Run with:  pytest      (from the backend folder). Needs GraphDB running with v0.7.0 loaded.
+"""Run with:  pytest      (from the backend folder). Needs GraphDB running with v0.8.0 loaded.
 
 The first group needs no database: it tests how verdicts change a ranked list.
 """

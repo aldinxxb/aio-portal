@@ -1,4 +1,4 @@
-"""Run with:  pytest      (from the backend folder). Needs GraphDB running with v0.7.0 loaded."""
+"""Run with:  pytest      (from the backend folder). Needs GraphDB running with v0.8.0 loaded."""
 import pytest
 from fastapi.testclient import TestClient
 
@@ -23,7 +23,7 @@ def test_study_objectives():
 def test_intents_scenarios_entities_counts():
     assert len(ontology.list_vocabulary("intent")) == 5
     assert len(ontology.list_vocabulary("scenario")) == 4
-    assert len(ontology.list_vocabulary("entity")) == 11
+    assert len(ontology.list_vocabulary("entity")) == 19
 
 
 def test_unknown_vocabulary_refused():

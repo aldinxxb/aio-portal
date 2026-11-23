@@ -1,5 +1,6 @@
 PREFIX aio:  <https://w3id.org/aio#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX aioreq: <https://w3id.org/aio/requirements#>
 
 # The requirements implied by ONE problem-definition value
 # (a study objective, an intent, a scenario, a driver, an output or a challenge).
@@ -7,18 +8,18 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT DISTINCT ?req ?type ?label ?rationale ?strength ?weight ?ruleId
                 ?onProperty ?allowedValue ?allowedLiteral ?appliesTo
 WHERE {
-  {{value}} aio:impliesRequirement ?req .
+  {{value}} aioreq:impliesRequirement ?req .
   ?req a ?type .
-  VALUES ?type { aio:MethodRequirement aio:DataRequirement aio:PresentationRequirement }
+  VALUES ?type { aioreq:MethodRequirement aioreq:DataRequirement aioreq:PresentationRequirement }
   OPTIONAL { ?req rdfs:label ?label .
              FILTER(lang(?label) = "en" || lang(?label) = "") }
-  OPTIONAL { ?req aio:rationale ?rationale .
+  OPTIONAL { ?req aioreq:rationale ?rationale .
              FILTER(lang(?rationale) = "en" || lang(?rationale) = "") }
-  OPTIONAL { ?req aio:hasStrength ?strength }
-  OPTIONAL { ?req aio:requirementWeight ?weight }
-  OPTIONAL { ?req aio:ruleId ?ruleId }
-  OPTIONAL { ?req aio:onProperty ?onProperty }
-  OPTIONAL { ?req aio:allowedValue ?allowedValue }
-  OPTIONAL { ?req aio:allowedLiteral ?allowedLiteral }
-  OPTIONAL { ?req aio:appliesToVariableType ?appliesTo }
+  OPTIONAL { ?req aioreq:hasStrength ?strength }
+  OPTIONAL { ?req aioreq:requirementWeight ?weight }
+  OPTIONAL { ?req aioreq:ruleId ?ruleId }
+  OPTIONAL { ?req aioreq:onProperty ?onProperty }
+  OPTIONAL { ?req aioreq:allowedValue ?allowedValue }
+  OPTIONAL { ?req aioreq:allowedLiteral ?allowedLiteral }
+  OPTIONAL { ?req aioreq:appliesToVariableType ?appliesTo }
 }

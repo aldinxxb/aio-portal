@@ -1,0 +1,8 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+# The nature of every variable: a flux, a state, or a parameter (static description).
+SELECT ?variable ?kind
+WHERE {
+  VALUES ?kind { aio:FluxVariable aio:StateVariable aio:ParameterVariable }
+  ?variable a ?kind .
+}

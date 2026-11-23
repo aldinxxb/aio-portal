@@ -1,0 +1,47 @@
+PREFIX aio:  <https://w3id.org/aio#>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dct:  <http://purl.org/dc/terms/>
+PREFIX aioreq: <https://w3id.org/aio/requirements#>
+PREFIX aiosw: <https://w3id.org/aio/software#>
+PREFIX aiowf: <https://w3id.org/aio/workflow#>
+
+# Milestone 0 of the set-up specification: every ontology term the diagnosis relies on.
+# Returns the terms that are used somewhere in the ontology (as subject, property or value).
+SELECT DISTINCT ?term
+WHERE {
+  VALUES ?term {
+    aio:ModelingMethod aio:modelsProcess aio:requiresMandatoryInput aio:acceptsOptionalInput
+    aio:requiresInitialCondition aio:hasPhysicalParameter aio:hasCalibrationParameter
+    aio:isCalibratedAgainst aio:producesOutput aio:canBeImplementedIn aio:hasTemporalMode
+    aio:supportsTimeStep aio:hasTypicalTimeStep aio:hasSpatialRepresentation
+    aio:hasDimensionality aio:hasApplicationScale
+
+    aiowf:ComponentRole aiowf:fillsRole aiowf:RoleInterface aiowf:fromRole aiowf:toRole
+    aiowf:exchangesVariable aiowf:substitutesInput aiowf:hasTypicalCoupling
+    aiowf:requiresMatchingSpatialRepresentation aiowf:canFeed aio:isAlternativeTo aiowf:CouplingType
+    aiowf:InternalCoupling aiowf:OfflineOneWay aiowf:TwoWayCoupling aiowf:ChainTemplate aiowf:hasSlot
+    aiowf:slotRole aiowf:slotOrder aiowf:isMandatorySlot aiowf:servesChallenge aiowf:deliversOutput
+    aiosw:ReferenceChain aiosw:instantiatesTemplate aiosw:hasStep aiosw:stepOrder aiosw:stepRole
+    aiosw:usesMethod aiosw:chainUsesSoftware aiosw:coversProcess aiosw:hasCouplingType
+
+    aio:WaterChallenge aio:hasPrimaryProcess aio:hasSecondaryProcess aio:StudyObjective
+    aio:DecisionIntent aio:Scenario aio:ExpectedOutput aio:isExpressedBy aio:hasOutputForm
+    aio:MapForm aio:hasTypicalOutput aio:hasPrimaryOutput aio:hasExpectedOutput
+    aio:hasDefaultDriver aio:Factor aio:isCharacterizedBy
+
+    aioreq:impliesRequirement aioreq:hasStrength aioreq:Hard aioreq:Soft aioreq:requirementWeight aioreq:ruleId
+    aioreq:onProperty aioreq:allowedValue aioreq:allowedLiteral aioreq:MethodRequirement
+    aioreq:DataRequirement aioreq:PresentationRequirement
+
+    dcat:Dataset aio:containsVariable aio:DataVariable aio:representsVariable
+    aio:hasTimeStepClass aio:spatialResolutionDegrees dcat:spatialResolutionInMeters
+    aio:hasProvenance aio:hasTemporalNature aio:isOngoing dct:spatial aio:isWithin
+    aio:Derivation aio:derivesVariable aio:requiresDerivationInput
+
+    aio:TimeStepClass aio:SubHourly aio:Hourly aio:Daily aio:MonthlyOrLonger
+    aio:minStepHours aio:maxStepHours
+
+    aio:WaterEntity aio:isKindOf aio:SoftwarePlatform aio:isOpenSource aio:isFreeOfCharge
+  }
+  FILTER EXISTS { { ?term ?p1 ?o1 } UNION { ?s2 ?term ?o2 } UNION { ?s3 ?p3 ?term } }
+}

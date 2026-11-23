@@ -1,0 +1,5 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+# Every (subject, value) pair of one property, e.g. challenge -> primary process.
+SELECT ?s ?o
+WHERE { ?s {{prop}} ?o }

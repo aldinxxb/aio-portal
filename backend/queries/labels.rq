@@ -1,0 +1,10 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# The label of everything in the ontology (id -> readable name), with its language:
+# the Python side keeps the English one when it exists, any other otherwise.
+SELECT ?s ?label ?lang
+WHERE {
+  ?s rdfs:label ?label .
+  FILTER(isIRI(?s))
+  BIND(lang(?label) AS ?lang)
+}

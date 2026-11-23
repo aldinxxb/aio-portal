@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+# Every ASSERTED triple of the repository (GraphDB keeps inferred ones apart: the
+# "explicit" graph holds only what the ontology files say). The documentation of the
+# ontology is built from these, so it shows the model as written, not its closure.
+# ?st / ?ot: i = IRI, b = blank node, l = literal.
+SELECT ?s ?p ?o ?st ?ot ?lang ?dt
+FROM <http://www.ontotext.com/explicit>
+WHERE {
+  ?s ?p ?o .
+  BIND(IF(isBlank(?s), "b", "i") AS ?st)
+  BIND(IF(isBlank(?o), "b", IF(isIRI(?o), "i", "l")) AS ?ot)
+  BIND(LANG(?o) AS ?lang)
+  BIND(IF(isLiteral(?o), DATATYPE(?o), "") AS ?dt)
+}

@@ -1,12 +1,14 @@
 PREFIX aio: <https://w3id.org/aio#>
+PREFIX aiowf: <https://w3id.org/aio/workflow#>
 
-# The facts about every method that the requirement rules need.
+# The facts about every method that the requirement rules and the chain layer need.
 # One row per (method, property, value).
 SELECT DISTINCT ?method ?prop ?value
 WHERE {
   VALUES ?prop {
     aio:hasTemporalMode
     aio:hasTypicalTimeStep
+    aio:supportsTimeStep
     aio:hasSpatialRepresentation
     aio:hasDimensionality
     aio:hasCalibrationParameter
@@ -14,8 +16,16 @@ WHERE {
     aio:isCalibratedAgainst
     aio:producesOutput
     aio:requiresMandatoryInput
+    aio:acceptsOptionalInput
+    aio:requiresInitialCondition
     aio:requiresInput
+    aio:modelsProcess
+    aiowf:fillsRole
+    aiowf:canFeed
+    aio:isAlternativeTo
+    aio:canBeImplementedIn
+    aiowf:hasInseparableRoles
   }
-  ?method aio:modelsProcess ?process .
+  ?method a aio:ModelingMethod .
   ?method ?prop ?value .
 }

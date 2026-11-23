@@ -11,7 +11,7 @@ def recommend(body: dict):
 
 def test_nothing_available():
     result = recommend({"challenge": "Flood"}).json()
-    assert result["counts"] == {"needs_complementary_data": 34}
+    assert result["counts"] == {"needs_complementary_data": 33, "inputs_not_recorded": 1}
     assert "directly_applicable" not in result["counts"]
 
 
@@ -30,7 +30,7 @@ def test_several_variables():
         "available_variables": ["RainfallIntensity", "HydraulicHead", "Discharge", "Precipitation"],
     }
     counts = recommend(body).json()["counts"]
-    assert counts == {"directly_applicable": 6, "needs_complementary_data": 28}
+    assert counts == {"directly_applicable": 6, "needs_complementary_data": 27, "inputs_not_recorded": 1}
 
 
 def test_process_filter():

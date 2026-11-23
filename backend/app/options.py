@@ -1,19 +1,19 @@
-from app import ontology
+from app import ontology, preview, problem
 from app.urr import Draft
 
-# One entry per wizard step: which query lists its options, what must be answered
-# before it, and why an option with no methods is greyed out.
+# One entry per wizard step: what must be answered before it, and where its options
+# come from. Two kinds of step:
+#   "query"   -> a counting query lists the options; "empty_reason" says why an option
+#                with no methods is greyed out;
+#   "builder" -> a function of preview.py lists them (problem-definition steps: the
+#                count is the number of methods left after the requirement rules).
 STEPS = {
     "challenge": {
         "query": "options_challenges",
         "needs": [],
         "empty_reason": "No method in the ontology models the processes of this challenge",
     },
-    "process": {
-        "query": "options_processes",
-        "needs": ["challenge"],
-        "empty_reason": "No method in the ontology models this process",
-    },
+    "process": {"builder": preview.process_options, "needs": ["challenge"]},
         "variable": {
         "query": "options_variables",
         "needs": ["challenge"],
@@ -24,11 +24,8 @@ STEPS = {
         "needs": ["challenge"],
         "empty_reason": "No method of this challenge works at this scale",
     },
-    "timestep": {
-        "query": "options_timesteps",
-        "needs": ["challenge"],
-        "empty_reason": "No method of this challenge uses this time step",
-    },
+    "timestep": {"builder": preview.timestep_options, "needs": ["challenge"]},
+    "datastep": {"builder": preview.datastep_options, "needs": ["challenge"]},
         "software": {
         "query": "options_software",
         "needs": [],
@@ -44,6 +41,10 @@ STEPS = {
         "needs": [],
         "empty_reason": "No method requires this variable",
     },
+    "objective": {"builder": preview.objective_options, "needs": ["challenge"]},
+    "driver": {"builder": preview.driver_options, "needs": ["challenge"]},
+    "entity": {"builder": preview.entity_options, "needs": ["challenge"]},
+    "output": {"builder": preview.output_options, "needs": ["challenge"]},
 }
 
 
@@ -73,6 +74,17 @@ def get_options(step: str, draft: Draft) -> dict:
         if answers["challenge"] not in known:
             raise StepError(f"Unknown challenge: {answers['challenge']}", 422)
 
+    if "builder" in spec:
+        # the answers already given (goal, entity, ...) take part in the rules: check them
+        problems = problem.check(draft)
+        if problems:
+            raise StepError("; ".join(problems), 422)
+        found = spec["builder"](draft)
+        return {
+            "step": step,
+            "options": [{**o, "enabled": o["reason"] is None} for o in found],
+        }
+
     rows = ontology.option_counts(spec["query"], **answers)
     return {
         "step": step,
@@ -83,6 +95,9 @@ def get_options(step: str, draft: Draft) -> dict:
                 "count": r["count"],
                 "enabled": r["count"] > 0,
                 "reason": None if r["count"] > 0 else spec["empty_reason"],
+                "hint": None,
+                "suggested": False,
+                "related": [],
             }
             for r in rows
         ],

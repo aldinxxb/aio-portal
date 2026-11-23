@@ -1,0 +1,25 @@
+PREFIX aio:  <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX aioreq: <https://w3id.org/aio/requirements#>
+
+# The requirements implied by EVERY problem-definition value, in one query
+# (a study objective, an intent, a scenario, a driver, an output or a challenge).
+# One row per combination of optional values: the Python side groups the rows.
+SELECT DISTINCT ?value ?req ?type ?label ?rationale ?strength ?weight ?ruleId
+                ?onProperty ?allowedValue ?allowedLiteral ?appliesTo
+WHERE {
+  ?value aioreq:impliesRequirement ?req .
+  ?req a ?type .
+  VALUES ?type { aioreq:MethodRequirement aioreq:DataRequirement aioreq:PresentationRequirement }
+  OPTIONAL { ?req rdfs:label ?label .
+             FILTER(lang(?label) = "en" || lang(?label) = "") }
+  OPTIONAL { ?req aioreq:rationale ?rationale .
+             FILTER(lang(?rationale) = "en" || lang(?rationale) = "") }
+  OPTIONAL { ?req aioreq:hasStrength ?strength }
+  OPTIONAL { ?req aioreq:requirementWeight ?weight }
+  OPTIONAL { ?req aioreq:ruleId ?ruleId }
+  OPTIONAL { ?req aioreq:onProperty ?onProperty }
+  OPTIONAL { ?req aioreq:allowedValue ?allowedValue }
+  OPTIONAL { ?req aioreq:allowedLiteral ?allowedLiteral }
+  OPTIONAL { ?req aioreq:appliesToVariableType ?appliesTo }
+}

@@ -1,0 +1,8 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+# The question each expected output answers, in plain words (English).
+SELECT ?s ?question
+WHERE {
+  ?s aio:plainQuestion ?question .
+  FILTER(lang(?question) = "en" || lang(?question) = "")
+}

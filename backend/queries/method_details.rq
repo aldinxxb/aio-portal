@@ -1,0 +1,23 @@
+PREFIX aio:  <https://w3id.org/aio#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# What to show about every method of a challenge: its parameters, what it produces
+# and the software that implements it. One row per (method, kind, item).
+SELECT DISTINCT ?method ?kind ?item ?label
+WHERE {
+  {{challenge}} aio:involvesProcess ?process .
+  ?method aio:modelsProcess ?process .
+  {
+    ?method aio:hasPhysicalParameter ?item . BIND("physical" AS ?kind)
+  } UNION {
+    ?method aio:hasCalibrationParameter ?item . BIND("calibration" AS ?kind)
+  } UNION {
+    ?method aio:producesOutput ?item . BIND("output" AS ?kind)
+  } UNION {
+    ?method aio:canBeImplementedIn ?item . BIND("software" AS ?kind)
+  }
+  OPTIONAL {
+    ?item rdfs:label ?label .
+    FILTER(lang(?label) = "en" || lang(?label) = "")
+  }
+}

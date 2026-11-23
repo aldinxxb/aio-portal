@@ -188,14 +188,17 @@ def judge(facts: dict, method_requirements: list[dict], ctx: dict) -> dict:
     return {"excluded": excluded, "adjustment": round(adjustment, 3), "reasons": reasons}
 
 
-def judge_methods(urr, methods: list[dict] | None = None) -> dict:
+def judge_methods(urr, methods: list[dict] | None = None,
+                  all_facts: dict | None = None) -> dict:
     """All requirements of the URR, and a verdict for every method.
 
     methods: the methods to judge (default: all methods of the URR's challenge).
+    all_facts: the result of ontology.method_facts(), if the caller already has it.
     """
     all_requirements = requirements.collect(urr)
     method_requirements = [r for r in all_requirements if r["kind"] == "method"]
-    all_facts = ontology.method_facts()
+    if all_facts is None:
+        all_facts = ontology.method_facts()
     ctx = build_context(urr, all_facts)
 
     verdicts = []

@@ -1,0 +1,11 @@
+PREFIX aio: <https://w3id.org/aio#>
+
+# Which open data exists for each variable: the dataset, how the values were obtained
+# and the time-step class of the data (absent for static layers such as a DEM).
+SELECT DISTINCT ?variable ?dataset ?provenance ?step
+WHERE {
+  ?dataVariable aio:representsVariable ?variable .
+  OPTIONAL { ?dataset aio:containsVariable ?dataVariable }
+  OPTIONAL { ?dataVariable aio:hasProvenance ?provenance }
+  OPTIONAL { ?dataVariable aio:hasTimeStepClass ?step }
+}

@@ -3,8 +3,14 @@ PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
+# Every catalogued dataset with the variables it provides.
+# Temporal facts: period covered, still updated or not, kind of record, time step.
+# Spatial facts: area covered, grid size (in metres or in degrees).
+# One row per combination: the Python side groups the rows.
 SELECT DISTINCT ?dataset ?datasetLabel ?variable ?variableLabel
                 ?publisher ?publisherLabel ?area ?areaLabel ?page
+                ?start ?end ?ongoing ?natureLabel
+                ?timeStep ?gridMeters ?gridDegrees
 WHERE {
   ?dataset a dcat:Dataset ;
            aio:containsVariable ?dataVariable .
@@ -20,4 +26,14 @@ WHERE {
     OPTIONAL { ?area rdfs:label ?areaLabel }
   }
   OPTIONAL { ?dataset dcat:landingPage ?page }
+  OPTIONAL {
+    ?dataset dct:temporal ?period .
+    OPTIONAL { ?period dcat:startDate ?start }
+    OPTIONAL { ?period dcat:endDate ?end }
+  }
+  OPTIONAL { ?dataset aio:isOngoing ?ongoing }
+  OPTIONAL { ?dataset aio:hasTemporalNature ?nature . ?nature rdfs:label ?natureLabel }
+  OPTIONAL { ?dataVariable dcat:temporalResolution ?timeStep }
+  OPTIONAL { ?dataVariable dcat:spatialResolutionInMeters ?gridMeters }
+  OPTIONAL { ?dataVariable aio:spatialResolutionDegrees ?gridDegrees }
 }

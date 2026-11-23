@@ -7,7 +7,7 @@ client = TestClient(app)
 
 def test_variables_list():
     data = client.get("/variables").json()
-    assert len(data) == 103
+    assert len(data) == 104
     assert "RainfallIntensity" in {v["id"] for v in data}
 
 

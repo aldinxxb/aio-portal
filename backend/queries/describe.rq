@@ -1,0 +1,11 @@
+PREFIX aio: <https://w3id.org/aio#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+# Everything the ontology says about every individual of one class.
+# One row per (individual, property, value): the Python side groups the rows.
+SELECT ?s ?p ?o
+WHERE {
+  ?s a {{kind}} ;
+     ?p ?o .
+  FILTER(?p != rdf:type)
+}
