@@ -19,17 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
---------------------------------------------------------------------------------
-
-This licence covers the source code of the portal (backend/, frontend/, graphdb/,
-docker-compose.yml and the scripts in ontology/).
-
-It does NOT cover:
-- the AIO ontology files (ontology/*.ttl), licensed under Creative Commons
-  Attribution 4.0 International (CC BY 4.0): see ontology/LICENSE;
-- the logos in frontend/public/ (AIO, GéoAzur, Université Côte d'Azur – IMREDD,
-  Métropole Nice Côte d'Azur, Xylem, ADEME / République française), which
-  remain the property of their owners and are used only to credit them;
-- open data and map layers fetched at run time (Sandre, IGN, data.gouv.fr,
-  Copernicus, ...), which keep their own licences.

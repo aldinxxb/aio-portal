@@ -63,6 +63,6 @@ Geographic layers (Sandre river basins, IGN regions and departments, BD Topage w
 
 ## Licence
 
-- **Code** (backend, frontend, scripts): [MIT](LICENSE).
+- **Code** (backend, frontend, scripts): [MIT](LICENSE); what it covers is detailed in [NOTICE](NOTICE).
 - **AIO ontology** (`ontology/*.ttl`): [CC BY 4.0](ontology/LICENSE), as declared in each module's header (`dct:license`).
 - The partner logos remain the property of their owners; open data and map layers fetched at run time keep their own licences.
