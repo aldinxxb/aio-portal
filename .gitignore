@@ -16,3 +16,9 @@ dist/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Regenerated caches (geo layers fetched from Sandre / IGN)
+backend/cache/
+
+# Local backup taken before the ontology was split into modules
+ontology/backup-0.8.0-before-modules/
