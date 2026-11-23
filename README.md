@@ -60,3 +60,9 @@ cd frontend && npm install && npm run dev
 Backend tests: `cd backend && .venv/Scripts/python -m pytest -q`.
 
 Geographic layers (Sandre river basins, IGN regions and departments, BD Topage watersheds) are fetched on first use and cached in `backend/cache/`.
+
+## Licence
+
+- **Code** (backend, frontend, scripts): [MIT](LICENSE).
+- **AIO ontology** (`ontology/*.ttl`): [CC BY 4.0](ontology/LICENSE), as declared in each module's header (`dct:license`).
+- The partner logos remain the property of their owners; open data and map layers fetched at run time keep their own licences.

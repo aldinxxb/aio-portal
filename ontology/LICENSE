@@ -1,0 +1,24 @@
+The AIO ontology – Agir et Innover pour l'Eau
+
+Copyright (c) 2026 the AIO – Agir et Innover pour l'Eau project contributors
+
+The ontology files in this folder (*.ttl: the core https://w3id.org/aio, the
+extensions https://w3id.org/aio/requirements, https://w3id.org/aio/workflow and
+https://w3id.org/aio/software, and the alignments https://w3id.org/aio/alignments)
+are licensed under the Creative Commons Attribution 4.0 International licence
+(CC BY 4.0). Each module also states this in its header (dct:license).
+
+You are free to share (copy and redistribute in any medium or format) and to
+adapt (remix, transform and build upon) the ontology, for any purpose, even
+commercially, as long as you give appropriate credit, provide a link to the
+licence, and indicate if changes were made.
+
+Suggested credit:
+  AIO ontology 0.9.0, AIO – Agir et Innover pour l'Eau project,
+  https://github.com/aldinxxb/aio-portal-, CC BY 4.0.
+
+Summary:    https://creativecommons.org/licenses/by/4.0/
+Legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+The Python scripts in this folder (build_software_ttl.py, tools/*.py) are code
+and are covered by the MIT licence in the LICENSE file at the root of the repository.
