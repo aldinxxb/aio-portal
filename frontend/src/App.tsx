@@ -1,121 +1,234 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getDatasets,
   getMethod,
-  getWorkflow,
+  getChains,
   getOptions,
-  reach,
   recommend,
   type Dataset,
   type Draft,
   type MethodProfile,
-  type ReachChallenge,
   type Recommendation,
-  type Status,
-  type Workflow,
+  type RecommendRequest,
+  type Chain,
+  type ChainRecommendation,
+  type Licence,
 } from "./api";
-import ChallengeCard from "./components/ChallengeCard";
-import CompareTable from "./components/CompareTable";
+import DataEntry from "./components/DataEntry";
+import type { DataItem } from "./dataApi";
+import Credits from "./components/Credits";
 import EntryCards, { type Entry } from "./components/EntryCards";
+import OntologyEntry from "./components/OntologyEntry";
+import { EntryHero } from "./components/EntryFrame";
+import FilterBar from "./components/FilterBar";
+import ExpectedOutputs from "./components/ExpectedOutputs";
 import MethodCard from "./components/MethodCard";
-import ResultCard from "./components/ResultCard";
 import OpenDataLayer from "./components/OpenDataLayer";
+import RequirementsPanel from "./components/RequirementsPanel";
 import SearchBar from "./components/SearchBar";
+import SummaryGraph from "./components/SummaryGraph";
+import SetupEntry from "./components/SetupEntry";
+import type { SetupRequest } from "./setupApi";
 import Wizard from "./components/Wizard";
 import WorkflowSection from "./components/WorkflowSection";
 import { CHALLENGE_STEPS, DATA_STEPS, SOFTWARE_STEPS } from "./steps";
 
-const MAX_COMPARED = 3;
 
-const GROUPS: { status: Status; title: string; dot: string; note?: string }[] = [
-  { status: "directly_applicable", title: "Directly applicable", dot: "dot-direct" },
-  { status: "needs_complementary_data", title: "Needs complementary data", dot: "dot-complement" },
-  {
-    status: "inputs_not_recorded",
-    title: "Inputs not recorded",
-    dot: "dot-unknown",
-    note: "The ontology lists no inputs for these methods, so we cannot tell what data they need.",
-  },
-];
+// The wizard answers of Entry 1 in the shape the backend expects (a URR).
+function toRequest(draft: Draft): RecommendRequest {
+  return {
+    challenge: draft.challenge ?? "",
+    processes: draft.processes ?? [],
+    available_variables: draft.available_variables ?? [],
+    scales: draft.scales ?? [],
+    time_steps: draft.time_steps ?? [],
+    data_time_step: draft.data_time_step,
+    objective: draft.objective,
+    entity: draft.entity,
+    drivers: draft.drivers ?? [],
+    outputs: draft.outputs ?? [],
+  };
+}
 
 export default function App() {
-  const [entry, setEntry] = useState<Entry | null>(null);
+  // the portal opens on "Start from data", or on the ontology when the address points to a term
+  const [entry, setEntry] = useState<Entry | null>(() => (window.location.hash.startsWith("#/ontology") ? "ontology" : "data"));
+  const ontologyTerm = useRef<string | null>(decodeURIComponent(window.location.hash.match(/^#\/ontology\/(.+)$/)?.[1] ?? "") || null);
   const [run, setRun] = useState(0);                       // bumped to restart the wizard
   const [answers, setAnswers] = useState<Draft | null>(null);
   const [labels, setLabels] = useState<Record<string, string>>({});
   const [result, setResult] = useState<Recommendation | null>(null);
   const [profiles, setProfiles] = useState<MethodProfile[]>([]);
-  const [reached, setReached] = useState<ReachChallenge[]>([]);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [graph, setGraph] = useState<Workflow | null>(null);
-  const [compareMode, setCompareMode] = useState(false);
-  const [compared, setCompared] = useState<string[]>([]);
+  const [chains, setChains] = useState<ChainRecommendation | null>(null);   // recommended workflows
+  const [licence, setLicence] = useState<Licence>(null);                    // software licence filter
+  const [chainSoftware, setChainSoftware] = useState<string | null>(null);  // the software the user works in
+  const [handover, setHandover] = useState<SetupRequest | null>(null);      // a workflow sent to the diagnosis
+  const [focus, setFocus] = useState<string | null>(null);         // the workflow the summary focuses on
+  // A workflow's diagnosis opened from the results. The results stay mounted (hidden), so
+  // coming back finds them as they were: filters, opened cards, focus; the scroll is restored.
+  const [adjusting, setAdjusting] = useState<SetupRequest | null>(null);
+  const [adjustRun, setAdjustRun] = useState(0);
+  const savedScroll = useRef(0);
+  const adjustingRef = useRef(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [catalogue, setCatalogue] = useState(false);       // the open data catalogue, slid in from the right
+
+  const lastRequest = useRef(0);   // only the answer to the latest request is shown
 
   async function handleFinish(draft: Draft, readable: Record<string, string>) {
+    const mine = ++lastRequest.current;
+    const latest = () => mine === lastRequest.current;
     setAnswers(draft);
     setLabels(readable);
     setLoading(true);
     setError(null);
     try {
-      if (entry === "data") {
-        setReached(await reach(draft.available_variables ?? []));
-      } else if (entry === "software") {
+      if (entry === "software") {
         let ids = draft.methods ?? [];
         if (ids.length === 0) {
           // no preference: take every method of the software
           const all = await getOptions("method", draft);
           ids = all.filter((o) => o.enabled).map((o) => o.id);
         }
-        setProfiles(await Promise.all(ids.map(getMethod)));
+        const found = await Promise.all(ids.map(getMethod));
+        if (latest()) setProfiles(found);
       } else if (entry === "challenge") {
-        setResult(
-          await recommend({
-            challenge: draft.challenge ?? "",
-            processes: draft.processes ?? [],
-            available_variables: draft.available_variables ?? [],
-            scales: draft.scales ?? [],
-            time_steps: draft.time_steps ?? [],
-          })
-        );
+        const found = await recommend(toRequest(draft));
+        if (latest()) setResult(found);
       }
     } catch (e) {
-      setError(String(e));
+      if (latest()) setError(String(e));
     } finally {
-      setLoading(false);
+      if (latest()) setLoading(false);
     }
   }
 
+  // A filter was changed or removed on the results page: same request, new answers.
+  function changeFilters(draft: Draft, extraLabels: Record<string, string>) {
+    setFocus(null);    // the focused workflow may no longer be in the list
+    handleFinish(draft, { ...labels, ...extraLabels });
+  }
+
   // Clicking an entry card (even the selected one) starts that flow from scratch.
+  // "Check and adjust this workflow": the chain goes to the Modeling Approach diagnosis with the
+  // study already described here (challenge, goal, outputs, data in hand). One engine judges both.
+  function adjust(chain: Chain) {
+    if (!answers) return;
+    const reference = chain.kind === "reference";
+    const request: SetupRequest = {
+      setup: {
+        software: chainSoftware,
+        reference_chain: reference ? chain.id : null,
+        // always the full list of methods: a later change (swap, leave out) edits this list
+        methods: chain.steps.map((s) => s.method.id),
+        roles: reference ? {} : Object.fromEntries(chain.steps.map((s) => [s.method.id, s.roles.map((r) => r.id)])),
+      },
+      context: {
+        challenge: answers.challenge ?? null,
+        objective: answers.objective ?? null,
+        intent: null,
+        scenario: null,
+        outputs: answers.outputs ?? [],
+        output_step: answers.time_steps?.[0] ?? null,
+        entity: answers.entity ?? null,
+      },
+      data: (answers.available_variables ?? []).map((variable) => ({
+        variable, source: "own" as const, dataset: null, step: answers.data_time_step ?? null, resolution_m: null,
+      })),
+    };
+    openDiagnosis(request);
+  }
+
+  // "Open its diagnosis" from the Start-from-data entry: the study described there.
+  function adjustFromData(chain: Chain, study: { challenge: string; objective: string | null; outputs: string[]; data: DataItem[] }) {
+    const reference = chain.kind === "reference";
+    openDiagnosis({
+      setup: {
+        software: null,
+        reference_chain: reference ? chain.id : null,
+        methods: chain.steps.map((s) => s.method.id),
+        roles: reference ? {} : Object.fromEntries(chain.steps.map((s) => [s.method.id, s.roles.map((r) => r.id)])),
+      },
+      context: {
+        challenge: study.challenge, objective: study.objective, intent: null, scenario: null,
+        outputs: study.outputs, output_step: null, entity: null,
+      },
+      data: study.data.map((d) => ({
+        variable: d.variable, source: d.source, dataset: d.dataset, step: d.step, resolution_m: null,
+      })),
+    });
+  }
+
+  function openDiagnosis(request: SetupRequest) {
+    savedScroll.current = window.scrollY;
+    adjustingRef.current = true;
+    setAdjusting(request);
+    setAdjustRun((n) => n + 1);
+    window.history.pushState({ aio: "diagnosis" }, "");   // the browser's back button comes back here
+    window.scrollTo({ top: 0 });
+  }
+
+  function closeDiagnosis() {
+    adjustingRef.current = false;
+    setAdjusting(null);
+    // after the results are shown again, put the page where it was
+    requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: savedScroll.current })));
+  }
+
+  useEffect(() => {
+    // a link to the ontology (#/ontology/<term>) opens its tab, even when the portal is already open
+    const onHash = () => {
+      const match = window.location.hash.match(/^#\/ontology\/?(.*)$/);
+      if (!match) return;
+      ontologyTerm.current = match[1] ? decodeURIComponent(match[1]) : null;
+      setEntry((current) => (current === "ontology" ? current : "ontology"));
+    };
+    window.addEventListener("hashchange", onHash);
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setCatalogue(false); };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("hashchange", onHash);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onBack = () => {
+      if (adjustingRef.current) closeDiagnosis();
+    };
+    window.addEventListener("popstate", onBack);
+    return () => window.removeEventListener("popstate", onBack);
+  }, []);
+
   function choose(next: Entry) {
+    if (next === "ontology") {
+      ontologyTerm.current = null;
+      if (!window.location.hash.startsWith("#/ontology")) window.location.hash = "/ontology";
+    } else if (window.location.hash.startsWith("#/ontology")) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+    setHandover(null);
+    adjustingRef.current = false;
+    setAdjusting(null);
+    setFocus(null);
+    lastRequest.current++;   // forget any answer still on its way
+    setLoading(false);
     setEntry(next);
     setRun((n) => n + 1);
     setAnswers(null);
     setResult(null);
     setProfiles([]);
-    setReached([]);
-    setGraph(null);
-    setCompareMode(false);
-    setCompared([]);
     setError(null);
   }
 
-  function toggleCompare(id: string) {
-    setCompared((current) =>
-      current.includes(id) ? current.filter((c) => c !== id) : [...current, id]
-    );
-  }
-
   const text = (id: string) => labels[id] ?? id;
-  const comparedResults = result ? result.results.filter((r) => compared.includes(r.id)) : [];
-  // Data missing in the methods on screen (or only in the compared ones, if any are ticked).
-  const pool = result
-    ? compared.length
-      ? result.results.filter((r) => compared.includes(r.id))
-      : result.results.filter((r) => r.status === "needs_complementary_data")
+  // The data layer lists open datasets for what the focused workflow (else the first one) still needs.
+  const shownChain = chains?.chains.find((c) => c.id === focus) ?? chains?.chains[0] ?? null;
+  const wanted = shownChain
+    ? [...new Set(shownChain.inputs.filter((i) => i.state !== "have").map((i) => i.id))].sort()
     : [];
-  const wanted = [...new Set(pool.flatMap((r) => r.inputs_missing.map((i) => i.id)))].sort();
   const wantedKey = wanted.join(",");
 
   // Ask the backend which open datasets provide that data.
@@ -136,33 +249,30 @@ export default function App() {
       cancelled = true;
     };
   }, [wantedKey]);
-  // The workflow and graph follow the compared methods, or the top 3 if none are ticked.
-  const focusKey = compared.join(",");
+  // The recommended workflows (chains of methods) follow the answers and the licence filter.
   useEffect(() => {
     if (entry !== "challenge" || !result || !answers) {
-      setGraph(null);
+      setChains(null);
       return;
     }
     let cancelled = false;
-    getWorkflow({
-      challenge: answers.challenge ?? "",
-      processes: answers.processes ?? [],
-      available_variables: answers.available_variables ?? [],
-      scales: answers.scales ?? [],
-      time_steps: answers.time_steps ?? [],
-      methods: focusKey ? focusKey.split(",") : [],
-    })
-      .then((g) => {
-        if (!cancelled) setGraph(g);
+    getChains({ ...toRequest(answers), licence, software: chainSoftware })
+      .then((found) => {
+        if (!cancelled) setChains(found);
       })
       .catch(() => {
-        if (!cancelled) setGraph(null);
+        if (!cancelled) setChains({ note: null, templates: [], chains: [] });
       });
     return () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result, focusKey]);
+  }, [result, licence, chainSoftware]);
+  const steps =
+    entry === "challenge" ? CHALLENGE_STEPS : entry === "software" ? SOFTWARE_STEPS : DATA_STEPS;
+  const filters = answers !== null && (
+    <FilterBar steps={steps.filter((x) => !x.skipWhen?.(answers))} answers={answers} text={text} onChange={changeFilters} />
+  );
   const restart = entry !== null && (
     <div className="actions">
       <button className="btn" onClick={() => choose(entry)}>
@@ -173,57 +283,63 @@ export default function App() {
 
   return (
     <>
+      {/* one app bar: brand and search on top, the three entries as tabs below */}
       <header className="header">
         <div className="header-inner">
-          <div className="logo">∿</div>
-          <div>
+          <img className="logo-img" src="/aio-logo.png" alt="AIO – Agir et Innover pour l'Eau" />
+          <div className="brand">
             <div className="brand-title">Hydrology Decision Support</div>
             <div className="brand-sub">Ontology-driven model &amp; open-data recommendation</div>
           </div>
           <SearchBar />
         </div>
+        <nav className="header-nav" aria-label="Starting points">
+          <EntryCards selected={entry} onChoose={choose} />
+          <button className={`catalogue-btn${catalogue ? " on" : ""}`} aria-expanded={catalogue} onClick={() => setCatalogue(!catalogue)}
+                  title="Search every catalogued dataset, variable or derived parameter">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5" /><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />
+            </svg>
+            Open data catalogue
+            {entry === "challenge" && datasets.length > 0 && <span className="catalogue-count" title="datasets for the workflow in focus">{datasets.length}</span>}
+          </button>
+        </nav>
       </header>
 
       <main className="page">
-        <h1 className="page-title">Hydrology Decision Support System</h1>
-        <p className="page-sub">
-          Explore models, methods, processes and data requirements through the ontology.
-        </p>
 
-        <EntryCards selected={entry} onChoose={choose} />
-
-        {entry !== null && answers === null && (
-          <Wizard
-            key={`${entry}-${run}`}
-            steps={
-              entry === "challenge"
-                ? CHALLENGE_STEPS
-                : entry === "software"
-                ? SOFTWARE_STEPS
-                : DATA_STEPS
-            }
-            onFinish={handleFinish}
+        {/* left: the entry · right: the open data layer. "Start from data" has its own open data
+            page and a large map, so it takes the whole width. */}
+        <div className="full">
+        <div className="split-main">
+        {entry === "software" && !adjusting && (
+          <EntryHero
+            kicker="Start from a modeling approach"
+            title="Does your method or software fit your study?"
+            lead="Describe the set-up you already use and the study it is for: the portal diagnoses it, checks its data and proposes improvements, one page at a time."
+          />
+        )}
+        {entry === "challenge" && !adjusting && (
+          <EntryHero
+            kicker="Start from a water challenge"
+            title="Which models and data fit your water issue?"
+            lead="Answer a few questions about your challenge, goal and data: the portal ranks the workflows that fit, with the data each one still needs."
           />
         )}
 
-        {entry === "data" && answers !== null && (
-          <section className="panel">
-            <div className="panel-head">
-              <div>
-                <h2 className="panel-title">What your data allows</h2>
-                <p className="panel-sub">
-                  Data provided:{" "}
-                  {(answers.available_variables ?? []).map(text).join(", ") || "none"}
-                </p>
-              </div>
-            </div>
-            {loading && <p className="muted">Checking every challenge…</p>}
-            {error && <p className="error">{error}</p>}
-            {reached.map((item) => (
-              <ChallengeCard key={item.id} item={item} />
-            ))}
-            {restart}
-          </section>
+        {entry === "ontology" && <OntologyEntry key={`onto-${run}`} initial={ontologyTerm.current} />}
+
+        {/* Modeling Approach: its own flow (set-up, study, data, diagnosis and improvements) */}
+        {entry === "software" && <SetupEntry key={`setup-${run}`} initial={handover} />}
+
+        {entry === "data" && (
+          <div hidden={!!adjusting}>
+            <DataEntry key={`data-${run}`} onAdjust={adjustFromData} />
+          </div>
+        )}
+
+        {entry === "challenge" && answers === null && (
+          <Wizard key={`${entry}-${run}`} steps={steps} onFinish={handleFinish} />
         )}
 
         {entry === "software" && answers !== null && (
@@ -232,119 +348,92 @@ export default function App() {
               <div>
                 <h2 className="panel-title">Methods you can run in {text(answers.software ?? "")}</h2>
                 <p className="panel-sub">
-                  {profiles.length} method(s). Open one to check your data against it.
+                  {profiles.length} method(s). Open one to add your data, see where the rest can come
+                  from, and combine it with other methods.
                 </p>
               </div>
             </div>
+            {filters}
             {loading && <p className="muted">Loading method details…</p>}
             {error && <p className="error">{error}</p>}
+            <div className="results-scroll">
             {profiles.map((p) => (
-              <MethodCard key={p.id} profile={p} />
+              <MethodCard key={p.id} profile={p} software={answers.software} />
             ))}
+            </div>
             {restart}
           </section>
+        )}
+
+        {/* a workflow's diagnosis, opened from the results: "back" returns to them as they were */}
+        {(entry === "challenge" || entry === "data") && adjusting && (
+          <>
+            <div className="back-bar">
+              <button className="btn" onClick={() => window.history.back()}>Back to {entry === "data" ? "your data" : "the recommended workflows"}</button>
+              <span className="muted">Your filters, opened workflows and position are kept.</span>
+            </div>
+            <SetupEntry key={`adjust-${adjustRun}`} initial={adjusting} />
+          </>
         )}
 
         {entry === "challenge" && answers !== null && (
-          <>
-          <div className="split">
-          <section className="panel">
-            <div className="panel-head">
-              <div>
-                <h2 className="panel-title">Model recommendations</h2>
-                <p className="panel-sub">Models ranked according to the ontology and your requirements.</p>
+          <div hidden={!!adjusting}>
+          {/* the study (answers and what they require) beside the expected outputs */}
+          <section className="panel study-grid">
+            <div className="study-col">
+              <div className="panel-head">
+                <div>
+                  <h2 className="panel-title">Your study</h2>
+                  <p className="panel-sub">Change or remove an answer here: the workflows below follow.</p>
+                </div>
               </div>
-              <label className="compare-mode">
-                <input
-                  type="checkbox"
-                  checked={compareMode}
-                  onChange={(e) => {
-                    setCompareMode(e.target.checked);
-                    if (!e.target.checked) setCompared([]);
-                  }}
-                />
-                Compare mode
-              </label>
+              {filters}
+              {loading && <p className="muted">Looking for workflows…</p>}
+              {error && <p className="error">{error}</p>}
+              {result && <RequirementsPanel requirements={result.requirements} excluded={[]} text={text} />}
+              {restart}
             </div>
-
-            <p className="meta">
-              Challenge: <strong>{text(answers.challenge ?? "")}</strong> · Data provided:{" "}
-              <strong>{answers.available_variables?.length ?? 0}</strong>
-              {(answers.scales?.length ?? 0) > 0 && (
-                <> · Scale: <strong>{answers.scales!.map(text).join(", ")}</strong></>
-              )}
-              {(answers.time_steps?.length ?? 0) > 0 && (
-                <> · Time step: <strong>{answers.time_steps!.map(text).join(", ")}</strong></>
-              )}
-            </p>
-
-            {loading && <p className="muted">Looking for methods…</p>}
-            {error && <p className="error">{error}</p>}
-
             {result && (
-              <>
-                <p className="meta">
-                  Processes used: {result.urr.processes.values.map(text).join(", ")} (
-                  {result.urr.processes.source === "stated"
-                    ? "you chose them"
-                    : "all processes of the challenge"}
-                  )
-                </p>
-                {result.filtered_out > 0 && (
-                  <p className="meta">
-                    {result.filtered_out} method(s) hidden by your scale / time step filters.
-                  </p>
-                )}
-
-                <CompareTable results={comparedResults} onRemove={toggleCompare} />
-
-                {GROUPS.map((group) => {
-                  const items = result.results.filter((r) => r.status === group.status);
-                  if (items.length === 0) return null;
-                  return (
-                    <section key={group.status} className="group">
-                      <h3 className="group-title">
-                        <span className={`dot ${group.dot}`}></span>
-                        {group.title} <span className="group-count">{items.length}</span>
-                      </h3>
-                      {group.note && <p className="group-note">{group.note}</p>}
-                      {items.map((r) => (
-                        <ResultCard
-                          key={r.id}
-                          result={r}
-                          text={text}
-                          compareMode={compareMode}
-                          compared={compared.includes(r.id)}
-                          canCompare={compared.length < MAX_COMPARED}
-                          onToggleCompare={() => toggleCompare(r.id)}
-                        />
-                      ))}
-                    </section>
-                  );
-                })}
-              </>
+              <div className="study-col">
+                <ExpectedOutputs result={result} />
+              </div>
             )}
-            {restart}
           </section>
 
+          {result && chains && (
+            <SummaryGraph result={result} chains={chains.chains} focus={focus} onFocus={setFocus}
+                          challenge={text(answers.challenge ?? "")} />
+          )}
+
           {result && (
-            <OpenDataLayer
-              datasets={datasets}
-              scope={compared.length ? "for the compared methods" : "for the data missing in the methods listed"}
-              nothingMissing={wanted.length === 0}
+            <WorkflowSection
+              chains={chains}
+              licence={licence}
+              onLicence={setLicence}
+              software={chainSoftware}
+              onSoftware={setChainSoftware}
+              onAdjust={adjust}
             />
           )}
           </div>
-
-          {graph && (
-            <WorkflowSection
-              graph={graph}
-              scope={compared.length ? "from the compared methods" : "from the top 3 methods"}
-            />
-          )}
-          </>
         )}
+        </div>
+
+        </div>
+
       </main>
+      <Credits />
+
+      {/* the open data catalogue: always one click away, without taking room from the pages */}
+      {catalogue && <div className="drawer-backdrop" onClick={() => setCatalogue(false)} />}
+      <div className={`drawer${catalogue ? " open" : ""}`} aria-hidden={!catalogue} inert={!catalogue} role="dialog" aria-label="Open data catalogue">
+        <button className="drawer-close" onClick={() => setCatalogue(false)} title="Close (Esc)">×</button>
+        <OpenDataLayer
+          datasets={entry === "challenge" ? datasets : []}
+          scope={entry === "challenge" && shownChain ? `for what “${shownChain.label}” still needs` : null}
+          nothingMissing={wanted.length === 0}
+        />
+      </div>
     </>
   );
 }

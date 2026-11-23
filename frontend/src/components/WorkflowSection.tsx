@@ -1,65 +1,84 @@
-import type { GraphNode, Workflow } from "../api";
-import KnowledgeGraph from "./KnowledgeGraph";
-
-// One row of the workflow table: a title and the kind of node it lists.
-const ROWS: { title: string; kind: GraphNode["kind"] }[] = [
-  { title: "Water challenge", kind: "challenge" },
-  { title: "Main processes", kind: "process" },
-  { title: "Methods", kind: "method" },
-  { title: "Software", kind: "software" },
-  { title: "Data", kind: "variable" },
-  { title: "Open data", kind: "dataset" },
-];
+import { useEffect, useState } from "react";
+import type { Chain, ChainRecommendation, Licence } from "../api";
+import { EMPTY_REQUEST, setupOptions, type SetupOption } from "../setupApi";
+import ChainCard from "./ChainCard";
 
 type Props = {
-  graph: Workflow;
-  scope: string;   // short text saying which methods the workflow is built from
+  chains: ChainRecommendation | null;   // null while loading
+  licence: Licence;                     // the software licence filter
+  onLicence: (licence: Licence) => void;
+  software: string | null;              // the software the user works in (null = any)
+  onSoftware: (software: string | null) => void;
+  onAdjust: (chain: Chain) => void;     // open a workflow in the diagnosis
 };
 
-export default function WorkflowSection({ graph, scope }: Props) {
+// A workflow is a CHAIN of methods (loss -> transform -> routing -> hydraulics ...),
+// because one method rarely answers a question alone. Standard-practice chains come
+// first; chains the portal builds from the ontology follow and are labelled as such.
+export default function WorkflowSection({ chains, licence, onLicence, software, onSoftware, onAdjust }: Props) {
+  const found = chains?.chains ?? [];
+  const [softwares, setSoftwares] = useState<SetupOption[]>([]);
+  useEffect(() => {
+    setupOptions<{ options: SetupOption[] }>("software", EMPTY_REQUEST)
+      .then((r) => setSoftwares(r.options))
+      .catch(() => setSoftwares([]));
+  }, []);
+  const ready = found.filter((c) => c.status === "runnable").length;
+
   return (
     <>
       <section className="panel">
         <div className="panel-head">
           <div>
-            <h2 className="panel-title">Recommended workflow</h2>
-            <p className="panel-sub">Ontology path from challenge to processes, methods, software and data · {scope}</p>
+            <h2 className="panel-title">Recommended workflows</h2>
+            <p className="panel-sub">
+              Combinations of methods that answer your challenge together. Open one, then click a
+              step to see its inputs, parameters and outputs.
+            </p>
           </div>
+          <label className="compare-mode">
+            Your software
+            <select className="select" value={software ?? ""} onChange={(e) => onSoftware(e.target.value || null)}>
+              <option value="">any software</option>
+              {softwares.map((s) => (
+                <option key={s.id} value={s.id}>{s.label ?? s.id}</option>
+              ))}
+            </select>
+          </label>
+          <label className="compare-mode">
+            Licence
+            <select
+              className="select"
+              value={licence ?? ""}
+              onChange={(e) => onLicence((e.target.value || null) as Licence)}
+            >
+              <option value="">any licence</option>
+              <option value="free">free of charge only</option>
+              <option value="open">open source only</option>
+            </select>
+          </label>
         </div>
 
-        {ROWS.map((row) => {
-          const items = graph.nodes.filter((n) => n.kind === row.kind);
-          return (
-            <div key={row.kind} className="flow-row">
-              <div className="flow-title">{row.title}</div>
-              <div className="pills">
-                {items.length === 0 && <span className="muted">–</span>}
-                {items.map((n) =>
-                  row.kind === "variable" ? (
-                    <span key={n.id} className={`pill${n.have ? "" : " pill-warn"}`}>
-                      {n.have ? "✓" : "⚠"} {n.label}
-                    </span>
-                  ) : (
-                    <span key={n.id} className="pill">
-                      {n.label}
-                    </span>
-                  )
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {chains === null && <p className="muted">Building workflows…</p>}
+        {chains?.note && <p className="group-note">{chains.note}</p>}
+        {chains !== null && found.length === 0 && (
+          <p className="muted">
+            No workflow fits these choices. Try another software or licence, or remove an expected output.
+          </p>
+        )}
+        {found.length > 0 && (
+          <p className="meta">
+            {found.length} workflow(s) · {ready} ready to run with your data and open data
+          </p>
+        )}
+
+        <div className="flow-groups">
+          {found.map((chain, index) => (
+            <ChainCard key={chain.id} chain={chain} open={index === 0} onAdjust={onAdjust} />
+          ))}
+        </div>
       </section>
 
-      <section className="panel">
-        <div className="panel-head">
-          <div>
-            <h2 className="panel-title">Dynamic knowledge graph</h2>
-            <p className="panel-sub">Relationships behind the recommendation, drawn from the ontology.</p>
-          </div>
-        </div>
-        <KnowledgeGraph graph={graph} />
-      </section>
     </>
   );
 }

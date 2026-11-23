@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type Entry = "challenge" | "software" | "data";
+export type Entry = "challenge" | "software" | "data" | "ontology";
 
 const icon = {
   width: 22,
@@ -49,6 +49,20 @@ const CARDS: { id: Entry; title: string; text: string; icon: ReactNode }[] = [
       </svg>
     ),
   },
+  {
+    id: "ontology",
+    title: "AIO Ontology",
+    text: "Browse the knowledge model behind the portal",
+    icon: (
+      <svg {...icon}>
+        <circle cx="12" cy="5" r="2.2" />
+        <circle cx="5" cy="18" r="2.2" />
+        <circle cx="19" cy="18" r="2.2" />
+        <circle cx="12" cy="13" r="1.6" />
+        <path d="M12 7.2v4.2M10.7 14.1l-4 2.7M13.3 14.1l4 2.7M7.2 18h9.6" />
+      </svg>
+    ),
+  },
 ];
 
 type Props = {
@@ -63,6 +77,8 @@ export default function EntryCards({ selected, onChoose }: Props) {
         <button
           key={card.id}
           className={`entry${selected === card.id ? " active" : ""}`}
+          aria-current={selected === card.id ? "page" : undefined}
+          title={card.text}
           onClick={() => onChoose(card.id)}
         >
           <span className="entry-icon">{card.icon}</span>

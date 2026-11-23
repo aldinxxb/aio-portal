@@ -44,12 +44,20 @@ export default function Wizard({ steps, onFinish }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepIndex]);
 
+  // the next step that is asked with these answers (a step may be skipped, see Step.skipWhen)
+  const skipped = (index: number, answers: Draft) => !!steps[index].skipWhen?.(answers);
+
   function confirm(values: string[]) {
     const next = { ...draft, [step.field]: step.multiple ? values : values[0] } as Draft;
+    let target = stepIndex + 1;
+    while (target < steps.length && skipped(target, next)) {
+      delete next[steps[target].field];
+      target++;
+    }
     setDraft(next);
     setSelected([]);
-    if (stepIndex + 1 < steps.length) {
-      setStepIndex(stepIndex + 1);
+    if (target < steps.length) {
+      setStepIndex(target);
     } else {
       onFinish(next, labels);
     }
@@ -66,7 +74,8 @@ export default function Wizard({ steps, onFinish }: Props) {
   }
 
   function goBack() {
-    const target = stepIndex - 1;
+    let target = stepIndex - 1;
+    while (target > 0 && skipped(target, draft)) target--;
     const previous = draft[steps[target].field];
     const kept = { ...draft };
     for (let i = target; i < steps.length; i++) {
@@ -78,9 +87,9 @@ export default function Wizard({ steps, onFinish }: Props) {
   }
 
   // Readable text for one answered step, e.g. "runoff, infiltration"
-  function answerText(field: keyof Draft): string | null {
+  function answerText(field: keyof Draft): string {
     const value = draft[field];
-    if (value === undefined) return null;
+    if (value === undefined) return "no preference";   // an optional step that was skipped
     const ids = Array.isArray(value) ? value : [value];
     return ids.length ? ids.map((id) => labels[id] ?? id).join(", ") : "no preference";
   }
@@ -88,18 +97,23 @@ export default function Wizard({ steps, onFinish }: Props) {
   return (
     <section className="panel">
       <ol className="stepper">
-        {steps.map((s, i) => (
-          <li key={s.id} className={`step${i === stepIndex ? " active" : i < stepIndex ? " done" : ""}`}>
-            {i + 1}. {s.title}
-          </li>
-        ))}
+        {steps.map((s, i) => {
+          const off = i !== stepIndex && skipped(i, draft);
+          return (
+            <li key={s.id} className={`step${i === stepIndex ? " active" : off ? " skipped" : i < stepIndex ? " done" : ""}`}
+                title={off ? s.skipNote : undefined}>
+              {i + 1}. {s.title}{off && s.skipNote ? ` · ${s.skipNote}` : ""}
+            </li>
+          );
+        })}
       </ol>
 
       {stepIndex > 0 && (
         <div className="answers">
-          {steps.slice(0, stepIndex).map((s) => (
+          {steps.slice(0, stepIndex).map((s, i) => (
             <span key={s.id}>
-              <span className="muted">{s.title}:</span> <strong>{answerText(s.field)}</strong>
+              <span className="muted">{s.title}:</span>{" "}
+              <strong>{skipped(i, draft) ? s.skipNote ?? "skipped" : answerText(s.field)}</strong>
             </span>
           ))}
         </div>
@@ -117,6 +131,8 @@ export default function Wizard({ steps, onFinish }: Props) {
               key={option.id}
               option={option}
               selected={step.multiple ? selected.includes(option.id) : false}
+              countOf={step.countOf}
+              relatedTitle={step.relatedTitle}
               onClick={() => handleClick(option.id)}
             />
           ))}
@@ -126,12 +142,17 @@ export default function Wizard({ steps, onFinish }: Props) {
       <div className="actions">
         {stepIndex > 0 && (
           <button className="btn" onClick={goBack}>
-            ← Back
+            Back
           </button>
         )}
         {step.multiple && (
           <button className="btn btn-primary" onClick={() => confirm(selected)}>
-            {selected.length ? "Next →" : "Next (no preference) →"}
+            {selected.length ? "Next" : "Next (no preference)"}
+          </button>
+        )}
+        {!step.multiple && step.optional && (
+          <button className="btn btn-primary" onClick={() => confirm([])}>
+            Skip (no preference)
           </button>
         )}
       </div>

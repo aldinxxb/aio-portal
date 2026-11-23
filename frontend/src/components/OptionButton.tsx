@@ -1,23 +1,40 @@
 import type { Option } from "../api";
 
 type Props = {
-  option: Option;          // the data to show (label, count, enabled, reason)
+  option: Option;          // the data to show (label, count, enabled, reason, hint)
   selected: boolean;       // is it currently picked?
   onClick: () => void;     // what to do when clicked (decided by the wizard)
+  countOf?: string;        // what the number counts, shown when the mouse is over it
+  relatedTitle?: string;   // name of the option's "related" list
 };
 
-export default function OptionButton({ option, selected, onClick }: Props) {
+export default function OptionButton({
+  option,
+  selected,
+  onClick,
+  countOf = "method(s)",
+  relatedTitle = "Related",
+}: Props) {
   return (
     <div className="opt-wrap">
       <button
-        className={`opt${selected ? " selected" : ""}`}
+        className={`opt${selected ? " selected" : ""}${option.suggested ? " opt-direct" : ""}`}
         onClick={onClick}
         disabled={!option.enabled}
         title={option.reason ?? ""}
       >
         <span>{option.label ?? option.id}</span>
-        <span className="count">{option.count}</span>
+        {option.suggested && (
+          <span className="opt-star" title="Suggested by the ontology">★</span>
+        )}
+        <span className="count" title={`${option.count} ${countOf}`}>{option.count}</span>
       </button>
+      {option.hint && <div className="opt-hint">{option.hint}</div>}
+      {option.related.length > 0 && (
+        <div className="opt-related">
+          {relatedTitle}: {option.related.map((r) => r.label ?? r.id).join(", ")}
+        </div>
+      )}
       {!option.enabled && option.reason && <div className="opt-reason">{option.reason}</div>}
     </div>
   );
