@@ -379,6 +379,7 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
         title="What can you do with your data, here?"
         lead="Choose where you work and tell what data you have: the portal finds the open data covering your area, the role of each dataset, what it makes possible and what to add next."
         aside={area ? <span className="ehero-chip">📍 {area.name}</span> : undefined}
+        compact={page > 0}
       />
       <PageSteps steps={PAGES} current={page} reachable={reachable} onGo={go} />
 
@@ -473,9 +474,11 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
               {region && sheds && (
                 <AreaList features={sheds.features} selected={picked} onPick={toggleShed} placeholder="Find a watershed…" />
               )}
-              <button className="btn btn-primary" disabled={!area} onClick={() => go(1)}>Next: your data</button>
             </aside>
           </div>
+          <PageNav onNext={() => go(1)} nextLabel="Next: your data" nextDisabled={!area}
+                   summary={area ? `📍 ${area.name}` : undefined}
+                   note={!area ? "click an area on the map or in the list" : undefined} />
         </section>
       )}
 
@@ -606,7 +609,8 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
             </div>
           </div>
           <PageNav onBack={() => go(0)} onNext={() => go(2)} nextLabel="Next: your goal"
-                   note={data.length ? `${data.length} variable(s) declared` : "no data declared: open data only"} />
+                   summary={`📍 ${area.name} · ${data.length ? `${data.length} data declared` : "open data only"}`}
+                   note={data.length ? undefined : "you can go on without data of your own"} />
         </section>
       )}
 
@@ -710,6 +714,8 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
             </div>
           )}
           <PageNav onBack={() => go(1)} onNext={() => { setLevel(null); go(3); }} nextLabel="See the workflows"
+                   summary={[`📍 ${area.name}`, challengeName, name(result?.objectives?.find((o) => o.id === objective) ?? { id: "", label: null }),
+                             outputs.length ? `${outputs.length} output${outputs.length > 1 ? "s" : ""}` : ""].filter(Boolean).join(" · ")}
                    nextDisabled={!challenge || !objective || outputs.length === 0}
                    note={!challenge ? "choose a challenge" : !objective ? "choose an objective" : outputs.length === 0 ? "choose an expected output" : undefined} />
         </section>

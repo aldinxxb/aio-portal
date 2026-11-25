@@ -38,6 +38,20 @@ import {
   addressOf, ago, dropDraft, fullSetupRequest, loadDraft, readAddress, saveDraft, writeAddress, type Draft as SavedDraft,
 } from "./share";
 
+// The banners of the two question flows (the data entry and the ontology have their own).
+const HEROES = {
+  software: {
+    kicker: "I have a model",
+    title: "Does your method or software fit your study?",
+    lead: "Describe the set-up you already use and the study it is for: the portal diagnoses it, checks its data and proposes improvements, one page at a time.",
+  },
+  challenge: {
+    kicker: "I have a water problem",
+    title: "Which models and data fit your water issue?",
+    lead: "Answer four questions about your challenge, goal, expected results and data: the portal ranks the workflows that fit, with the data each one still needs.",
+  },
+};
+
 // The Water Challenge results as kept in the address: the answers and how to name them.
 type ChallengeState = { answers: Draft; labels: Record<string, string>; licence?: Licence; software?: string | null; focus?: string | null };
 
@@ -517,26 +531,14 @@ export default function App() {
             page and a large map, so it takes the whole width. */}
         <div className="full">
         <div className="split-main">
-        {entry === "software" && !adjusting && (
-          <EntryHero
-            kicker="I have a model"
-            title="Does your method or software fit your study?"
-            lead="Describe the set-up you already use and the study it is for: the portal diagnoses it, checks its data and proposes improvements, one page at a time."
-          />
-        )}
-        {entry === "challenge" && !adjusting && (
-          <EntryHero
-            kicker="I have a water problem"
-            title="Which models and data fit your water issue?"
-            lead="Answer a few questions about your challenge, goal and data: the portal ranks the workflows that fit, with the data each one still needs."
-          />
-        )}
+        {/* the banner: inside the flows (full on their first page, then one line); one line on the results */}
+        {entry === "challenge" && !adjusting && answers !== null && <EntryHero {...HEROES.challenge} compact />}
 
         {entry === "ontology" && <OntologyEntry key={`onto-${run}`} initial={ontologyTerm.current} initialQuery={ontologyQuery.current} />}
 
         {/* Modeling Approach: its own flow (set-up, study, data, diagnosis and improvements) */}
         {entry === "software" && (
-          <SetupEntry key={`setup-${run}`} initial={handover} saved={saved as SetupState | null}
+          <SetupEntry key={`setup-${run}`} initial={handover} saved={saved as SetupState | null} hero={HEROES.software}
                       onState={(state, summary) => report("software", state, summary)} />
         )}
 
@@ -548,7 +550,8 @@ export default function App() {
         )}
 
         {entry === "challenge" && answers === null && (
-          <Wizard key={`${entry}-${run}`} steps={steps} onFinish={handleFinish} initial={wizardStart} />
+          <Wizard key={`${entry}-${run}`} steps={steps.filter((s) => !s.refine)} onFinish={handleFinish} initial={wizardStart}
+                  hero={HEROES.challenge} later={steps.filter((s) => s.refine).map((s) => s.title.toLowerCase())} />
         )}
 
         {entry === "software" && answers !== null && (

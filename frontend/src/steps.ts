@@ -12,6 +12,8 @@ export type Step = {
   relatedTitle?: string; // name of the "related" list of an option (outputs: "Variables")
   skipWhen?: (draft: Draft) => boolean;   // a step not asked when this holds
   skipNote?: string;                      // why it was not asked, shown in its place
+  sub?: string;         // a few words under the title in the step bar
+  refine?: boolean;     // not asked in the questions: added later from the results ("Refine")
 };
 
 const LEFT = "method(s) still possible with this choice";
@@ -20,6 +22,7 @@ export const CHALLENGE_STEPS: Step[] = [
   {
     id: "challenge",
     title: "Challenge",
+    sub: "flood, drought…",
     question: "What is your water challenge?",
     multiple: false,
     field: "challenge",
@@ -28,6 +31,7 @@ export const CHALLENGE_STEPS: Step[] = [
   {
     id: "objective",
     title: "Goal",
+    sub: "simulate, forecast…",
     question: "What is the goal of your study? (optional)",
     multiple: false,
     field: "objective",
@@ -37,6 +41,7 @@ export const CHALLENGE_STEPS: Step[] = [
   {
     id: "driver",
     title: "Drivers",
+    refine: true,
     question: "Which drivers do you want to study? (optional)",
     multiple: true,
     field: "drivers",
@@ -45,6 +50,7 @@ export const CHALLENGE_STEPS: Step[] = [
   {
     id: "output",
     title: "Outputs",
+    sub: "the results you need",
     question: "Which results do you expect? (optional)",
     multiple: true,
     field: "outputs",
@@ -55,6 +61,7 @@ export const CHALLENGE_STEPS: Step[] = [
   {
     id: "process",
     title: "Processes",
+    refine: true,
     question: "Which hydrological processes matter to you?",
     multiple: true,
     field: "processes",
@@ -64,7 +71,8 @@ export const CHALLENGE_STEPS: Step[] = [
   },
   {
     id: "variable",
-    title: "Data",
+    title: "Your data",
+    sub: "what you already have",
     question: "Which data do you already have?",
     multiple: true,
     field: "available_variables",
@@ -72,6 +80,7 @@ export const CHALLENGE_STEPS: Step[] = [
   {
     id: "datastep",
     title: "Data step",
+    refine: true,
     question: "At which time step is your data? (optional)",
     multiple: false,
     field: "data_time_step",
@@ -81,6 +90,7 @@ export const CHALLENGE_STEPS: Step[] = [
   {
     id: "scale",
     title: "Scale",
+    refine: true,
     question: "At which spatial scale do you work? (optional)",
     multiple: true,
     field: "scales",
@@ -88,6 +98,7 @@ export const CHALLENGE_STEPS: Step[] = [
   {
     id: "timestep",
     title: "Time step",
+    refine: true,
     question: "At which time step do you need the results? (optional)",
     multiple: true,
     field: "time_steps",

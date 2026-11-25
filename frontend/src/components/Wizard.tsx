@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getOptions, type Draft, type Option } from "../api";
 import type { Step } from "../steps";
 import OptionButton from "./OptionButton";
+import { EntryHero, PageNav, PageSteps, type Hero } from "./EntryFrame";
 
 // A start from the search or an example: answers already given (asked no more), and choices
 // ticked in advance on a later question (the user still confirms them there).
@@ -11,11 +12,13 @@ type Props = {
   steps: Step[];                                                // the questions to ask, in order
   onFinish: (draft: Draft, labels: Record<string, string>) => void; // final answers + id -> label
   initial?: WizardStart | null;
+  hero?: Hero;                        // the entry's banner (full on the first question, then one line)
+  later?: string[];                   // the questions left for "Refine" on the results page
 };
 
 const asList = (value: unknown): string[] => (value === undefined || value === null ? [] : Array.isArray(value) ? value : [String(value)]);
 
-export default function Wizard({ steps, onFinish, initial }: Props) {
+export default function Wizard({ steps, onFinish, initial, hero, later = [] }: Props) {
   // the first question not answered yet
   const [stepIndex, setStepIndex] = useState(() => {
     if (!initial) return 0;
@@ -96,6 +99,12 @@ export default function Wizard({ steps, onFinish, initial }: Props) {
   function goBack() {
     let target = stepIndex - 1;
     while (target > 0 && skipped(target, draft)) target--;
+    goTo(target);
+  }
+
+  // an earlier question, from the step bar: its answer and the later ones are asked again
+  function goTo(target: number) {
+    if (target >= stepIndex) return;
     const previous = draft[steps[target].field];
     const kept = { ...draft };
     for (let i = target; i < steps.length; i++) {
@@ -106,6 +115,11 @@ export default function Wizard({ steps, onFinish, initial }: Props) {
     setStepIndex(target);
   }
 
+  // the answers so far, in one line for the bottom bar
+  const summary = steps.slice(0, stepIndex).filter((_, i) => !skipped(i, draft) && draft[steps[i].field] !== undefined)
+    .map((s) => answerText(s.field)).filter((t) => t !== "no preference").join(" · ");
+  const last = (() => { let i = stepIndex + 1; while (i < steps.length && skipped(i, draft)) i++; return i >= steps.length; })();
+
   // Readable text for one answered step, e.g. "runoff, infiltration"
   function answerText(field: keyof Draft): string {
     const value = draft[field];
@@ -115,29 +129,16 @@ export default function Wizard({ steps, onFinish, initial }: Props) {
   }
 
   return (
+    <>
+    {hero && <EntryHero {...hero} compact={stepIndex > 0} />}
     <section className="panel">
-      <ol className="stepper">
-        {steps.map((s, i) => {
-          const off = i !== stepIndex && skipped(i, draft);
-          return (
-            <li key={s.id} className={`step${i === stepIndex ? " active" : off ? " skipped" : i < stepIndex ? " done" : ""}`}
-                title={off ? s.skipNote : undefined}>
-              {i + 1}. {s.title}{off && s.skipNote ? ` · ${s.skipNote}` : ""}
-            </li>
-          );
-        })}
-      </ol>
-
-      {stepIndex > 0 && (
-        <div className="answers">
-          {steps.slice(0, stepIndex).map((s, i) => (
-            <span key={s.id}>
-              <span className="muted">{s.title}:</span>{" "}
-              <strong>{skipped(i, draft) ? s.skipNote ?? "skipped" : answerText(s.field)}</strong>
-            </span>
-          ))}
-        </div>
-      )}
+      <PageSteps
+        steps={steps.map((s) => ({ title: s.title, sub: s.sub }))}
+        current={stepIndex}
+        reachable={(i) => i <= stepIndex}
+        onGo={goTo}
+        note={later.length ? <>{steps.length} questions, then the workflows. {later.join(", ").replace(/^./, (c) => c.toUpperCase())}: add them on the results page with <strong>Refine</strong>, if you need them.</> : undefined}
+      />
 
       <h2 className="question">{step.question}</h2>
 
@@ -159,23 +160,16 @@ export default function Wizard({ steps, onFinish, initial }: Props) {
         </div>
       )}
 
-      <div className="actions">
-        {stepIndex > 0 && (
-          <button className="btn" onClick={goBack}>
-            Back
-          </button>
-        )}
-        {step.multiple && (
-          <button className="btn btn-primary" onClick={() => confirm(selected)}>
-            {selected.length ? "Next" : "Next (no preference)"}
-          </button>
-        )}
-        {!step.multiple && step.optional && (
-          <button className="btn btn-primary" onClick={() => confirm([])}>
-            Skip (no preference)
-          </button>
-        )}
-      </div>
+      <PageNav
+        onBack={stepIndex > 0 ? goBack : undefined}
+        summary={summary}
+        onNext={step.multiple ? () => confirm(selected) : step.optional ? () => confirm([]) : undefined}
+        nextLabel={step.multiple
+          ? (last ? "See the workflows" : selected.length ? "Next" : "Next (no preference)")
+          : "Skip (no preference)"}
+        note={!step.multiple && !step.optional ? "choose one to go on" : step.multiple ? (selected.length ? `${selected.length} chosen` : "optional") : undefined}
+      />
     </section>
+    </>
   );
 }

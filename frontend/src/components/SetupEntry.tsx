@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fullSetupRequest } from "../share";
+import { EntryHero, PageNav, PageSteps, type Hero } from "./EntryFrame";
 import type { Ref } from "../api";
 import {
   applyPatch,
@@ -18,7 +19,12 @@ import {
 import { KIND, NATURE, name, names, STATUS } from "../setupLabels";
 import SetupDiagnosis from "./SetupDiagnosis";
 
-const STEPS = ["Your set-up", "Your study", "Your data", "Diagnosis"];
+const STEPS = [
+  { title: "Your set-up", sub: "methods or a standard workflow" },
+  { title: "Your study", sub: "challenge, objective, outputs" },
+  { title: "Your data", sub: "what you already have" },
+  { title: "Diagnosis", sub: "fit and improvements" },
+];
 const MORE: { field: "output_step" | "intent" | "scenario" | "entity"; label: string }[] = [
   { field: "output_step", label: "Time step of the results" },
   { field: "intent", label: "Decision intent" },
@@ -69,8 +75,9 @@ export type SetupState = { step: number; request: SetupRequest; declined?: strin
 
 // initial: a set-up handed over by the Water Challenge entry ("check and adjust this workflow")
 // saved: a study from a link or a draft, where it was left
-export default function SetupEntry({ initial, saved, onState }: {
+export default function SetupEntry({ initial, saved, onState, hero }: {
   initial?: SetupRequest | null; saved?: SetupState | null; onState?: (state: SetupState | null, summary: string) => void;
+  hero?: Hero;   // the entry's banner (full on the first page, then one line); none inside a results page
 }) {
   // with a challenge and an objective the diagnosis can start at once; else the study is asked first
   // a link drops empty values to stay short: the set-up is put back in its full shape
@@ -324,19 +331,24 @@ export default function SetupEntry({ initial, saved, onState }: {
   const shownChallenge = openChallenge ?? context.challenge;
   const chosenChain = chains.find((c) => c.id === setup.reference_chain);
 
+  // the set-up and study so far, in one line for the bottom bar
+  const chosen = chosenChain ? name(chosenChain) : setup.methods.length
+    ? `${setup.methods.slice(0, 2).map(labelOf).join(", ")}${setup.methods.length > 2 ? ` +${setup.methods.length - 2}` : ""}`
+    : softwareName ? name(softwareName) : "";
+  const findName = (list: string, id: string | null) => {
+    if (!id) return "";
+    const found = (lists[list] ?? []).find((o) => o.id === id);
+    return found ? name(found) : "";
+  };
+  const navSummary = [chosen, findName("challenge", context.challenge), findName("objective", context.objective),
+                      step >= 2 && request.data.length ? `${request.data.length} data in hand` : ""].filter(Boolean).join(" · ");
+  const why = step === 0 ? "choose at least one method or a standard workflow" : step === 1 ? "choose a challenge and an objective" : undefined;
+
   return (
+    <>
+    {hero && <EntryHero {...hero} compact={step > 0} />}
     <section className="panel">
-      <ol className="stepper">
-        {STEPS.map((title, i) => (
-          <li key={title}>
-            <button className={`step${i === step ? " active" : i < step ? " done" : ""}`}
-                    disabled={!reachable(i)} aria-current={i === step ? "step" : undefined}
-                    onClick={() => setStep(i)}>
-              {i + 1}. {title}
-            </button>
-          </li>
-        ))}
-      </ol>
+      <PageSteps steps={STEPS} current={step} reachable={reachable} onGo={setStep} />
       {error && <p className="error">{error}</p>}
 
       {step === 0 && (
@@ -615,23 +627,16 @@ export default function SetupEntry({ initial, saved, onState }: {
         </>
       )}
 
-      <div className="actions">
-        {step > 0 && (
-          <button className="btn" onClick={() => setStep(step - 1)}>
-            Back
-          </button>
-        )}
-        {step < 3 && (
-          <button className="btn btn-primary" disabled={!canNext} onClick={() => setStep(step + 1)}>
-            {step === 2 ? "Diagnose" : "Next"}
-          </button>
-        )}
-        {step === 3 && (
-          <button className="btn" onClick={restart}>
-            Start again
-          </button>
-        )}
-      </div>
+      <PageNav
+        onBack={step > 0 ? () => setStep(step - 1) : undefined}
+        summary={navSummary}
+        onNext={step < 3 ? () => setStep(step + 1) : restart}
+        nextLabel={step === 0 ? "Next: your study" : step === 1 ? "Next: your data" : step === 2 ? "Diagnose" : "Start again"}
+        nextDisabled={step < 3 && !canNext}
+        note={step < 3 && !canNext ? why : undefined}
+        quiet={step === 3}
+      />
     </section>
+    </>
   );
 }
