@@ -801,14 +801,14 @@ function TermView({ term, onOpen }: { term: Term; onOpen: (id: string) => void }
 
 type Tab = "classes" | "object" | "datatype" | "annotation";
 
-export default function OntologyEntry({ initial }: { initial: string | null }) {
+export default function OntologyEntry({ initial, initialQuery = null }: { initial: string | null; initialQuery?: string | null }) {
   const [view, setView] = useState<View>("core");
   const [overview, setOverview] = useState<Overview | null>(null);
   const [terms, setTerms] = useState<ListedTerm[]>([]);
   const [current, setCurrent] = useState<string | null>(initial);
   const [term, setTerm] = useState<Term | null>(null);
   const [tab, setTab] = useState<Tab>("classes");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery ?? "");
   const [found, setFound] = useState<ListedTerm[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showGraph, setShowGraph] = useState(true);

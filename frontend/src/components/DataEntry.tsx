@@ -375,7 +375,7 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
   return (
     <div className="dentry">
       <EntryHero
-        kicker="Start from data"
+        kicker="I have data"
         title="What can you do with your data, here?"
         lead="Choose where you work and tell what data you have: the portal finds the open data covering your area, the role of each dataset, what it makes possible and what to add next."
         aside={area ? <span className="ehero-chip">📍 {area.name}</span> : undefined}

@@ -29,7 +29,9 @@ import SearchBar from "./components/SearchBar";
 import SummaryGraph from "./components/SummaryGraph";
 import SetupEntry, { type SetupState } from "./components/SetupEntry";
 import type { SetupRequest } from "./setupApi";
-import Wizard from "./components/Wizard";
+import Wizard, { type WizardStart } from "./components/Wizard";
+import StartGuide from "./components/StartGuide";
+import type { Go } from "./searchIndex";
 import WorkflowSection from "./components/WorkflowSection";
 import { CHALLENGE_STEPS, DATA_STEPS, SOFTWARE_STEPS } from "./steps";
 import {
@@ -70,6 +72,13 @@ export default function App() {
   const diagnosisState = useRef<unknown | null>(start.current.diagnosis);   // the open diagnosis, as last reported
   const pushedDiagnosis = useRef(false);                         // opened here (back works) or from a link
   const [copied, setCopied] = useState(false);
+  // "Where do you want to start?": on a first visit (no study in the address), and on demand
+  const [guide, setGuide] = useState<boolean>(() => {
+    if (start.current.state || start.current.entry === "ontology") return false;
+    try { return !localStorage.getItem("aio-guide-seen"); } catch { return false; }
+  });
+  const [wizardStart, setWizardStart] = useState<WizardStart | null>(null);   // the challenge questions, partly answered
+  const ontologyQuery = useRef<string | null>(null);                            // a search to run in the ontology page
   const [run, setRun] = useState(0);                       // bumped to restart the wizard
   const [answers, setAnswers] = useState<Draft | null>(null);
   const [labels, setLabels] = useState<Record<string, string>>({});
@@ -295,6 +304,7 @@ export default function App() {
   // study of that entry is offered back.
   function choose(next: Entry) {
     if (next === "ontology") ontologyTerm.current = null;
+    ontologyQuery.current = null;
     open(next, null);
     setResume(next === "ontology" ? null : loadDraft(next));
   }
@@ -333,9 +343,33 @@ export default function App() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  function closeGuide() {
+    setGuide(false);
+    try { localStorage.setItem("aio-guide-seen", "1"); } catch { /* private window */ }
+  }
+
+  // A suggestion of the search or an example of the guide: open its entry already filled in.
+  function goTo(go: Go) {
+    closeGuide();
+    setResume(null);
+    if (go.kind === "data") open("data", go.state);
+    else if (go.kind === "setup") open("software", go.state);
+    else if (go.kind === "challenge") {
+      open("challenge", null);
+      setWizardStart({ draft: go.draft, labels: go.labels, preselect: go.preselect });
+    } else {
+      ontologyTerm.current = null;
+      ontologyQuery.current = go.query;
+      if (window.location.hash !== "#/ontology") window.location.hash = "/ontology";
+      open("ontology", null);
+    }
+    window.scrollTo({ top: 0 });
+  }
+
   // open an entry, empty or on a study (from a link or a draft)
   function open(next: Entry, state: unknown | null) {
     current.current = state;
+    setWizardStart(null);
     if (next === "ontology") {
       if (!window.location.hash.startsWith("#/ontology")) window.location.hash = "/ontology";
     } else {
@@ -440,16 +474,22 @@ export default function App() {
             <div className="brand-title">Hydrology Decision Support</div>
             <div className="brand-sub">Ontology-driven model &amp; open-data recommendation</div>
           </div>
-          <SearchBar />
+          <SearchBar onGo={goTo} />
         </div>
         <nav className="header-nav" aria-label="Starting points">
           <EntryCards selected={entry} onChoose={choose} />
+          <button className="guide-btn" onClick={() => setGuide(true)} title="The three starting points, with examples">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" /><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6" /><path d="M12 17h.01" />
+            </svg>
+            Where to start?
+          </button>
           <button className={`catalogue-btn${catalogue ? " on" : ""}`} aria-expanded={catalogue} onClick={() => setCatalogue(!catalogue)}
                   title="Search every catalogued dataset, variable or derived parameter">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5" /><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />
             </svg>
-            Open data catalogue
+            Open data<span className="tool-extra"> catalogue</span>
             {entry === "challenge" && datasets.length > 0 && <span className="catalogue-count" title="datasets for the workflow in focus">{datasets.length}</span>}
           </button>
           <button className={`share-btn${copied ? " on" : ""}`} onClick={copyLink}
@@ -457,7 +497,7 @@ export default function App() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" /><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
             </svg>
-            <span aria-live="polite">{copied ? "Link copied" : "Copy link"}</span>
+            <span aria-live="polite" className={copied ? "" : "tool-label"}>{copied ? "Link copied" : "Copy link"}</span>
           </button>
         </nav>
       </header>
@@ -479,20 +519,20 @@ export default function App() {
         <div className="split-main">
         {entry === "software" && !adjusting && (
           <EntryHero
-            kicker="Start from a modeling approach"
+            kicker="I have a model"
             title="Does your method or software fit your study?"
             lead="Describe the set-up you already use and the study it is for: the portal diagnoses it, checks its data and proposes improvements, one page at a time."
           />
         )}
         {entry === "challenge" && !adjusting && (
           <EntryHero
-            kicker="Start from a water challenge"
+            kicker="I have a water problem"
             title="Which models and data fit your water issue?"
             lead="Answer a few questions about your challenge, goal and data: the portal ranks the workflows that fit, with the data each one still needs."
           />
         )}
 
-        {entry === "ontology" && <OntologyEntry key={`onto-${run}`} initial={ontologyTerm.current} />}
+        {entry === "ontology" && <OntologyEntry key={`onto-${run}`} initial={ontologyTerm.current} initialQuery={ontologyQuery.current} />}
 
         {/* Modeling Approach: its own flow (set-up, study, data, diagnosis and improvements) */}
         {entry === "software" && (
@@ -508,7 +548,7 @@ export default function App() {
         )}
 
         {entry === "challenge" && answers === null && (
-          <Wizard key={`${entry}-${run}`} steps={steps} onFinish={handleFinish} />
+          <Wizard key={`${entry}-${run}`} steps={steps} onFinish={handleFinish} initial={wizardStart} />
         )}
 
         {entry === "software" && answers !== null && (
@@ -595,6 +635,8 @@ export default function App() {
 
       </main>
       <Credits />
+
+      {guide && <StartGuide onStart={(entry) => { closeGuide(); choose(entry); }} onGo={goTo} onClose={closeGuide} />}
 
       {/* the open data catalogue: always one click away, without taking room from the pages */}
       {catalogue && <div className="drawer-backdrop" onClick={() => setCatalogue(false)} />}

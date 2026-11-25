@@ -153,6 +153,11 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const getChallenges = () => request<Item[]>("/challenges");
 
+// the expected outputs of a challenge, with the plain question each one answers
+export type ChallengeOutput = { id: string; label: string; question: string | null; primary: boolean };
+export const getChallengeOutputs = (challengeId: string) =>
+  request<ChallengeOutput[]>(`/challenges/${encodeURIComponent(challengeId)}/outputs`);
+
 export const getProcesses = (challengeId: string) =>
   request<Item[]>(`/challenges/${encodeURIComponent(challengeId)}/processes`);
 

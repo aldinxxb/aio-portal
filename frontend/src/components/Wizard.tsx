@@ -3,21 +3,41 @@ import { getOptions, type Draft, type Option } from "../api";
 import type { Step } from "../steps";
 import OptionButton from "./OptionButton";
 
+// A start from the search or an example: answers already given (asked no more), and choices
+// ticked in advance on a later question (the user still confirms them there).
+export type WizardStart = { draft: Draft; labels: Record<string, string>; preselect: Partial<Draft> };
+
 type Props = {
   steps: Step[];                                                // the questions to ask, in order
   onFinish: (draft: Draft, labels: Record<string, string>) => void; // final answers + id -> label
+  initial?: WizardStart | null;
 };
 
-export default function Wizard({ steps, onFinish }: Props) {
-  const [stepIndex, setStepIndex] = useState(0);
-  const [draft, setDraft] = useState<Draft>({});
+const asList = (value: unknown): string[] => (value === undefined || value === null ? [] : Array.isArray(value) ? value : [String(value)]);
+
+export default function Wizard({ steps, onFinish, initial }: Props) {
+  // the first question not answered yet
+  const [stepIndex, setStepIndex] = useState(() => {
+    if (!initial) return 0;
+    const i = steps.findIndex((s) => initial.draft[s.field] === undefined);
+    return i < 0 ? 0 : i;
+  });
+  const [draft, setDraft] = useState<Draft>(initial?.draft ?? {});
   const [options, setOptions] = useState<Option[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const [labels, setLabels] = useState<Record<string, string>>({});
+  const [labels, setLabels] = useState<Record<string, string>>(initial?.labels ?? {});
+  const preselect = initial?.preselect ?? {};
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const step = steps[stepIndex];
+
+  // a question with choices ticked in advance: tick them (unless the user already chose)
+  useEffect(() => {
+    const ahead = asList(preselect[step.field]);
+    if (ahead.length && step.multiple) setSelected((now) => (now.length ? now : ahead));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepIndex]);
 
   useEffect(() => {
     let cancelled = false;
