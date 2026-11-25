@@ -1,4 +1,5 @@
 import type { Chain, ChainStep, DataState, Ref , Module } from "../api";
+import Def from "./Def";
 
 const name = (item: Ref) => item.label ?? item.id;
 const names = (items: Ref[]) => items.map(name).join(", ");
@@ -20,7 +21,7 @@ function StatePill({ item }: { item: Ref & { state: DataState } }) {
   );
 }
 
-function Row({ title, children }: { title: string; children: React.ReactNode }) {
+function Row({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="fact">
       <dt>{title}</dt>
@@ -49,7 +50,7 @@ export function ModuleLine({ module }: { module: Module }) {
       <strong>{module.name}</strong> <span className="muted">in {name(module.software)}</span>
       <span className="module-facts">
         <span title="usual time step in this software">⏱ {module.time_step}</span>
-        <span title="computational unit">◫ {module.spatial_unit}</span>
+        <span title="computational unit">◫ {module.spatial_unit && /\bHRU/.test(module.spatial_unit) ? <Def k="hru">{module.spatial_unit}</Def> : module.spatial_unit}</span>
         <span title="usual spatial resolution">▦ {module.resolution}</span>
       </span>
     </div>
@@ -161,7 +162,7 @@ export default function ChainCard({ chain, open, onAdjust, best, compare }: Card
                 {name(s)}<i className={`wf-lic ${s.open ? "open" : s.free ? "free" : "paid"}`} />
               </span>
             ))}
-            {chain.software.length > 1 && <span className="muted">· coupled ({chain.coupling ? name(chain.coupling) : "two software"})</span>}
+            {chain.software.length > 1 && <span className="muted">· <Def k="coupling">coupled</Def> ({chain.coupling ? name(chain.coupling) : "two software"})</span>}
           </span>
         </div>
         {compare && (
@@ -173,7 +174,7 @@ export default function ChainCard({ chain, open, onAdjust, best, compare }: Card
         <div className="wf-tags">
           <span className={`tag ${runnable ? "tag-direct" : "tag-complement"}`}>{runnable ? "ready to run" : "to check"}</span>
           <span className={`tag ${chain.kind === "reference" ? "tag-soft" : "tag-info"}`}>
-            {chain.kind === "reference" ? "standard practice" : "possible combination"}
+            {chain.kind === "reference" ? <Def k="standard">standard practice</Def> : <Def k="generated">possible combination</Def>}
           </span>
         </div>
         <div className="wf-meters">
@@ -227,25 +228,25 @@ export default function ChainCard({ chain, open, onAdjust, best, compare }: Card
             <h4 className="wf-sub">What it needs</h4>
             <div className="wf-counts">
               <span className="pill pill-hit">✓ {count("have")} you have</span>
-              <span className="pill pill-open">◎ {count("open_data")} open data</span>
+              <span className="pill pill-open">◎ {count("open_data")} <Def k="opendata">open data</Def></span>
               <span className={`pill${count("missing") ? " pill-warn" : ""}`}>⚠ {count("missing")} without a source</span>
             </div>
             <dl className="facts">
               {NATURES.map((n) => {
                 const items = chain.inputs.filter((i) => (i.nature ?? (i.kind === "parameter" ? "static" : "forcing")) === n.id);
                 return items.length ? (
-                  <Row key={n.id} title={n.title}>{items.map((i) => <StatePill key={i.id} item={i} />)}</Row>
+                  <Row key={n.id} title={<Def k={n.id}>{n.title}</Def>}>{items.map((i) => <StatePill key={i.id} item={i} />)}</Row>
                 ) : null;
               })}
               {chain.inputs.length === 0 && <Row title="Inputs"><span className="muted">nothing to bring</span></Row>}
               {chain.initial_conditions.length > 0 && (
-                <Row title="Initial state">
+                <Row title={<Def k="initial" />}>
                   {plain(chain.initial_conditions)}
                   <span className="muted">warm-up run or observed snapshot</span>
                 </Row>
               )}
               {chain.calibration.needed && (
-                <Row title="Calibration">
+                <Row title={<Def k="calibration" />}>
                   <span className={chain.calibration.ok ? "reason-pass" : "reason-fail"}>
                     {chain.calibration.ok ? "✓ measured data exists for " : "✗ no measured data for "}
                     {names(chain.calibration.against)}

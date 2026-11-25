@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { fullSetupRequest } from "../share";
+import Def from "./Def";
+import StudyBridge from "./StudyBridge";
+import type { Go } from "../searchIndex";
 import { EntryHero, PageNav, PageSteps, type Hero } from "./EntryFrame";
 import type { Ref } from "../api";
 import {
@@ -75,9 +78,10 @@ export type SetupState = { step: number; request: SetupRequest; declined?: strin
 
 // initial: a set-up handed over by the Water Challenge entry ("check and adjust this workflow")
 // saved: a study from a link or a draft, where it was left
-export default function SetupEntry({ initial, saved, onState, hero }: {
+export default function SetupEntry({ initial, saved, onState, hero, onGo }: {
   initial?: SetupRequest | null; saved?: SetupState | null; onState?: (state: SetupState | null, summary: string) => void;
   hero?: Hero;   // the entry's banner (full on the first page, then one line); none inside a results page
+  onGo?: (go: Go) => void;   // continue with this study in another entry
 }) {
   // with a challenge and an objective the diagnosis can start at once; else the study is asked first
   // a link drops empty values to stay short: the set-up is put back in its full shape
@@ -565,7 +569,7 @@ export default function SetupEntry({ initial, saved, onState, hero }: {
             if (items.length === 0) return null;
             return (
               <div key={nature}>
-                <h4 className="sub-title">{NATURE[nature]} ({items.length})</h4>
+                <h4 className="sub-title"><Def k={nature}>{NATURE[nature]}</Def> ({items.length})</h4>
                 {items.map((row) => {
                   const item = request.data.find((x) => x.variable === row.id);
                   return (
@@ -627,6 +631,14 @@ export default function SetupEntry({ initial, saved, onState, hero }: {
         </>
       )}
 
+      {step === 3 && onGo && result && (
+        <StudyBridge from="software" onGo={onGo} study={{
+          challenge: result.diagnosis.study.challenge,
+          objective: result.diagnosis.study.objective,
+          outputs: result.diagnosis.outputs.map((o) => ({ id: o.id, label: o.label })),
+          data: request.data.map((d) => ({ variable: { id: d.variable, label: result.diagnosis.data.find((r) => r.id === d.variable)?.label ?? d.variable }, step: d.step })),
+        }} />
+      )}
       <PageNav
         onBack={step > 0 ? () => setStep(step - 1) : undefined}
         summary={navSummary}

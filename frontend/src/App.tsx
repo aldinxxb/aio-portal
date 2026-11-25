@@ -31,6 +31,7 @@ import SetupEntry, { type SetupState } from "./components/SetupEntry";
 import type { SetupRequest } from "./setupApi";
 import Wizard, { type WizardStart } from "./components/Wizard";
 import StartGuide from "./components/StartGuide";
+import StudyBridge from "./components/StudyBridge";
 import type { Go } from "./searchIndex";
 import WorkflowSection from "./components/WorkflowSection";
 import { CHALLENGE_STEPS, DATA_STEPS, SOFTWARE_STEPS } from "./steps";
@@ -368,6 +369,7 @@ export default function App() {
     setResume(null);
     if (go.kind === "data") open("data", go.state);
     else if (go.kind === "setup") open("software", go.state);
+    else if (go.kind === "results") open("challenge", go.state);
     else if (go.kind === "challenge") {
       open("challenge", null);
       setWizardStart({ draft: go.draft, labels: go.labels, preselect: go.preselect });
@@ -538,13 +540,13 @@ export default function App() {
 
         {/* Modeling Approach: its own flow (set-up, study, data, diagnosis and improvements) */}
         {entry === "software" && (
-          <SetupEntry key={`setup-${run}`} initial={handover} saved={saved as SetupState | null} hero={HEROES.software}
+          <SetupEntry key={`setup-${run}`} initial={handover} saved={saved as SetupState | null} hero={HEROES.software} onGo={goTo}
                       onState={(state, summary) => report("software", state, summary)} />
         )}
 
         {entry === "data" && (
           <div hidden={!!adjusting}>
-            <DataEntry key={`data-${run}`} onAdjust={adjustFromData} initial={saved as DataState | null}
+            <DataEntry key={`data-${run}`} onAdjust={adjustFromData} initial={saved as DataState | null} onGo={goTo}
                        onState={(state, summary) => report("data", state, summary)} />
           </div>
         )}
@@ -615,6 +617,14 @@ export default function App() {
             )}
           </section>
 
+          {result && (
+            <StudyBridge from="challenge" onGo={goTo} study={{
+              challenge: answers.challenge ? { id: answers.challenge, label: text(answers.challenge) } : null,
+              objective: answers.objective ? { id: answers.objective, label: text(answers.objective) } : null,
+              outputs: (answers.outputs ?? []).map((id) => ({ id, label: text(id) })),
+              data: (answers.available_variables ?? []).map((id) => ({ variable: { id, label: text(id) }, step: answers.data_time_step ?? null })),
+            }} />
+          )}
           {result && chains && (
             <SummaryGraph result={result} chains={chains.chains} focus={focus} onFocus={setFocus}
                           challenge={text(answers.challenge ?? "")} />

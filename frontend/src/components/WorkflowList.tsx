@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Chain, Ref } from "../api";
 import ChainCard from "./ChainCard";
+import Def from "./Def";
 import { count, toFind } from "../workflowRank";
 
 // The recommended workflows, as a list the user can act on (shared by both results pages):
@@ -29,7 +30,7 @@ function sorted(chains: Chain[], sort: Sort): Chain[] {
 }
 
 function Compare({ chains, onClear }: { chains: Chain[]; onClear: () => void }) {
-  const rows: [string, (c: Chain) => React.ReactNode][] = [
+  const rows: [React.ReactNode, (c: Chain) => React.ReactNode][] = [
     ["Software", (c) => c.software.map((s) => `${name(s)} (${s.open ? "open source" : s.free ? "free" : "commercial"})`).join(" + ")],
     ["Status", (c) => (c.status === "runnable" ? "ready to run" : "to check")],
     ["Kind", (c) => (c.kind === "reference" ? "standard practice" : "combination built by the portal")],
@@ -38,8 +39,8 @@ function Compare({ chains, onClear }: { chains: Chain[]; onClear: () => void }) 
     ["To fetch", (c) => names(c.inputs.filter((i) => i.state === "open_data")) || "nothing"],
     ["Without a source", (c) => names(c.inputs.filter((i) => i.state === "missing")) || "nothing"],
     ["Steps", (c) => c.steps.map((s) => name(s.method)).join(" → ")],
-    ["Time step", (c) => [...new Set(c.steps.map((s) => s.module?.time_step).filter(Boolean))].join(", ") || "–"],
-    ["Calibration", (c) => (!c.calibration.needed ? "not needed" : c.calibration.ok ? `measured data exists (${names(c.calibration.against)})` : `no measured data for ${names(c.calibration.against)}`)],
+    [<Def key="timestep" k="timestep" />, (c) => [...new Set(c.steps.map((s) => s.module?.time_step).filter(Boolean))].join(", ") || "–"],
+    [<Def key="calibration" k="calibration" />, (c) => (!c.calibration.needed ? "not needed" : c.calibration.ok ? `measured data exists (${names(c.calibration.against)})` : `no measured data for ${names(c.calibration.against)}`)],
     ["Delivers", (c) => names(c.delivers) || "–"],
   ];
   return (
@@ -54,8 +55,8 @@ function Compare({ chains, onClear }: { chains: Chain[]; onClear: () => void }) 
             <tr><th />{chains.map((c) => <th key={c.id}>{c.label}</th>)}</tr>
           </thead>
           <tbody>
-            {rows.map(([label, cell]) => (
-              <tr key={label}><th scope="row">{label}</th>{chains.map((c) => <td key={c.id}>{cell(c)}</td>)}</tr>
+            {rows.map(([label, cell], i) => (
+              <tr key={i}><th scope="row">{label}</th>{chains.map((c) => <td key={c.id}>{cell(c)}</td>)}</tr>
             ))}
           </tbody>
         </table>

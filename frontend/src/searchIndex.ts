@@ -20,7 +20,8 @@ export type Go =
   | { kind: "challenge"; draft: Draft; labels: Record<string, string>; preselect: Partial<Draft> }
   | { kind: "data"; state: DataState }
   | { kind: "setup"; state: SetupState }
-  | { kind: "ontology"; query: string };
+  | { kind: "ontology"; query: string }
+  | { kind: "results"; state: unknown };   // the water-problem results, all answers given (from another entry)
 
 export type Suggestion = { key: string; group: string; title: string; detail: string | null; go: Go };
 

@@ -23,6 +23,9 @@ import { whyBest } from "../workflowRank";
 import { EntryHero, PageNav, PageSteps } from "./EntryFrame";
 import FranceMap, { boundsOf, type Bounds } from "./FranceMap";
 import { fullDataItems } from "../share";
+import Def from "./Def";
+import StudyBridge from "./StudyBridge";
+import type { Go } from "../searchIndex";
 
 // Entry "Start from data", the home screen of the portal. Four pages, one question each:
 //   1 Study area     choose an area of France, then the watersheds (BD Topage) inside it
@@ -189,9 +192,10 @@ type Props = {
   onAdjust: (chain: Chain, study: { challenge: string; objective: string | null; outputs: string[]; data: DataItem[] }) => void;
   initial?: DataState | null;                                // a study from a link or a draft
   onState?: (state: DataState | null, summary: string) => void;   // every change, for the address (null: nothing chosen)
+  onGo?: (go: Go) => void;                                   // continue with this study in another entry
 };
 
-export default function DataEntry({ onAdjust, initial, onState }: Props) {
+export default function DataEntry({ onAdjust, initial, onState, onGo }: Props) {
   const [page, setPage] = useState(initial?.page ?? 0);
   // the area of a link is found once its layer is loaded
   const pendingArea = useRef<string | null>(initial?.area ?? null);
@@ -574,7 +578,7 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
                       if (!items.length) return null;
                       return (
                         <div key={r.id} className={`role-col rc-${r.id}`}>
-                          <div className="role-col-head"><strong>{r.title}</strong><span className="muted">{r.help}</span></div>
+                          <div className="role-col-head"><strong>{r.id === "unused" ? r.title : <Def k={r.id}>{r.title}</Def>}</strong><span className="muted">{r.help}</span></div>
                           {items.map((x) => (
                             <div key={x.id} className={`role-item${x.source === "dataset" ? " from-dataset" : ""}`}>
                               <strong>{name(x)}</strong>
@@ -828,6 +832,15 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
                 );
               })}
             </>
+          )}
+          {onGo && region && (
+            <StudyBridge from="data" onGo={onGo} study={{
+              challenge: challenge ? { id: challenge, label: challengeName } : null,
+              objective: objective ? { id: objective, label: name(result?.objectives?.find((o) => o.id === objective) ?? { id: objective, label: null }) } : null,
+              outputs: outputs.map((id) => ({ id, label: name(result?.outputs?.find((o) => o.id === id) ?? { id, label: null }) })),
+              data: data.map((d) => ({ variable: { id: d.variable, label: label.get(d.variable) ?? d.variable }, step: d.step })),
+              area: { layer: region.layer, id: region.feature.properties.id, name: region.feature.properties.name, sheds: picked },
+            }} />
           )}
           <PageNav onBack={() => go(2)} />
         </section>
