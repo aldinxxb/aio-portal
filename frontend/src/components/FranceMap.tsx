@@ -124,7 +124,9 @@ export default function FranceMap({ features, selected, onSelect, bounds = FRANC
     if (!d.moved && Math.hypot(dx, dy) < 4) return;
     d.moved = true;
     moved.current = true;
-    const scale = d.view.w / svgRef.current.getBoundingClientRect().width;
+    // screen pixels per map unit, as drawn (the map may be centred with margins when its height is capped)
+    const m = svgRef.current.getScreenCTM();
+    const scale = m && m.a ? 1 / m.a : d.view.w / svgRef.current.getBoundingClientRect().width;
     setView(clamp({ ...d.view, x: d.view.x - dx * scale, y: d.view.y - dy * scale }));
   }
   function onPointerUp() {

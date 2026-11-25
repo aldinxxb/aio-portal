@@ -186,7 +186,8 @@ function layout(ids: string[], edges: { from: string; to: string }[], W: number,
   return new Map(ids.map((id, i) => [id, { x: p[i].x, y: p[i].y }]));
 }
 
-// Zoom (mouse wheel, buttons) and move (drag) for an SVG drawing of size W x H.
+// Zoom (Ctrl/⌘ + wheel, pinch, buttons) and move (drag) for an SVG drawing of size W x H.
+// The plain wheel is left to the page, so the graph never traps the scrolling.
 function useZoom(W: number, H: number) {
   const full = useMemo(() => ({ x: 0, y: 0, w: W, h: H }), [W, H]);
   const [view, setView] = useState(full);
@@ -207,6 +208,7 @@ function useZoom(W: number, H: number) {
     const el = svg.current;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return;      // a trackpad pinch also arrives with ctrlKey
       e.preventDefault();
       const m = el.getScreenCTM();
       if (!m) return;
@@ -217,20 +219,36 @@ function useZoom(W: number, H: number) {
     return () => el.removeEventListener("wheel", onWheel);
   });
   const handlers = {
-    onPointerDown: (e: React.PointerEvent) => { drag.current = { x: e.clientX, y: e.clientY, view, moved: false }; moved.current = false; },
+    onPointerDown: (e: React.PointerEvent) => {
+      if (e.button !== 0) return;
+      drag.current = { x: e.clientX, y: e.clientY, view, moved: false };
+      moved.current = false;
+      // keep the pan going if the pointer slips out of the drawing
+      try { svg.current?.setPointerCapture(e.pointerId); } catch { /* not a captured pointer */ }
+    },
     onPointerMove: (e: React.PointerEvent) => {
       const d = drag.current;
       if (!d || !svg.current) return;
       const dx = e.clientX - d.x, dy = e.clientY - d.y;
       if (!d.moved && Math.hypot(dx, dy) < 4) return;
       d.moved = true; moved.current = true;
-      const scale = d.view.w / svg.current.getBoundingClientRect().width;
+      // screen pixels per drawing unit, as drawn (the drawing may be centred with margins)
+      const m = svg.current.getScreenCTM();
+      const scale = m && m.a ? 1 / m.a : d.view.w / svg.current.getBoundingClientRect().width;
       setView(clamp({ ...d.view, x: d.view.x - dx * scale, y: d.view.y - dy * scale }));
     },
-    onPointerUp: () => { drag.current = null; },
+    onPointerUp: (e?: React.PointerEvent) => {
+      drag.current = null;
+      if (e && svg.current?.hasPointerCapture(e.pointerId)) svg.current.releasePointerCapture(e.pointerId);
+    },
     onPointerLeave: () => { drag.current = null; },
   };
-  return { svg, view, zoom: W / view.w, zoomAt, reset: () => setView(full), handlers, wasDrag: () => moved.current };
+  // the pointer, in the drawing's coordinates
+  const toSvg = (e: { clientX: number; clientY: number }) => {
+    const m = svg.current?.getScreenCTM();
+    return m ? new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse()) : null;
+  };
+  return { svg, view, zoom: W / view.w, zoomAt, reset: () => setView(full), handlers, wasDrag: () => moved.current, toSvg };
 }
 
 const countInstances = (n: TreeNode): number => n.instances + n.children.reduce((sum, c) => sum + countInstances(c), 0);
@@ -239,7 +257,7 @@ const MODULE_COLOUR: Record<string, string> = { requirements: "mod-req", workflo
 type Box = TreeNode & { axis?: string; context?: boolean };
 type Edge = { from: string; to: string; props: TermRef[] };
 
-function ModuleDiagram({ overview, onOpen }: { overview: Overview; onOpen: (id: string) => void }) {
+function ModuleDiagram({ overview, onOpen, selected }: { overview: Overview; onOpen: (id: string) => void; selected: string | null }) {
   const [hover, setHover] = useState<string | null>(null);
   // Core: the classes directly under the four axes (the semantic architecture), coloured by
   // axis. Extension: its classes (coloured by module) and the classes it builds on (dashed).
@@ -282,8 +300,49 @@ function ModuleDiagram({ overview, onOpen }: { overview: Overview; onOpen: (id: 
   }, [overview]);
 
   const W = 1500, H = 860;
-  const at = useMemo(() => layout(nodes.map((n) => n.id), edges, W, H), [nodes, edges]);
-  const { svg, view, zoom, zoomAt, reset, handlers, wasDrag } = useZoom(W, H);
+  const laid = useMemo(() => layout(nodes.map((n) => n.id), edges, W, H), [nodes, edges]);
+  const { svg, view, zoom, zoomAt, reset, handlers, toSvg } = useZoom(W, H);
+  // Boxes the user moved: their position replaces the computed one (until "Reset layout").
+  const [placed, setPlaced] = useState<Record<string, { x: number; y: number }>>({});
+  useEffect(() => setPlaced({}), [laid]);                  // another module: its own layout
+  const at = useMemo(() => {
+    const m = new Map(laid);
+    for (const [id, p] of Object.entries(placed)) if (m.has(id)) m.set(id, p);
+    return m;
+  }, [laid, placed]);
+  // a box being dragged: grabbed at (dx, dy) from its centre; a press without a move opens it
+  const grab = useRef<{ id: string; dx: number; dy: number; x0: number; y0: number; moved: boolean } | null>(null);
+  function grabBox(e: React.PointerEvent, id: string) {
+    if (e.button !== 0) return;
+    e.stopPropagation();                                  // not a move of the whole drawing
+    const pt = toSvg(e);
+    const p = at.get(id);
+    if (!pt || !p) return;
+    grab.current = { id, dx: pt.x - p.x, dy: pt.y - p.y, x0: e.clientX, y0: e.clientY, moved: false };
+    svg.current?.setPointerCapture(e.pointerId);
+  }
+  const dragHandlers = {
+    onPointerDown: handlers.onPointerDown,
+    onPointerMove: (e: React.PointerEvent) => {
+      const g = grab.current;
+      if (!g) { handlers.onPointerMove(e); return; }
+      if (!g.moved && Math.hypot(e.clientX - g.x0, e.clientY - g.y0) < 4) return;
+      g.moved = true;
+      const pt = toSvg(e);
+      if (!pt) return;
+      const x = Math.min(W - BOX_W / 2 - 4, Math.max(BOX_W / 2 + 4, pt.x - g.dx));
+      const y = Math.min(H - BOX_H / 2 - 4, Math.max(BOX_H / 2 + 4, pt.y - g.dy));
+      setPlaced((old) => ({ ...old, [g.id]: { x, y } }));
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      const g = grab.current;
+      grab.current = null;
+      if (svg.current?.hasPointerCapture(e.pointerId)) svg.current.releasePointerCapture(e.pointerId);
+      if (g && !g.moved) onOpen(g.id);                    // a click: open the class
+      handlers.onPointerUp(e);
+    },
+    onPointerLeave: () => { if (!grab.current) handlers.onPointerLeave(); },
+  };
   const shownEdges = edges.filter((e) => at.has(e.from) && at.has(e.to));
   const active = hover ? shownEdges.filter((e) => e.from === hover || e.to === hover) : [];
   const isOn = (e: Edge) => !hover || e.from === hover || e.to === hover;
@@ -296,7 +355,7 @@ function ModuleDiagram({ overview, onOpen }: { overview: Overview; onOpen: (id: 
   return (
     <div className="odiagram">
       <div className="odiagram-frame">
-        <svg ref={svg} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} role="img" {...handlers}
+        <svg ref={svg} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} role="img" {...dragHandlers}
              aria-label="Classes of the AIO ontology and the object properties between them">
           <defs>
             {["edge", "edge-on"].map((id) => (
@@ -335,8 +394,9 @@ function ModuleDiagram({ overview, onOpen }: { overview: Overview; onOpen: (id: 
             const dim = hover && hover !== n.id && !active.some((e) => e.from === n.id || e.to === n.id);
             return (
               <g key={n.id} transform={`translate(${p.x},${p.y})`}
-                 className={`onode ${colourOf(n)}${dim ? " off" : ""}${hover === n.id ? " on" : ""}${n.context ? " onode-context" : ""}${n.reused ? " onode-reused" : ""}`}
-                 onMouseEnter={() => setHover(n.id)} onMouseLeave={() => setHover(null)} onClick={() => { if (!wasDrag()) onOpen(n.id); }}>
+                 className={`onode ${colourOf(n)}${dim ? " off" : ""}${hover === n.id ? " on" : ""}${selected === n.id ? " picked" : ""}${n.context ? " onode-context" : ""}${n.reused ? " onode-reused" : ""}`}
+                 onMouseEnter={() => { if (!grab.current) setHover(n.id); }} onMouseLeave={() => { if (!grab.current) setHover(null); }}
+                 onPointerDown={(e) => grabBox(e, n.id)}>
                 <rect x={-BOX_W / 2} y={-BOX_H / 2} width={BOX_W} height={BOX_H} rx={11} />
                 <text y={-3} textAnchor="middle" className="onode-title">{n.label.length > 24 ? n.label.slice(0, 23) + "…" : n.label}</text>
                 <text y={13} textAnchor="middle" className="onode-sub">
@@ -352,7 +412,10 @@ function ModuleDiagram({ overview, onOpen }: { overview: Overview; onOpen: (id: 
           <button title="Whole graph" onClick={reset} disabled={zoom <= 1.01}>⤢</button>
           {zoom > 1.01 && <span className="fmap-zoom-level">×{zoom.toFixed(1)}</span>}
         </div>
-        <div className="fmap-help">Scroll to zoom · drag to move · click a box to open it</div>
+        {Object.keys(placed).length > 0 && (
+          <button className="odiagram-relayout" onClick={() => setPlaced({})} title="Put every box back where the layout placed it">Reset layout</button>
+        )}
+        <div className="fmap-help">Drag a box to move it · click it to open it · Ctrl + scroll to zoom · drag the background to pan</div>
         {hover && (
           <div className="odiagram-pop">
             <strong>{nodes.find((n) => n.id === hover)?.label}</strong>
@@ -537,12 +600,31 @@ function AlignmentTable({ groups, onOpen }: { groups: Overview["alignments"]; on
 
 // ---- the browser's side list ------------------------------------------------------------------
 
-function Tree({ nodes, current, onOpen, depth = 0 }: { nodes: TreeNode[]; current: string | null; onOpen: (id: string) => void; depth?: number }) {
+// the classes (or properties) above a term in a tree, outermost first; null if it is not there
+function pathTo(nodes: TreeNode[], id: string): string[] | null {
+  for (const n of nodes) {
+    if (n.id === id) return [];
+    const below = pathTo(n.children, id);
+    if (below) return [n.id, ...below];
+  }
+  return null;
+}
+
+// expand: the branches to open so that the selected term is visible
+function Tree({ nodes, current, onOpen, expand, depth = 0 }: {
+  nodes: TreeNode[]; current: string | null; onOpen: (id: string) => void; expand: string[]; depth?: number;
+}) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  // a term selected elsewhere (graph, links, search) opens its branch, even one closed by hand
+  const expandKey = expand.join("|");
+  useEffect(() => {
+    if (expand.length) setOpen((old) => ({ ...old, ...Object.fromEntries(expand.map((id) => [id, true])) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expandKey]);
   return (
     <ul className="otree" role={depth ? "group" : "tree"}>
       {nodes.map((n) => {
-        const expanded = open[n.id] ?? false;
+        const expanded = open[n.id] ?? expand.includes(n.id);
         return (
           <li key={n.id} role="treeitem" aria-expanded={n.children.length ? expanded : undefined}>
             <div className={`otree-row${current === n.id ? " on" : ""}`} style={{ paddingLeft: 6 + depth * 14 }}>
@@ -552,7 +634,7 @@ function Tree({ nodes, current, onOpen, depth = 0 }: { nodes: TreeNode[]; curren
               <a href={`#/ontology/${n.id}`} onClick={(e) => { e.preventDefault(); onOpen(n.id); }}>{n.label}</a>
               {(n.total ?? n.instances) > 0 && <span className="otree-n">{n.total ?? n.instances}</span>}
             </div>
-            {expanded && n.children.length > 0 && <Tree nodes={n.children} current={current} onOpen={onOpen} depth={depth + 1} />}
+            {expanded && n.children.length > 0 && <Tree nodes={n.children} current={current} onOpen={onOpen} expand={expand} depth={depth + 1} />}
           </li>
         );
       })}
@@ -790,6 +872,39 @@ export default function OntologyEntry({ initial }: { initial: string | null }) {
     annotation: propertyTree(terms, "annotation"),
   }), [terms]);
 
+  // The term to show selected in the side list: the current one, or for an individual its class.
+  // The list moves to its tab and opens its branch; a search that does not hold it is cleared.
+  const pick = useMemo(() => {
+    if (!current || !overview) return null;
+    const forest: [Tab, TreeNode[]][] = [["classes", overview.hierarchy], ["object", trees.object], ["datatype", trees.datatype], ["annotation", trees.annotation]];
+    const candidates = [current, ...(term?.id === current && term.kind === "individual" ? term.types.map((t) => t.id) : [])];
+    for (const id of candidates) {
+      for (const [tab, nodes] of forest) {
+        const path = pathTo(nodes, id);
+        if (path) return { id, tab, path };
+      }
+    }
+    return null;
+  }, [current, term, overview, trees]);
+  const listBox = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!pick) return;
+    setTab(pick.tab);
+    if (found && !found.some((t) => t.id === current)) setQuery("");
+    // once the branch is open, bring the row into view inside the list (not the page)
+    const timer = setTimeout(() => {
+      const box = listBox.current;
+      const row = box?.querySelector<HTMLElement>(".otree-row.on, .olist-item.on");
+      if (!box || !row) return;
+      const top = row.offsetTop - box.offsetTop, bottom = top + row.offsetHeight;
+      if (top < box.scrollTop || bottom > box.scrollTop + box.clientHeight) box.scrollTop = top - box.clientHeight / 3;
+    }, 60);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pick?.id, pick?.tab, pick?.path.join("|")]);
+  const expand = pick?.path ?? [];
+  const selectedInList = pick?.id ?? current;
+
   const o = overview;
   const licence = o?.license ? LICENCES[o.license] ?? o.license : null;
   const prefixes = o ? o.namespaces.map((n) => `PREFIX ${n.prefix}: <${n.namespace}>`).join("\n") : "";
@@ -849,7 +964,7 @@ export default function OntologyEntry({ initial }: { initial: string | null }) {
             <h3>{o.module === "core" ? "The semantic architecture: four axes and how they relate" : o.module === "all" ? "All modules and how they relate" : `${o.title}: its classes and what they build on`}</h3>
             <button className="btn btn-quiet" onClick={() => setShowGraph(!showGraph)}>{showGraph ? "Hide the graph" : "Show the graph"}</button>
           </div>
-          {showGraph && <ModuleDiagram overview={o} onOpen={open} />}
+          {showGraph && <ModuleDiagram overview={o} onOpen={open} selected={current} />}
         </section>
       )}
 
@@ -857,7 +972,7 @@ export default function OntologyEntry({ initial }: { initial: string | null }) {
         <aside className="oside">
           <input className="ofind" type="search" placeholder="Search classes, properties, individuals…" value={query} onChange={(e) => setQuery(e.target.value)} />
           {found ? (
-            <div className="olist">
+            <div className="olist" ref={listBox}>
               <div className="olist-head">{found.length} result{found.length === 1 ? "" : "s"}</div>
               {found.map((t) => (
                 <button key={t.id} className={`olist-item${current === t.id ? " on" : ""}`} onClick={() => open(t.id)} title={t.definition ?? undefined}>
@@ -872,7 +987,7 @@ export default function OntologyEntry({ initial }: { initial: string | null }) {
                   <button key={id} role="tab" aria-selected={tab === id} className={`otab${tab === id ? " on" : ""}`} onClick={() => setTab(id)}>{label}</button>
                 ))}
               </div>
-              <div className="olist">
+              <div className="olist" ref={listBox}>
                 {tab === "classes" && o && (() => {
                   const axes = o.hierarchy.filter((h) => h.group === "axis");
                   const descriptors = o.hierarchy.filter((h) => h.group === "descriptor");
@@ -880,15 +995,15 @@ export default function OntologyEntry({ initial }: { initial: string | null }) {
                   return (
                     <>
                       {axes.length > 0 && <div className="otree-group">The four axes</div>}
-                      {axes.length > 0 && <Tree nodes={axes} current={current} onOpen={open} />}
+                      {axes.length > 0 && <Tree nodes={axes} current={selectedInList} onOpen={open} expand={expand} />}
                       {extension.length > 0 && <div className="otree-group">{view === "all" ? "Extensions" : VIEW[view].name}</div>}
-                      {extension.length > 0 && <Tree nodes={extension} current={current} onOpen={open} />}
+                      {extension.length > 0 && <Tree nodes={extension} current={selectedInList} onOpen={open} expand={expand} />}
                       {descriptors.length > 0 && <div className="otree-group">Descriptors (value sets)</div>}
-                      {descriptors.length > 0 && <Tree nodes={descriptors} current={current} onOpen={open} />}
+                      {descriptors.length > 0 && <Tree nodes={descriptors} current={selectedInList} onOpen={open} expand={expand} />}
                     </>
                   );
                 })()}
-                {tab !== "classes" && <Tree nodes={trees[tab]} current={current} onOpen={open} />}
+                {tab !== "classes" && <Tree nodes={trees[tab]} current={selectedInList} onOpen={open} expand={expand} />}
               </div>
             </>
           )}
