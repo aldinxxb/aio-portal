@@ -8,6 +8,9 @@ type Props = {
   relatedTitle?: string;   // name of the option's "related" list
 };
 
+// "method(s) still possible…" -> "methods" (or "method" for one): the unit shown with the number
+const unitOf = (countOf: string, n: number) => countOf.split(" ")[0].replace("(s)", n === 1 ? "" : "s");
+
 export default function OptionButton({
   option,
   selected,
@@ -27,7 +30,9 @@ export default function OptionButton({
         {option.suggested && (
           <span className="opt-star" title="Suggested by the ontology">★</span>
         )}
-        <span className="count" title={`${option.count} ${countOf}`}>{option.count}</span>
+        <span className="count" title={`${option.count} ${countOf}`}>
+          {option.count}<span className="count-unit"> {unitOf(countOf, option.count)}</span>
+        </span>
       </button>
       {option.hint && <div className="opt-hint">{option.hint}</div>}
       {option.related.length > 0 && (

@@ -473,13 +473,6 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
               {region && sheds && (
                 <AreaList features={sheds.features} selected={picked} onPick={toggleShed} placeholder="Find a watershed…" />
               )}
-              <label className="field">
-                <span>Water entity <span className="muted">(optional)</span></span>
-                <select className="select" value={entity ?? ""} onChange={(e) => setEntity(e.target.value || null)}>
-                  <option value="">any</option>
-                  {entities.map((e) => <option key={e.id} value={e.id}>{name(e)}</option>)}
-                </select>
-              </label>
               <button className="btn btn-primary" disabled={!area} onClick={() => go(1)}>Next: your data</button>
             </aside>
           </div>
@@ -496,7 +489,7 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
           <div className="data-grid">
             <div className="data-col">
               <div className="dcard">
-                <div className="dcard-head"><span className="who who-you">You</span><h4>Declare your data in hand</h4></div>
+                <div className="dcard-head"><span className="who who-you">What you have</span><h4>Declare your data in hand</h4></div>
                 <div className={`declare${isStatic ? " is-static" : ""}`}>
                   <div className="dfield dfield-var"><span>Variable</span>
                   <VariablePicker variables={variables} taken={data.map((d) => d.variable)} value={item.variable} onPick={pickVariable} /></div>
@@ -542,9 +535,13 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
               </div>
 
               <div className="dcard">
-                <div className="dcard-head"><span className="who who-sys">System</span><h4>Role of your data</h4></div>
+                <div className="dcard-head"><span className="who who-sys">Worked out for you</span><h4>Role of your data</h4></div>
                 {data.length === 0 ? (
-                  <p className="muted small">Declare data to see the role each one plays in a model: forcing, boundary condition, static description, calibration or initial state.</p>
+                  <div className="empty-hint">
+                    <strong>Nothing declared yet.</strong>
+                    <span>Add your first data on the left, for example <em>daily precipitation from your rain gauges</em>: its role in a model appears here (what drives it, what describes the site, what checks the results).</span>
+                    <span className="muted">No data of your own? Go on: the open data of your area is enough to start.</span>
+                  </div>
                 ) : (
                   <div className="roles">
                     {ROLES.map((r) => {
@@ -571,7 +568,7 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
             </div>
 
             <div className="dcard">
-              <div className="dcard-head"><span className="who who-sys">System</span><h4>Open data covering your area</h4></div>
+              <div className="dcard-head"><span className="who who-sys">Found for you</span><h4>Open data covering your area</h4></div>
               {!result && <p className="muted">Looking in the catalogue…</p>}
               {result && (
                 <>
@@ -665,7 +662,9 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
                             disabled={o.hand + o.area === 0 && o.workflows === 0}
                             onClick={() => { setObjective(o.id); setOutputs([]); }}>
                       <span>{name(o)}</span>
-                      <span className="count" title="workflows runnable for this objective">{o.hand + o.area}</span>
+                      <span className="count" title="workflows runnable for this objective">
+                        {o.hand + o.area}<span className="count-unit"> workflow{o.hand + o.area === 1 ? "" : "s"}</span>
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -677,7 +676,17 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
             <div className="goal-step">
               <div className="goal-n">3</div>
               <div className="goal-body">
-                <h4>Expected output <span className="muted">· pick one or several</span></h4>
+                <div className="goal-head-row">
+                  <h4>Expected output <span className="muted">· pick one or several</span></h4>
+                  <label className="inline-field">
+                    <span>for</span>
+                    <select className="select" value={entity ?? ""} onChange={(e) => setEntity(e.target.value || null)}
+                            title="The kind of water body you study: outputs that fit it are marked">
+                      <option value="">any water body</option>
+                      {entities.map((e) => <option key={e.id} value={e.id}>{name(e)}</option>)}
+                    </select>
+                  </label>
+                </div>
                 {!result?.outputs && <p className="muted">Assessing…</p>}
                 <div className="out-grid">
                   {(result?.outputs ?? []).map((o) => {
@@ -689,7 +698,7 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
                         <span className="out-head">
                           <strong>{name(o)}</strong>
                           {o.suggested && <span className="out-star">★ suggested</span>}
-                          {o.entity_match && <span className="pill">your water entity</span>}
+                          {o.entity_match && <span className="pill">fits your water body</span>}
                         </span>
                         {o.question && <span className="out-q">“{o.question}”</span>}
                         <span className="muted">{reach ? `${reach} runnable workflow(s)` : "no runnable workflow here yet"} · from {names(o.variables)}</span>

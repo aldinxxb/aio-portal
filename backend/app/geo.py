@@ -145,9 +145,11 @@ def build(layer: str) -> dict:
             "features": features}
 
 
-# Sandre names both parts of the Meuse district "Meuse"; the second one (FRB2) is the Sambre,
-# as its sub-basin FRB2_SAMB says. Applied on read, so an existing disk cache is corrected too.
-NAME_FIXES = {"basins": {"FRB2": "Sambre"}}
+# Names as they are written in French. Sandre gives the districts in capitals without accents
+# (title-cased here: "Rhone", "Adour Garonne"), and names both parts of the Meuse district
+# "Meuse": the second one (FRB2) is the Sambre, as its sub-basin FRB2_SAMB says.
+# Applied on read, so an existing disk cache is corrected too.
+NAME_FIXES = {"basins": {"FRB2": "Sambre", "FRD": "Rhône", "FRF": "Adour-Garonne", "FRA": "Escaut-Somme"}}
 
 
 def _fix_names(name: str, collection: dict) -> dict:

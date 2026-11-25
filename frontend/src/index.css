@@ -1629,3 +1629,12 @@ html { zoom: var(--zoom); }
 /* laptops: the tab titles speak for themselves; their questions stay in the tooltips */
 @media (max-width: 1420px) { .header-nav .entry-text { display: none; } }
 .guide-head { padding-right: 28px; }
+
+/* quick wins: units on counts, plain badges, helpful empty states */
+.count-unit { font-weight: 500; opacity: .8; }
+.empty-hint { display: grid; gap: 6px; padding: 12px 14px; border: 1px dashed #b7c7da; border-radius: 10px; background: var(--surface); font-size: 13px; line-height: 1.45; color: #334155; }
+.empty-hint strong { color: var(--text); }
+.goal-head-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 14px; }
+.goal-head-row h4 { margin-bottom: 0; }
+.inline-field { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.inline-field .select { width: auto; padding: 4px 8px; font-size: 13px; }

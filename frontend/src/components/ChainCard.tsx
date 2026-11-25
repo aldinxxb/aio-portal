@@ -249,10 +249,10 @@ export default function ChainCard({ chain, open, onAdjust }: CardProps) {
 
         {onAdjust && (
           <div className="wf-action">
-            <button className="btn btn-primary" onClick={() => onAdjust(chain)}>Open its diagnosis</button>
+            <button className="btn btn-primary" onClick={() => onAdjust(chain)}>Check this workflow for my study</button>
             <span className="muted">
-              Fit for your study, what is missing, components you can change, add or leave out. The back
-              button brings you here again.
+              How well it fits, what is missing, and the parts you can change, add or leave out.
+              Back brings you here again.
             </span>
           </div>
         )}

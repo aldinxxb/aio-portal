@@ -70,7 +70,7 @@ export type SetupState = { step: number; request: SetupRequest; declined?: strin
 // initial: a set-up handed over by the Water Challenge entry ("check and adjust this workflow")
 // saved: a study from a link or a draft, where it was left
 export default function SetupEntry({ initial, saved, onState }: {
-  initial?: SetupRequest | null; saved?: SetupState | null; onState?: (state: SetupState, summary: string) => void;
+  initial?: SetupRequest | null; saved?: SetupState | null; onState?: (state: SetupState | null, summary: string) => void;
 }) {
   // with a challenge and an objective the diagnosis can start at once; else the study is asked first
   // a link drops empty values to stay short: the set-up is put back in its full shape
@@ -108,11 +108,23 @@ export default function SetupEntry({ initial, saved, onState }: {
   // every change goes to the address (and the draft): a reload or a shared link finds it again
   useEffect(() => {
     if (!onState) return;
-    const parts = [request.setup.methods.length ? `${request.setup.methods.length} method${request.setup.methods.length > 1 ? "s" : ""}` : "",
-                   request.context.challenge ? "challenge chosen" : "", request.data.length ? `${request.data.length} data` : ""].filter(Boolean);
+    const empty = step === 0 && !request.setup.software && !request.setup.methods.length && !request.setup.reference_chain
+      && !request.context.challenge && !request.data.length;
+    if (empty) { onState(null, ""); return; }
+    // names, from the lists this page has loaded (an id until they arrive)
+    const nameOf = (id: string) => {
+      const listed = [...chains, ...software, ...(lists.challenge ?? []), ...chains.flatMap((c) => c.challenges ?? [])].find((o) => o.id === id);
+      return listed ? name(listed) : labelOf(id);
+    };
+    const methods = request.setup.methods.map(nameOf);
+    const parts = [
+      request.setup.reference_chain ? nameOf(request.setup.reference_chain) : methods.length ? `${methods.slice(0, 2).join(", ")}${methods.length > 2 ? ` +${methods.length - 2}` : ""}` : request.setup.software ? nameOf(request.setup.software) : "",
+      request.context.challenge ? nameOf(request.context.challenge) : "",
+      request.data.length ? `${request.data.length} data` : "",
+    ].filter(Boolean);
     onState({ step, request, declined, tried: autoTried }, parts.join(" · "));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, JSON.stringify(request), declined.join(), autoTried.join()]);
+  }, [step, JSON.stringify(request), declined.join(), autoTried.join(), groups.length, chains.length, software.length, lists.challenge?.length]);
 
   // step 1: software, standard workflows, and the methods grouped by the job they do
   useEffect(() => {
@@ -357,7 +369,13 @@ export default function SetupEntry({ initial, saved, onState }: {
           <div className="setup-summary">
             <span className="muted">Your set-up:</span>
             {chosenChain && <span className="pill pill-open">{name(chosenChain)}</span>}
-            {setup.methods.length === 0 && <span className="muted">nothing yet</span>}
+            {setup.methods.length === 0 && !chosenChain && (
+              <span className="muted">
+                nothing chosen yet. {mode === "workflow"
+                  ? "Pick the standard workflow closest to yours below."
+                  : "Open a job below (e.g. runoff transform) and tick the method you use for it, or pick your software first."}
+              </span>
+            )}
             {setup.methods.map((m) => (
               <span key={m} className="pill pill-hit">{labelOf(m)}</span>
             ))}
