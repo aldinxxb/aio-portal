@@ -125,6 +125,8 @@ type CardProps = {
   chain: Chain;
   open: boolean;
   onAdjust?: (chain: Chain) => void;   // open this workflow's diagnosis (Modeling Approach)
+  best?: string[];                     // the best match: why, in a few words
+  compare?: { on: boolean; full: boolean; onToggle: () => void };   // ticked for the side-by-side comparison
 };
 
 const NATURES: { id: "forcing" | "boundary" | "static"; title: string }[] = [
@@ -136,16 +138,22 @@ const NATURES: { id: "forcing" | "boundary" | "static"; title: string }[] = [
 // One recommended workflow. Closed: its name, software, verdict and two small meters
 // (processes covered, data available). Open: the essential steps on the left, what the
 // workflow needs and gives on the right, the optional components, then the action.
-export default function ChainCard({ chain, open, onAdjust }: CardProps) {
+export default function ChainCard({ chain, open, onAdjust, best, compare }: CardProps) {
   const runnable = chain.status === "runnable";
   const count = (state: DataState) => chain.inputs.filter((i) => i.state === state).length;
   const total = chain.inputs.length;
   const reachable = count("have") + count("open_data");
 
   return (
-    <details className={`chain wf ${runnable ? "is-direct" : "is-complement"}`} open={open}>
+    <details className={`chain wf ${runnable ? "is-direct" : "is-complement"}${best ? " is-best" : ""}`} open={open}>
       <summary className="wf-head">
         <div className="wf-name">
+          {best && (
+            <span className="wf-best">
+              <span className="wf-best-badge">★ Best match</span>
+              {best.length > 0 && <span className="wf-best-why">{best.join(" · ")}</span>}
+            </span>
+          )}
           <span className="chain-title">{chain.label}</span>
           <span className="wf-software">
             {chain.software.map((s) => (
@@ -156,6 +164,12 @@ export default function ChainCard({ chain, open, onAdjust }: CardProps) {
             {chain.software.length > 1 && <span className="muted">· coupled ({chain.coupling ? name(chain.coupling) : "two software"})</span>}
           </span>
         </div>
+        {compare && (
+          <label className={`wf-compare${compare.on ? " on" : ""}`} title={compare.full && !compare.on ? "Three workflows at most" : "Compare it side by side with others"}>
+            <input type="checkbox" checked={compare.on} disabled={compare.full && !compare.on} onChange={compare.onToggle} />
+            compare
+          </label>
+        )}
         <div className="wf-tags">
           <span className={`tag ${runnable ? "tag-direct" : "tag-complement"}`}>{runnable ? "ready to run" : "to check"}</span>
           <span className={`tag ${chain.kind === "reference" ? "tag-soft" : "tag-info"}`}>

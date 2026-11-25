@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Chain, ChainRecommendation, Licence } from "../api";
 import { EMPTY_REQUEST, setupOptions, type SetupOption } from "../setupApi";
-import ChainCard from "./ChainCard";
+import WorkflowList from "./WorkflowList";
+import { whyBest } from "../workflowRank";
 
 type Props = {
   chains: ChainRecommendation | null;   // null while loading
@@ -24,6 +25,8 @@ export default function WorkflowSection({ chains, licence, onLicence, software, 
       .catch(() => setSoftwares([]));
   }, []);
   const ready = found.filter((c) => c.status === "runnable").length;
+  // the best match: the first workflow (the portal's ranking) that can run
+  const best = found.find((c) => c.status === "runnable") ?? null;
 
   return (
     <>
@@ -73,9 +76,7 @@ export default function WorkflowSection({ chains, licence, onLicence, software, 
         )}
 
         <div className="flow-groups">
-          {found.map((chain, index) => (
-            <ChainCard key={chain.id} chain={chain} open={index === 0} onAdjust={onAdjust} />
-          ))}
+          <WorkflowList chains={found} bestId={best?.id ?? null} why={best ? whyBest(best, found) : []} onAdjust={onAdjust} />
         </div>
       </section>
 

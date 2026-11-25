@@ -1664,3 +1664,27 @@ html { zoom: var(--zoom); }
   .pnav-note { display: none; }
   .pnav .btn-primary, .pnav .btn:last-child { margin-left: auto; }
 }
+
+/* ================= results users can act on ================= */
+.wlist-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 16px; margin: 4px 0 10px; font-size: 12.5px; }
+.chain.wf.is-best { border-color: var(--aio-green); box-shadow: 0 0 0 2px rgba(61, 122, 60, .18); }
+.wf-best { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-bottom: 3px; }
+.wf-best-badge { font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--aio-green); padding: 2px 8px; border-radius: 999px; }
+.wf-best-why { font-size: 12px; color: #245f24; font-weight: 600; }
+.wf-compare { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); padding: 3px 8px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; white-space: nowrap; background: var(--surface); }
+.wf-compare.on { color: var(--aio-blue-dark); border-color: var(--aio-blue); background: #eef4fb; font-weight: 700; }
+.wf-compare input { margin: 0; }
+
+.wcompare { border: 1px solid var(--aio-blue); border-radius: 12px; background: #f7fafd; padding: 10px 12px; margin-bottom: 12px; }
+.wcompare-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13.5px; }
+.wcompare-scroll { overflow-x: auto; }
+.wcompare-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 560px; }
+.wcompare-table th, .wcompare-table td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.wcompare-table thead th { font-size: 13px; color: var(--aio-blue-dark); border-bottom: 2px solid var(--aio-blue); }
+.wcompare-table tbody th { width: 130px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+.wcompare-table td { width: calc((100% - 130px) / 3); }
+
+.change-note { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0 0 10px; padding: 8px 12px; border-radius: 10px;
+  background: var(--green-soft); border: 1px solid #b9dcb3; color: #245f24; font-size: 13px; font-weight: 600; }
+.next.next-optional { background: var(--bg); border-style: dashed; }
+.wf-best { flex-basis: 100%; width: 100%; }

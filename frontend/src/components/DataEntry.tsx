@@ -18,7 +18,8 @@ import {
   type Role,
   type WatershedLayer,
 } from "../dataApi";
-import ChainCard from "./ChainCard";
+import WorkflowList from "./WorkflowList";
+import { whyBest } from "../workflowRank";
 import { EntryHero, PageNav, PageSteps } from "./EntryFrame";
 import FranceMap, { boundsOf, type Bounds } from "./FranceMap";
 import { fullDataItems } from "../share";
@@ -219,6 +220,8 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const latest = useRef(0);
+  const justAdded = useRef<{ name: string; before: Record<Readiness, number> } | null>(null);
+  const [change, setChange] = useState<string | null>(null);
 
   useEffect(() => {
     getDeclarable().then(setVariables).catch(() => setVariables([]));
@@ -342,6 +345,8 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
   }
 
   function addDataset(dataset: Ref, provided: Ref[], step: string | null) {
+    justAdded.current = { name: name(dataset), before: { ...counts } };
+    setChange(null);
     const known = new Set(data.map((d) => d.variable));
     const added = provided.filter((v) => !known.has(v.id)).map((v) => ({
       variable: v.id, source: "dataset" as const, dataset: dataset.id, step, start: null, end: null, form: null,
@@ -368,6 +373,23 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
   const flow = result?.workflows?.chains ?? [];
   const counts = Object.fromEntries(LEVELS.map((l) => [l.id, flow.filter((c) => c.readiness === l.id).length])) as Record<Readiness, number>;
   const openLevel = level ?? LEVELS.find((l) => counts[l.id] > 0)?.id ?? "hand";
+  // the best match: the first workflow that runs with your data alone, else with the open data here
+  const bestChain = flow.find((c) => c.readiness === "hand") ?? flow.find((c) => c.readiness === "area") ?? null;
+  const bestWhy = bestChain ? whyBest(bestChain, flow.filter((c) => c.readiness === bestChain.readiness)) : [];
+
+  // once the assessment that follows an added dataset arrives, say what it changed
+  const countsKey = LEVELS.map((l) => counts[l.id]).join("/");
+  useEffect(() => {
+    const was = justAdded.current;
+    if (!was || busy || !result?.workflows) return;
+    justAdded.current = null;
+    const now = counts;
+    const parts: string[] = [];
+    if (now.hand !== was.before.hand) parts.push(`${now.hand} workflow${now.hand === 1 ? "" : "s"} ready with your data alone (was ${was.before.hand})`);
+    if (now.none !== was.before.none) parts.push(`${now.none} not ready here (was ${was.before.none})`);
+    setChange(`Added ${was.name} to your data: ${parts.length ? parts.join(", ") : "the workflows stay where they were, but their inputs now come from it"}.`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countsKey, busy, result]);
   const regionLayer = LAYERS.find((l) => l.id === region?.layer);
   const shedBounds: Bounds | undefined = region ? boundsOf([region.feature.properties.bbox]) : undefined;
   const challengeName = challenge ? name(result?.enables.find((e) => e.id === challenge) ?? { id: challenge, label: null }) : null;
@@ -747,9 +769,20 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
                 ))}
               </div>
 
+              {change && (
+                <div className="change-note" role="status">
+                  <span>✓ {change}</span>
+                  <button className="link-btn" onClick={() => setChange(null)}>OK</button>
+                </div>
+              )}
+
               {openLevel !== "hand" && (result.next_datasets ?? []).length > 0 && (
-                <div className="next">
-                  <div className="next-title">Next dataset to add <span className="muted">· covering {area.name}, to move workflows up</span></div>
+                <div className={`next${counts.none === 0 ? " next-optional" : ""}`}>
+                  <div className="next-title">
+                    {counts.none === 0
+                      ? <>Optional: datasets to take in hand <span className="muted">· every workflow can already run with the open data of {area.name}; adding one counts it as your data, so workflows move to “ready with your data”</span></>
+                      : <>Next dataset to add <span className="muted">· covering {area.name}, to make more workflows ready</span></>}
+                  </div>
                   <div className="next-grid">
                     {(result.next_datasets ?? []).map((n) => (
                       <div key={n.dataset.id} className="next-card">
@@ -789,10 +822,8 @@ export default function DataEntry({ onAdjust, initial, onState }: Props) {
                           : "Every workflow can run here."}
                       </p>
                     )}
-                    {items.map((c, i) => (
-                      <ChainCard key={c.id} chain={c} open={i === 0}
-                                 onAdjust={(chain) => onAdjust(chain, { challenge: challenge!, objective, outputs, data })} />
-                    ))}
+                    <WorkflowList chains={items} bestId={bestChain?.id ?? null} why={bestWhy}
+                                  onAdjust={(chain) => onAdjust(chain, { challenge: challenge!, objective, outputs, data })} />
                   </div>
                 );
               })}
